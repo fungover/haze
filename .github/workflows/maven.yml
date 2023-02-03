@@ -27,5 +27,9 @@ jobs:
           java-version: '19'
           distribution: 'temurin'
           cache: maven
-      - name: Build with Maven
+      - name: Compile with Maven
+        run: mvn -B compile --file pom.xml
+
+      - name: Test with Maven
         run: mvn -B test --file pom.xml
+
