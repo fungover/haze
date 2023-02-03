@@ -1,6 +1,9 @@
 name-template: 'v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
 
+template: |
+  $CHANGES
+
 version-resolver:
   major:
     labels:
@@ -27,7 +30,6 @@ autolabeler:
   - label: 'feature'
     branch:
       - '/feature-.+'
-      -
 categories:
   - title: '💥💥Breaking Changes💥💥'
     labels:
