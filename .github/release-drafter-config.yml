@@ -1,0 +1,49 @@
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+
+version-resolver:
+  major:
+    labels:
+      - 'major'
+  minor:
+    labels:
+      - 'minor'
+  patch:
+    labels:
+      - 'patch'
+  default: patch
+
+autolabeler:
+  - label: 'maintenance'
+    files:
+      - '*.md'
+      - '.github/*'
+  - label: 'bug'
+    branch:
+      - '/bug-.+'
+  - label: 'maintenance'
+    branch:
+      - '/maintenance-.+'
+  - label: 'feature'
+    branch:
+      - '/feature-.+'
+      -
+categories:
+  - title: '💥💥Breaking Changes💥💥'
+    labels:
+      - 'breakingchange'
+  - title: '⬆️ New Features ⬆️'
+    labels:
+      - 'feature'
+      - 'enhancement'
+  - title: '🐛 Bug Fixes'
+    labels:
+      - 'bugfix'
+      - 'bug'
+  - title: '🚧 Maintenance 🚧'
+    labels:
+      - 'maintenance'
+      - 'dependencies'
+      - 'testing'
+
+change-template: '- $TITLE (#$NUMBER)'
