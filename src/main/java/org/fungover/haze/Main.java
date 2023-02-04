@@ -8,20 +8,18 @@ import java.net.ServerSocket;
 public class Main {
     public static void main(String[] args) {
 
+
         try (ServerSocket serverSocket = new ServerSocket(6379)) {
             while (true) {
                 var client = serverSocket.accept();
 
                 BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                System.out.println(input.readLine());
-                System.out.println(input.readLine());
-                System.out.println(input.readLine());
-                System.out.println(input.readLine());
-                System.out.println(input.readLine());
-                System.out.println(input.readLine());
-                System.out.println(input.readLine());
 
-                client.getOutputStream().write("+OK\r\n".getBytes());
+
+                if (input.readLine().equals("PING\r\n")) {
+                    client.getOutputStream().write("+PONG\r\n".getBytes());
+                }
+
 
                 client.close();
             }
@@ -29,4 +27,5 @@ public class Main {
             throw new RuntimeException(e);
         }
     }
+
 }
