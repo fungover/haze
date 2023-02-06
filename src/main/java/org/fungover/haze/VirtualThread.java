@@ -9,6 +9,7 @@ public class VirtualThread extends Thread {
 	private String databaseKey;
 	private String databaseValue;
 	private Map<String, String> database;
+	//TODO Add Command variable
 
 
 	@Override
@@ -16,6 +17,7 @@ public class VirtualThread extends Thread {
 		Lock lock = new ReentrantLock();
 		lock.lock();
 		try {
+			//TODO Switch on command
 			this.database.put(databaseKey, databaseValue);
 		} finally {
 			lock.unlock();
@@ -26,6 +28,7 @@ public class VirtualThread extends Thread {
 
 
 	public void startNewVirtualThread(String databaseKey, String databaseValue, Map<String, String> database) {
+		//TODO Add command perimeter
 		this.databaseKey = databaseKey;
 		this.databaseValue = databaseValue;
 		this.database = database;
