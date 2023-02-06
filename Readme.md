@@ -1,0 +1,1 @@
+[![Build Status](https://github.com/<username>/<repo>/workflows/<workflow_name>/badge.svg)](https://github.com/<username>/<repo>/actions)
