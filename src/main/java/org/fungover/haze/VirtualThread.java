@@ -14,15 +14,16 @@ public class VirtualThread extends Thread {
 
 	@Override
 	public void run() {
+		//Run input to database
 		Lock lock = new ReentrantLock();
 		lock.lock();
 		try {
 			//TODO Switch on command
 			this.database.put(databaseKey, databaseValue);
+			System.out.println(VirtualThread.currentThread().isVirtual()); //For Debug
 		} finally {
 			lock.unlock();
 		}
-
 
 	}
 
@@ -42,5 +43,13 @@ public class VirtualThread extends Thread {
 
 	public VirtualThread(Map<String, String> database) {
 		this.database = database;
+	}
+
+	public void setDatabaseKey(String databaseKey) {
+		this.databaseKey = databaseKey;
+	}
+
+	public void setDatabaseValue(String databaseValue) {
+		this.databaseValue = databaseValue;
 	}
 }
