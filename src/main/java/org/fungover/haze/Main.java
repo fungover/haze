@@ -45,7 +45,7 @@ public class Main {
 						throw new RuntimeException(e);
 					}
 				};
-				Thread newTHread = Thread.startVirtualThread(newThread);
+				Thread.startVirtualThread(newThread);
 
 			}
 		} catch (IOException e) {
