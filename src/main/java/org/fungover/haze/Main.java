@@ -4,9 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class Main {
 	public static void main(String[] args) {
@@ -29,13 +26,6 @@ public class Main {
 
 						printThreadDebug();
 
-						Lock lock = new ReentrantLock();
-						lock.lock();
-						try{
-							// Edit Database here
-						}finally {
-							lock.unlock();
-						}
 
 						client.getOutputStream().write("+OK\r\n".getBytes());
 
