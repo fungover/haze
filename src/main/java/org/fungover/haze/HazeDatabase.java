@@ -58,14 +58,17 @@ public class HazeDatabase {
 		return "";
 	}
 
-	public String setNX(String key) {
+	public String setNX(String key, String value) {
 		lock.lock();
 		try {
-			//sets value if key does not exists, if there is a key this operation is ignored.
+			if(database.containsKey(key))
+				return ":0\r\n";
+			else{
+				database.put(key, value);
+				return ":1\r\n";
+			}
 		} finally {
 			lock.unlock();
-
 		}
-		return "";
 	}
 }
