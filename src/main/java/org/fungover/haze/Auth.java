@@ -17,8 +17,9 @@ public class Auth {
 
 		return "Ah ah ah, you didn't say the magic word.";
 	}
+
 	public String authenticate() {
-			return "+OK\\r\\n\n";
+		return "+OK\\r\\n\n";
 	}
 
 	private boolean passwordNotSet() {
