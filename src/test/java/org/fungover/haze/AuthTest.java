@@ -12,6 +12,7 @@ class AuthTest {
 
 	@Test
 	void passwordIsNotSetShouldReturnOK() {
+		auth.setPassword("");
 		assertThat(auth.authenticate()).isEqualTo("+OK\\r\\n\n");
 	}
 
@@ -34,9 +35,13 @@ class AuthTest {
 	}
 
 	@Test
-	void passwordNotSetShouldReturnOK() {
+	void authenticateWithEmptyStringIfPasswordIsSet() {
+		assertThat(auth.authenticate()).isEqualTo("Ah ah ah, you didn't say the magic word.");
+	}
+	@Test
+	void passwordIsNotSetShouldReturnOKEvenIfPasswordSent() {
 		auth.setPassword("");
-		assertThat(auth.authenticate("12345")).isEqualTo("+OK\\r\\n\n");
+		assertThat(auth.authenticate("1234")).isEqualTo("+OK\\r\\n\n");
 	}
 
 
