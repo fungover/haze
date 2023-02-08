@@ -1,7 +1,7 @@
 package org.fungover.haze;
 
 public class Auth {
-	private String password = System.getenv("password");
+	private String password = System.getenv("PASSWORD");
 
 
 	public void setPassword(String password) {
