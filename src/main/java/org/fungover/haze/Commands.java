@@ -1,6 +1,6 @@
 package org.fungover.haze;
 
-public class CommandHandler {
+public class Commands {
     public void handleCommand(Command cmd) {
         switch (cmd) {
             case SET -> handleSetCommand();
