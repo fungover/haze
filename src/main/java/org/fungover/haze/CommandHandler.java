@@ -23,3 +23,4 @@ public class CommandHandler {
     private void handlePingCommand() {
     }
 }
+
