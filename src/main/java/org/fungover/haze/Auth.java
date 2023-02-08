@@ -8,15 +8,18 @@ public class Auth {
 		this.password = password;
 	}
 
-	private boolean authenticate(String password) {
+	public String authenticate(String password) {
 		if (passwordNotSet())
-			return true;
-		return this.password.equals(password);
+			return "+OK\\r\\n\n";
+
+		if (this.password.equals(password))
+			return "+OK\\r\\n\n";
+
+		return "Ah ah ah, you didn't say the magic word.";
 	}
 
 	private boolean passwordNotSet() {
 		return this.password.isBlank();
 	}
-
 
 }
