@@ -20,11 +20,13 @@ class AuthTest {
 	}
 
 	@Test
-	void wrongPasswordSholdReturnError() {
+	void wrongPasswordShouldReturnError() {
 		auth.setPassword("12345");
 		assertThat(auth.authenticate("123456")).isEqualTo("Ah ah ah, you didn't say the magic word.");
 
 	}
+
+
 
 
 
