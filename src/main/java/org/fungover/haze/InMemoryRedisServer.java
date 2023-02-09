@@ -7,15 +7,24 @@ public class InMemoryRedisServer {
 
 	private final Map<String, String> database;
 
-	public InMemoryRedisServer() {database = new HashMap<>();}
+	public InMemoryRedisServer() {
+		database = new HashMap<>();
+	}
 
-	public String set(String key, String value) {database.put(key, value); return "+OK\r\n";}
+	public String set(String key, String value) {
+		database.put(key, value);
+		return "+OK\r\n";
+	}
 
 	public String get(String key) {
-		if (database.containsKey(key)) {return getString(key);
-		} else { return "$-1\r\n";
+		if (database.containsKey(key)) {
+			return getString(key);
+		} else {
+			return "$-1\r\n";
 		}
 	}
 
-	private String getString(String key) {return "$" + database.get(key).length() + "\r\n" + database.get(key) + "\r\n"; }
+	public String getString(String key) {
+		return "$" + database.get(key).length() + "\r\n" + database.get(key) + "\r\n";
+	}
 }
