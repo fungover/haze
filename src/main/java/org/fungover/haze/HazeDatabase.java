@@ -59,13 +59,15 @@ public class HazeDatabase {
 	}
 
 	public String setNX(String key, String value) {
+		String replyWhenKeyNotSet = ":0\r\n";
+		String replyWhenKeySet = ":1\r\n";
 		lock.lock();
 		try {
 			if(database.containsKey(key))
-				return ":0\r\n";
+				return replyWhenKeyNotSet;
 			else{
 				database.put(key, value);
-				return ":1\r\n";
+				return replyWhenKeySet;
 			}
 		} finally {
 			lock.unlock();
