@@ -7,8 +7,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class HazeDatabase {
 
-	private static Map<String, String> database;
-	private static Lock lock;
+	private Map<String, String> database;
+	private Lock lock;
 
 	public HazeDatabase() {
 		this.database = new HashMap<>();
@@ -16,7 +16,7 @@ public class HazeDatabase {
 	}
 
 
-	private String set() {
+	public String set(String key, String value) {
 		lock.lock();
 		try {
 			//add code for setting value when when key exists
@@ -26,7 +26,7 @@ public class HazeDatabase {
 		return "";
 	}
 
-	private String get() {
+	public String get(String key) {
 		lock.lock();
 		try {
 			//return value when key is passed
@@ -36,7 +36,7 @@ public class HazeDatabase {
 		return "";
 	}
 
-	private String delete() {
+	public String delete(String key) {
 		lock.lock();
 		try {
 			//remove key when it is passed, ignores if there is no key
@@ -47,7 +47,7 @@ public class HazeDatabase {
 		return "";
 	}
 
-	private String exists() {
+	public String exists(String key) {
 		lock.lock();
 		try {
 			//gets key as parameter and returns an integer representing how many keys exists
@@ -58,7 +58,7 @@ public class HazeDatabase {
 		return "";
 	}
 
-	private String setNX() {
+	public String setNX(String key) {
 		lock.lock();
 		try {
 			//sets value if key does not exists, if there is a key this operation is ignored.
