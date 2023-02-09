@@ -1,12 +1,12 @@
 package org.fungover.haze;
 
 public class Commands {
-	public void handleCommand(Command cmd) {
+	public void command(Command cmd) {
 		switch (cmd) {
-			case SET -> handleSetCommand();
-			case GET -> handleGetCommand();
-			case DEL -> handleDelCommand();
-			case PING -> handlePingCommand();
+			case SET -> SetCommand();
+			case GET -> GetCommand();
+			case DEL -> DelCommand();
+			case PING -> PingCommand();
 			default -> System.out.println("Invalid Command");
 		}
 	}
