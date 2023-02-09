@@ -3,7 +3,7 @@ root = true
 [*]
 charset = utf-8
 end_of_line = lf
-indent_size = 4
+indent_size = 2
 indent_style = space
 insert_final_newline = true
 max_line_length = 120
@@ -17,8 +17,7 @@ ij_visual_guides = none
 ij_wrap_on_typing = false
 
 [*.java]
-indent_style = tab
-ij_smart_tabs = true
+indent_size = 4
 ij_java_align_consecutive_assignments = false
 ij_java_align_consecutive_variable_declarations = false
 ij_java_align_group_field_declarations = false
@@ -269,8 +268,6 @@ ij_editorconfig_space_before_comma = false
 ij_editorconfig_spaces_around_assignment_operators = true
 
 [{*.ant,*.fxml,*.jhm,*.jnlp,*.jrxml,*.jspx,*.pom,*.rng,*.tagx,*.tld,*.wsdl,*.xml,*.xsd,*.xsl,*.xslt,*.xul}]
-indent_style = tab
-ij_smart_tabs = true
 ij_xml_align_attributes = true
 ij_xml_align_text = false
 ij_xml_attribute_wrap = normal
@@ -291,7 +288,6 @@ ij_xml_text_wrap = normal
 ij_xml_use_custom_settings = false
 
 [{*.har,*.json}]
-indent_size = 2
 ij_json_array_wrapping = split_into_lines
 ij_json_keep_blank_lines_in_code = 0
 ij_json_keep_indents_on_empty_lines = false
@@ -353,7 +349,6 @@ ij_markdown_wrap_text_if_long = true
 ij_markdown_wrap_text_inside_blockquotes = true
 
 [{*.yaml,*.yml}]
-indent_size = 2
 ij_yaml_align_values_properties = do_not_align
 ij_yaml_autoinsert_sequence_marker = true
 ij_yaml_block_mapping_on_new_line = false
