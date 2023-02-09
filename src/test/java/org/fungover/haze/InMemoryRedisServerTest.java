@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class RedisServerTest {
+class InMemoryRedisServerTest {
 
-	RedisServer redisServer = new RedisServer();
+	InMemoryRedisServer redisServer = new InMemoryRedisServer();
 
 	@Test
 	void testSetAndGet(){
