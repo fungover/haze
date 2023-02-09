@@ -1,0 +1,16 @@
+name: 'Issue Links'
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  issue-links:
+    runs-on: ubuntu-latest
+    # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: tkt-actions/add-issue-links@v1.8.1
+        with:
+          repo-token: '${{ secrets.GITHUB_TOKEN }}' # required
+          branch-prefix: 'issue-'
