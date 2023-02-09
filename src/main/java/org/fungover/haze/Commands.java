@@ -3,24 +3,24 @@ package org.fungover.haze;
 public class Commands {
 	public void command(Command cmd) {
 		switch (cmd) {
-			case SET -> SetCommand();
-			case GET -> GetCommand();
-			case DEL -> DelCommand();
-			case PING -> PingCommand();
+			case SET -> setCommand();
+			case GET -> getCommand();
+			case DEL -> delCommand();
+			case PING -> pingCommand();
 			default -> System.out.println("Invalid Command");
 		}
 	}
 
-	private void handleSetCommand() {
+	private void setCommand() {
 	}
 
-	private void handleGetCommand() {
+	private void getCommand() {
 	}
 
-	private void handleDelCommand() {
+	private void delCommand() {
 	}
 
-	private void handlePingCommand() {
+	private void pingCommand() {
 	}
 }
 
