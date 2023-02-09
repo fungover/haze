@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 	public static void main(String[] args) {
@@ -16,18 +18,15 @@ public class Main {
 					try {
 
 
-						BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
-						System.out.println(input.readLine());
-						System.out.println(input.readLine());
-						System.out.println(input.readLine());
-						System.out.println(input.readLine());
-						System.out.println(input.readLine());
+                        BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                        List<String> inputList = new ArrayList<>();
 
+                        String firstReading = input.readLine();
+                        readInputStream(input, inputList, firstReading);
+
+                        inputList.forEach(System.out::println); // For checking incoming message
 
 						printThreadDebug();
-
-
-						client.getOutputStream().write("+OK\r\n".getBytes());
 
 						client.close();
 
@@ -36,12 +35,9 @@ public class Main {
 					}
 				};
 				Thread.startVirtualThread(newThread);
-
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
-
-
 		}
 	}
 
@@ -49,4 +45,14 @@ public class Main {
 		System.out.println("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
 		System.out.println("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
 	}
+    private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws IOException {
+        int size;
+        if (firstReading.startsWith("*")) {
+            size = Integer.parseInt(firstReading.substring(1)) * 2;
+            for (int i = 0; i < size; i++) {
+                inputList.add(input.readLine());
+            }
+        } else
+            inputList.add(firstReading);
+    }
 }
