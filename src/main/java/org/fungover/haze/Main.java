@@ -15,10 +15,19 @@ public class Main {
 
                 BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
-
                 if (input.readLine().equals("PING\r\n")) {
                     client.getOutputStream().write("+PONG\r\n".getBytes());
                 }
+
+                System.out.println(input.readLine());
+                System.out.println(input.readLine());
+                System.out.println(input.readLine());
+                System.out.println(input.readLine());
+                System.out.println(input.readLine());
+                System.out.println(input.readLine());
+                System.out.println(input.readLine());
+
+                client.getOutputStream().write("+OK\r\n".getBytes());
 
 
                 client.close();
