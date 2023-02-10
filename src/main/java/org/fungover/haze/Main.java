@@ -6,29 +6,50 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 
 public class Main {
-	public static void main(String[] args) {
-		Initialize initialize = new Initialize();
-		initialize.importCliOptions(args);
+    public static void main(String[] args) {
 
-		try (ServerSocket serverSocket = new ServerSocket(initialize.setPort())) {
-			while (true) {
-				var client = serverSocket.accept();
+        Initialize initialize = new Initialize();
+        initialize.importCliOptions(args);
 
-				BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
-				System.out.println(input.readLine());
-				System.out.println(input.readLine());
-				System.out.println(input.readLine());
-				System.out.println(input.readLine());
-				System.out.println(input.readLine());
-				System.out.println(input.readLine());
-				System.out.println(input.readLine());
+        try (ServerSocket serverSocket = new ServerSocket(initialize.setPort())) {
+            while (true) {
+                var client = serverSocket.accept();
 
-				client.getOutputStream().write("+OK\r\n".getBytes());
+                Runnable newThread = () -> {
+                    try {
 
-				client.close();
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+
+                        BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                        System.out.println(input.readLine());
+                        System.out.println(input.readLine());
+                        System.out.println(input.readLine());
+                        System.out.println(input.readLine());
+                        System.out.println(input.readLine());
+
+
+                        printThreadDebug();
+
+
+                        client.getOutputStream().write("+OK\r\n".getBytes());
+
+                        client.close();
+
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                };
+                Thread.startVirtualThread(newThread);
+
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+
+
+        }
+    }
+
+    private static void printThreadDebug() {
+        System.out.println("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
+        System.out.println("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
+    }
 }
