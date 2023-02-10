@@ -43,6 +43,10 @@ class AuthTest {
 		auth.setPassword("");
 		assertThat(auth.authenticate("1234")).isEqualTo("+OK\\r\\n\n");
 	}
-
+    @Test
+    void passwordIsNullShouldReturnPasswordNotSet(){
+        auth.setPassword(null);
+        assertThat(auth.authenticate()).isEqualTo("+OK\\r\\n\n");
+    }
 
 }
