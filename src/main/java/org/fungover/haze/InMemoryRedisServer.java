@@ -3,11 +3,11 @@ package org.fungover.haze;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RedisServer {
+public class InMemoryRedisServer {
 
 	private Map<String,String> database;
 
-	public RedisServer() {
+	public InMemoryRedisServer() {
 		database = new HashMap<>();
 	}
 
@@ -19,10 +19,14 @@ public class RedisServer {
 
 	public String get(String key) {
 		if (database.containsKey(key)) {
-			return "$" + database.get(key).length() + "\r\n" + database.get(key) + "\r\n";
+			return getString(key);
 		} else {
 			return "$-1\r\n";
 		}
+	}
+
+	public String getString(String key) {
+		return "$" + database.get(key).length() + "\r\n" + database.get(key) + "\r\n";
 	}
 
 }
