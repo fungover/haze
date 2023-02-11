@@ -17,6 +17,7 @@ public class Main {
 		try (ServerSocket serverSocket = new ServerSocket()) {
             serverSocket.setReuseAddress(true);
             serverSocket.bind(new InetSocketAddress(6379));
+
             while (true) {
                 var client = serverSocket.accept();
                 Log4j2.debug(String.valueOf(client));
