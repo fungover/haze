@@ -9,8 +9,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class HazeDatabase {
 
-    private Map<String, String> database;
-    private Lock lock;
+	private Map<String, String> database;
+	private Lock lock;
 
     public HazeDatabase() {
         this.database = new HashMap<>();
@@ -57,30 +57,35 @@ public class HazeDatabase {
         }
     }
 
-    public String exists(String key) {
+    public String exists(String... key) {
         lock.lock();
+        int numberOfKeys = 0;
         try {
-            //gets key as parameter and returns an integer representing how many keys exists
-        } finally {
-            lock.unlock();
-
-        }
-        return "";
-    }
-
-    public String setNX(String key, String value) {
-        String replyWhenKeyNotSet = ":0\r\n";
-        String replyWhenKeySet = ":1\r\n";
-        lock.lock();
-        try {
-            if (database.containsKey(key))
-                return replyWhenKeyNotSet;
-            else {
-                database.put(key, value);
-                return replyWhenKeySet;
+            for (String i : key) {
+                if (database.containsKey(i)) {
+                    numberOfKeys++;
+                }
             }
         } finally {
             lock.unlock();
+
         }
+        return ":" + numberOfKeys + "\r\n";
     }
+
+	public String setNX(String key, String value) {
+		String replyWhenKeyNotSet = ":0\r\n";
+		String replyWhenKeySet = ":1\r\n";
+		lock.lock();
+		try {
+			if(database.containsKey(key))
+				return replyWhenKeyNotSet;
+			else{
+				database.put(key, value);
+				return replyWhenKeySet;
+			}
+		} finally {
+			lock.unlock();
+		}
+	}
 }
