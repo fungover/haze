@@ -3,19 +3,14 @@ package org.fungover.haze;
 import java.util.*;
 
 public class HazeList {
-    @Override
-    public String toString() {
-        return "HazeList{" +
-                "database=" + database +
-                '}';
-    }
 
-    private final Map<String, List<String>> database;
+    //TODO Find out if LPOP, RPOP and TRIM should take a String Argument and parse it to an int instead of an int.
+
+    final Map<String, List<String>> database;
 
     public HazeList() {
         this.database = new HashMap<>();
     }
-
 
     public String LPUSH(String key, String... values) {
         List<String> list = database.computeIfAbsent(key, k -> new ArrayList<>());
@@ -31,6 +26,8 @@ public class HazeList {
         return list.size() + "\n";
     }
 
+
+
     public String LPOP(String key, int count) {
         if (count <= 0)
             return "";
@@ -43,10 +40,8 @@ public class HazeList {
     public String RPOP(String key, int count) {
         if (count <= 0)
             return "";
-        if (!database.containsKey(key) || database.get(key).isEmpty()) {
-            database.remove(key);
+        if (!database.containsKey(key) || database.get(key).isEmpty())
             return "(nil)\n";
-        }
         String result = database.get(key).remove(database.get(key).size()-1) + "\n";
         return result + RPOP(key, count -1);
     }
@@ -100,6 +95,13 @@ public class HazeList {
         catch (IndexOutOfBoundsException e) {
             return "The inputs are outside the range of the list.\n";
         }
+    }
+
+    @Override
+    public String toString() {
+        return "HazeList{" +
+                "database=" + database +
+                '}';
     }
 }
 
