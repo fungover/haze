@@ -16,8 +16,7 @@ public class SaveFile {
         String FormatFile = ".txt";
         String NameFile = "test";
         String homeFolder = System.getProperty("user.home");
-        Path filePath = Path.of(homeFolder,"IdeaProjects","haze",NameFile+FormatFile);
-        return filePath;
+        return Path.of(homeFolder,"IdeaProjects","haze",NameFile+FormatFile);
     }
     public static void createFile() {
         Path filePath = getPath();
@@ -43,8 +42,7 @@ public class SaveFile {
         try {
             Files.writeString(getPath(),Key+":"+Value+"\n", StandardOpenOption.APPEND);
         }catch (IOException e){
-            System.out.println("Restart");
-        }
+            System.out.println("Restart");        }
 
 
 
