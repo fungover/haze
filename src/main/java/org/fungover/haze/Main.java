@@ -25,9 +25,9 @@ public class Main {
                         BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
                         List<String> inputList = new ArrayList<>();
 
+
                         String firstReading = input.readLine();
                         readInputStream(input, inputList, firstReading);
-
 				        executeCommand(hazeDatabase, client, inputList);
 
 				        inputList.forEach(System.out::println); // For checking incoming message
@@ -53,12 +53,14 @@ public class Main {
 	}
 
 	private static void executeCommand(HazeDatabase hazeDatabase, Socket client, List<String> inputList) throws IOException {
+
 		String command = inputList.get(0);
 		String key = inputList.get(1);
 		String value = getValueIfExist(inputList);
 
 		switch (command) {
 			case "SETNX" -> client.getOutputStream().write(hazeDatabase.setNX(key, value).getBytes());
+			case "PING" -> client.getOutputStream().write(hazeDatabase.ping(value).getBytes());
 			default -> client.getOutputStream().write("-ERR unknown command\r\n".getBytes());
 		}
 	}
