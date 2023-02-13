@@ -22,7 +22,7 @@ public class Auth {
                 client.getOutputStream().write(OK.getBytes());
                 return true;
             }
-            client.getOutputStream().write("-Ah ah ah, you didn't say the magic word.".getBytes());
+            client.getOutputStream().write("-Ah ah ah, you didn't say the magic word. \nRead more Here: https://tinyurl.com/38e7yvp8 ".getBytes());
         } catch (Exception ignored) {
         }
         return false;

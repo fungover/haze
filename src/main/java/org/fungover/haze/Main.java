@@ -34,9 +34,7 @@ public class Main {
                         readInputStream(input, inputList, firstReading);
 
                         checkPassword(auth, passwordSet, lock, client, inputList);
-                        
 
-                        System.out.println(inputList);
                         executeCommand(hazeDatabase, client, inputList);
 
                         inputList.forEach(System.out::println); // For checking incoming message
