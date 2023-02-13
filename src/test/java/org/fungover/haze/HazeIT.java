@@ -10,13 +10,17 @@ import redis.clients.jedis.util.SafeEncoder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Callable;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
-public class HazeIT {
+class HazeIT {
 
     static Process pro;
     static JedisPooled pool;
@@ -24,11 +28,25 @@ public class HazeIT {
 
     @BeforeAll
     static void startServer() throws IOException {
+        var pathSep = System.getProperty("path.separator");
         port = findFreePort();
         System.out.println(port);
-        String[] command = {"java", "--enable-preview", "-cp", "target/classes", "org.fungover.haze.Main", "--port", String.valueOf(port)};
+        String[] command = {"java", "--enable-preview", "-cp", "target/classes" + pathSep + "target/dependency/*", "org.fungover.haze.Main", "--port", String.valueOf(port)};
         pro = Runtime.getRuntime().exec(command);
+
+        await().atMost(10, SECONDS).until(serverIsUp());
+
         pool = new JedisPooled("localhost", port);
+    }
+
+    private static Callable<Boolean> serverIsUp() {
+        return () -> {
+            try (Socket socket = new Socket("localhost", port)) {
+                return true;
+            } catch (IOException e) {
+                return false;
+            }
+        }; // The condition that must be fulfilled
     }
 
     @AfterAll
@@ -59,7 +77,7 @@ public class HazeIT {
         assertThat(pool.setnx("test", "test")).isEqualTo(1);
         assertThat(pool.setnx("test1", "test")).isEqualTo(1);
         //Key test already exists so should not be set
-        assertThat(pool.setnx("test", "test1")).isEqualTo(0);
+        assertThat(pool.setnx("test", "test1")).isZero();
     }
 
     @Test
@@ -90,9 +108,10 @@ public class HazeIT {
 
     private static int findFreePort() {
         int port = 0;
-        try (ServerSocket socket = new ServerSocket(0)) {
-            // Disable timeout and reuse address after closing the socket.
+        try (ServerSocket socket = new ServerSocket()) {
+            // Allow direct reuse of port after closing the socket.
             socket.setReuseAddress(true);
+            socket.bind(new InetSocketAddress("localhost", 0));
             port = socket.getLocalPort();
         } catch (IOException ignored) {
         }
