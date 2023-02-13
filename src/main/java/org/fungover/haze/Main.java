@@ -15,11 +15,12 @@ public class Main {
 		HazeDatabase hazeDatabase = new HazeDatabase();
 
 		try (ServerSocket serverSocket = new ServerSocket(6379)) {
-			while (true) {
-				var client = serverSocket.accept();
+            serverSocket.setReuseAddress(true);
+            while (true) {
+                var client = serverSocket.accept();
 
-				Runnable newThread = () -> {
-					try {
+                Runnable newThread = () -> {
+                    try {
 
 
                         BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
