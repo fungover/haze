@@ -13,8 +13,6 @@ public class Auth {
 
     public boolean authenticate(String password, Socket client) {
         try {
-
-
             if (passwordNotSet()) {
                 client.getOutputStream().write(OK.getBytes());
                 return true;
