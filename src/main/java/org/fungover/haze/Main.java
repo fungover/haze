@@ -53,7 +53,7 @@ public class Main {
     }
 
     public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList) {
-        String command = inputList.get(0);
+        String command = inputList.get(0).toUpperCase();
 
         return switch (command) {
             case "SETNX" -> hazeDatabase.setNX(inputList);
