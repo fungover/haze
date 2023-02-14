@@ -39,12 +39,12 @@ class HazeDatabaseTest {
     void callingDeleteRemovesTheSpecifiedKey() {
         testDatabase.setNX("1", "thisWillBeRemoved");
         testDatabase.delete(Collections.singletonList("1"));
-        assertThat(testDatabase.get("1")).isEqualTo("(nil)");
+        assertThat(testDatabase.get("1")).isEqualTo("$-1\r\n");
     }
 
     @Test
     void callingGetReturnsTheCorrectValueIfItExists() {
         testDatabase.setNX("someKey", "someValue");
-        assertThat(testDatabase.get("someKey")).isEqualTo("someValue");
+        assertThat(testDatabase.get("someKey")).isEqualTo("$9\r\nsomeValue\r\n");
     }
 }

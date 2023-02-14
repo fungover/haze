@@ -59,8 +59,7 @@ public class Main {
 
         switch (command) {
             case "SETNX" -> client.getOutputStream().write(hazeDatabase.setNX(key, value).getBytes());
-            case "DEL" ->
-                    client.getOutputStream().write(hazeDatabase.delete(inputList.subList(1, inputList.size())).getBytes());
+            case "DEL" -> client.getOutputStream().write(hazeDatabase.delete(inputList.subList(1, inputList.size())).getBytes());
             default -> client.getOutputStream().write("-ERR unknown command\r\n".getBytes());
         }
     }

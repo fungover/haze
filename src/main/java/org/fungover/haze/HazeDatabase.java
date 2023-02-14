@@ -31,7 +31,11 @@ public class HazeDatabase {
     public String get(String key) {
         lock.lock();
         try {
-            return database.getOrDefault(key, "(nil)");
+            if (database.containsKey(key)) {
+                var value = database.get(key);
+                return "$" + value.length() + "\r\n" + value + "\r\n";
+            }
+            else return "$-1\r\n";
         } finally {
             lock.unlock();
         }
