@@ -22,45 +22,45 @@ class HazeDatabaseTest {
     }
 
     @Test
-    public void testSetWithValidKeyValuePair() {
+    void testSetWithValidKeyValuePair() {
         String result = testDatabase.set("key", "value");
         assertEquals("+OK\r\n", result);
     }
 
     @Test
-    public void testSetWithNullValue() {
+    void testSetWithNullValue() {
         String result = testDatabase.set("key", null);
         assertEquals("+OK\r\n", result);
     }
 
     @Test
-    public void testGetWithValidKey() {
+    void testGetWithValidKey() {
         testDatabase.set("key", "value");
         String result = testDatabase.get("key");
         assertEquals("$5\r\nvalue\r\n", result);
     }
 
     @Test
-    public void testGetWithInvalidKey() {
+    void testGetWithInvalidKey() {
         String result = testDatabase.get("invalidKey");
         assertEquals("$-1\r\n", result);
     }
 
     @Test
-    public void testGetWithNullKey() {
+    void testGetWithNullKey() {
         String result = testDatabase.get(null);
         assertEquals("$-1\r\n", result);
     }
 
     @Test
-    public void testGetStringWithValidKey() {
+    void testGetStringWithValidKey() {
         testDatabase.set("key", "value");
         String result = testDatabase.getString("key");
         assertEquals("$5\r\nvalue\r\n", result);
     }
 
     @Test
-    public void testGetStringWithNullKey() {
+    void testGetStringWithNullKey() {
         try {
             testDatabase.getString(null);
             fail();

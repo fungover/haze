@@ -38,7 +38,7 @@ public class HazeDatabase {
         }
         return "$-1\r\n";
     }
-    String getString(String key) {
+    public String getString(String key) {
         return "$" + database.get(key).length() + "\r\n" + database.get(key) + "\r\n";
     }
 
