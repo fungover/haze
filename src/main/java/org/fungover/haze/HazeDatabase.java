@@ -74,11 +74,11 @@ public class HazeDatabase {
         }
     }
 
-    public String ping(String value) {
+    public String ping(String bulkMessage) {
 
-        if (value == null)
-            return "PONG";
-        else return value;
+        if (bulkMessage == null)
+            return "+PONG\r\n";
+        else return "$" + bulkMessage.length() + "\r\n" + bulkMessage + "\r\n";
 
     }
 

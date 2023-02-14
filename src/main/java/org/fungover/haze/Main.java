@@ -60,7 +60,6 @@ public class Main {
 
 		switch (command) {
 			case "SETNX" -> client.getOutputStream().write(hazeDatabase.setNX(key, value).getBytes());
-			case "PING" -> client.getOutputStream().write(hazeDatabase.ping(value).getBytes());
 			default -> client.getOutputStream().write("-ERR unknown command\r\n".getBytes());
 		}
 	}

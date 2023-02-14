@@ -27,7 +27,7 @@ class HazeDatabaseTest {
 
     @Test
     void testPingResponseShouldBeSameAsValue() {
-        assertThat(testDatabase.ping("Test ping")).isEqualTo("Test ping");
+        assertThat(testDatabase.ping("Test ping")).isEqualTo("$9\r\nTest ping\r\n");
 
     }
 }
