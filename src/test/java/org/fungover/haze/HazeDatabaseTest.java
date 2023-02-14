@@ -21,7 +21,7 @@ class HazeDatabaseTest {
 
     @Test
     void testPingResponseReturnsPong() {
-        assertThat(testDatabase.ping(null)).isEqualTo("PONG");
+        assertThat(testDatabase.ping(null)).isEqualTo("+PONG\r\n");
 
     }
 
