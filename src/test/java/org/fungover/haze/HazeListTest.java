@@ -34,7 +34,7 @@ class HazeListTest {
     @Test
     void lpopShouldReturnNilStringWhenNoKeyIsPressent() {
         String nilTest= hazeList.LPOP("keyThatDontExist");
-        assertEquals("$3\r\n(nil)\r\n", nilTest);
+        assertEquals("$5\r\n(nil)\r\n", nilTest);
     }
 
     @Test
