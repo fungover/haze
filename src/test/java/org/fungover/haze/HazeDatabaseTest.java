@@ -44,9 +44,16 @@ class HazeDatabaseTest {
         assertThat(testDatabase.setNX("1", "Då")).isEqualTo(":0\r\n");
     }
 
+	@Test
+	void testSetNxReturnOneWhenKeyDontExist() {
+		assertThat(testDatabase.setNX("2", "Då")).isEqualTo(":1\r\n");
+	}
+
     @Test
-    void testSetNxReturnOneWhenKeyDontExist() {
-        assertThat(testDatabase.setNX("2", "Då")).isEqualTo(":1\r\n");
+    void testSettingOneKeyInDatabaseMakesExistsFunctionReturnOneInstanceOfKeyExistingInTheDatabase() {
+        testDatabase.setNX("name", "saher");
+
+        assertThat(testDatabase.exists("name")).isEqualTo(":1\r\n");
     }
 
     @Test
