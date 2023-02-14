@@ -3,6 +3,7 @@ package org.fungover.haze;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -14,7 +15,10 @@ public class Main {
 
         HazeDatabase hazeDatabase = new HazeDatabase();
 
-        try (ServerSocket serverSocket = new ServerSocket(6379)) {
+
+        try (ServerSocket serverSocket = new ServerSocket()) {
+            serverSocket.setReuseAddress(true);
+            serverSocket.bind(new InetSocketAddress(6379));
             while (true) {
                 var client = serverSocket.accept();
 
@@ -59,7 +63,8 @@ public class Main {
 
         switch (command) {
             case "SETNX" -> client.getOutputStream().write(hazeDatabase.setNX(key, value).getBytes());
-            case "DEL" -> client.getOutputStream().write(hazeDatabase.delete(inputList.subList(1, inputList.size())).getBytes());
+            case "DEL" ->
+                    client.getOutputStream().write(hazeDatabase.delete(inputList.subList(1, inputList.size())).getBytes());
             default -> client.getOutputStream().write("-ERR unknown command\r\n".getBytes());
         }
     }

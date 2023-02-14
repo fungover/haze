@@ -34,8 +34,7 @@ public class HazeDatabase {
             if (database.containsKey(key)) {
                 var value = database.get(key);
                 return "$" + value.length() + "\r\n" + value + "\r\n";
-            }
-            else return "$-1\r\n";
+            } else return "$-1\r\n";
         } finally {
             lock.unlock();
         }
