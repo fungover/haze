@@ -7,6 +7,9 @@ public class HazeList {
 
     final Map<String, List<String>> database;
     final ReentrantLock lock;
+    final String NIL_RESPONSE = "$5\r\n(nil)\r\n";
+    final String LEFT = "LEFT";
+    final String RIGHT = "RIGHT";
 
     public HazeList() {
         this.database = new HashMap<>();
@@ -44,7 +47,7 @@ public class HazeList {
         lock.lock();
         try {
             if (!database.containsKey(key) || database.get(key).isEmpty())
-                return "$5\r\n(nil)\r\n";
+                return NIL_RESPONSE;
             int lengthOfValue = database.get(key).get(0).length();
             return "$" + lengthOfValue + "\r\n" +database.get(key).remove(0) + "\r\n";
         }
@@ -58,7 +61,7 @@ public class HazeList {
         lock.lock();
         try {
             if (!database.containsKey(key) || database.get(key).isEmpty())
-                return "$5\r\n(nil)\r\n";
+                return NIL_RESPONSE;
 
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("*").append(count).append("\r\n");
@@ -79,7 +82,7 @@ public class HazeList {
         lock.lock();
         try {
             if (!database.containsKey(key) || database.get(key).isEmpty())
-                return "$5\r\n(nil)\r\n";
+                return NIL_RESPONSE;
             int lengthOfValue = database.get(key).get(0).length();
             int lastIndex = database.get(key).size()-1;
             return "$" + lengthOfValue + "\r\n" + database.get(key).remove(lastIndex) + "\r\n";
@@ -95,7 +98,7 @@ public class HazeList {
         lock.lock();
         try {
             if (!database.containsKey(key) || database.get(key).isEmpty())
-                return "$5\r\n(nil)\r\n";
+                return NIL_RESPONSE;
 
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("*").append(count).append("\r\n");
@@ -136,19 +139,19 @@ public class HazeList {
 
             String value;
 
-            if (whereFrom.equals("LEFT") && whereTo.equals("LEFT")) {
+            if (whereFrom.equals(LEFT) && whereTo.equals(LEFT)) {
                 value = database.get(source).remove(0);
                 database.get(destination).add(0, value);
             }
-            else if (whereFrom.equals("LEFT") && whereTo.equals("RIGHT")) {
+            else if (whereFrom.equals(LEFT) && whereTo.equals(RIGHT)) {
                 value = database.get(source).remove(0);
                 database.get(destination).add(value);
             }
-            else if (whereFrom.equals("RIGHT") && whereTo.equals("LEFT")) {
+            else if (whereFrom.equals(RIGHT) && whereTo.equals(LEFT)) {
                 value = database.get(source).remove(database.get(source).size() - 1);
                 database.get(destination).add(0, value);
             }
-            else if (whereFrom.equals("RIGHT") && whereTo.equals("RIGHT")) {
+            else if (whereFrom.equals(RIGHT) && whereTo.equals(RIGHT)) {
                 value = database.get(source).remove(database.get(source).size() - 1);
                 database.get(destination).add(value);
             }

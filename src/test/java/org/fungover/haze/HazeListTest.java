@@ -33,7 +33,7 @@ class HazeListTest {
 
     @Test
     void alLenWithMissingKeyShouldReturRspZero() {
-        assertEquals(hazeList.lLen("missingKey"),":0\r\n");
+        assertEquals(":0\r\n", hazeList.lLen("missingKey"));
     }
 
 
@@ -101,7 +101,7 @@ class HazeListTest {
         hazeList.rPush("key2", "val3", "val4");
         hazeList.lMove("key1", "key2", "LEFT", "LEFT");
         String shouldBeVal1 = hazeList.database.get("key2").get(0);
-        assertEquals(shouldBeVal1, "val1");
+        assertEquals("val1", shouldBeVal1);
     }
 
     @Test
@@ -119,7 +119,7 @@ class HazeListTest {
         hazeList.rPush("key2", "val3", "val4");
         hazeList.lMove("key1", "key2", "RIGHT", "LEFT");
         int shouldBeSizeOne = hazeList.database.get("key1").size();
-        assertEquals(shouldBeSizeOne, 1);
+        assertEquals(1, shouldBeSizeOne);
     }
 
     @Test
@@ -143,11 +143,11 @@ class HazeListTest {
         hazeList.rPush("key2", "val3", "val4");
         hazeList.lMove("key1", "key2", "RIGHT", "RIGHT");
         int shouldBeSizeThree = hazeList.database.get("key2").size();
-        assertEquals(shouldBeSizeThree, 3);
+        assertEquals(3, shouldBeSizeThree);
     }
 
     @Test
-    public void testLMoveInvalidFromAndTo() {
+    void testLMoveInvalidFromAndTo() {
         hazeList.lPush("key1", "val1");
         hazeList.lPush("key2", "val2");
         String result = hazeList.lMove("key1", "key2", "UPP", "DOWN");
