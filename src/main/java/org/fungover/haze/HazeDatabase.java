@@ -61,7 +61,7 @@ public class HazeDatabase {
         lock.lock();
         int numberOfKeys = 0;
         try {
-            for (String i : key) {
+            for (String i : keys) {
                 if (database.containsKey(i)) {
                     numberOfKeys++;
                 }
