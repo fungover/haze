@@ -51,8 +51,7 @@ public class Main {
                         System.out.println("Client closed");
 
                     } catch (IOException e) {
-                        //Todo: Add nice logging for client socket error
-                        System.out.println("Client socket error.");
+                        Log4j2.error(String.valueOf(e));
 
                         throw new RuntimeException(e);
                     }
@@ -60,8 +59,7 @@ public class Main {
                 Thread.startVirtualThread(newThread);
             }
         } catch (IOException e) {
-            //Todo: Add nice logging for server socket error
-            System.out.println("Client server socket error.");
+            Log4j2.error(String.valueOf(e));
 
         }
         System.out.println("Shutting down....");
@@ -69,7 +67,7 @@ public class Main {
 
     private static void shutdown() {
         //Todo: Replace with logging messages
-        System.out.println("Shutting down...");
+        Log4j2.info("Shutting down...");
         //Todo: Save data to file before application shuts down
         System.out.println("Shutdown Done.");
     }
