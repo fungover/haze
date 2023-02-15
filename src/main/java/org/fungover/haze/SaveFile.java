@@ -1,6 +1,5 @@
 package org.fungover.haze;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,17 +9,23 @@ import java.util.Date;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.nio.file.Files.createDirectory;
+
 
 public class SaveFile {
+    private static Path saveFolder;
+
     private static void createFolder() {
         String homeFolder = System.getProperty("user.home");
-        File f = new File(homeFolder, "fungover");
-        File h = new File(homeFolder, "fungover\\haze");
-        if (f.mkdir() && h.mkdir()) {
-            System.out.println("Directory has been created successfully");
-        } else {
-            System.out.println("The folder already exists");
+        Path f = Path.of(homeFolder, "fungover");
+        Path h = Path.of(homeFolder, "fungover\\haze");
+        try {
+            createDirectory(f);
+            createDirectory(h);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        saveFolder = h;
     }
 
     private static Path getPath() {
@@ -29,9 +34,9 @@ public class SaveFile {
         SimpleDateFormat format = new SimpleDateFormat(dateAndTimes);
         String NameFile = "Data" + "-" + format.format(date);
         String FormatFile = ".txt";
-        createFolder();
-        String homeFolder = System.getProperty("user.home");
-        return Path.of(homeFolder, "fungover", "haze", NameFile + FormatFile);
+        if (saveFolder == null)
+            createFolder();
+        return Path.of(saveFolder.toString(), NameFile + FormatFile);
     }
 
 
@@ -56,7 +61,7 @@ public class SaveFile {
         String convertMapToString = keyValues.entrySet().stream().map(e -> e.getKey() + "\n" + e.getValue() + "\n").collect(Collectors.joining());
         System.out.println(convertMapToString);
         try {
-            Files.writeString(getPath(), convertMapToString + "\n", StandardOpenOption.APPEND);
+            Files.writeString(getPath(), convertMapToString, StandardOpenOption.APPEND);
             System.out.println(onSuccess);
             return onSuccess;
         } catch (IOException e) {
@@ -64,5 +69,8 @@ public class SaveFile {
             return onError;
         }
     }
-}
 
+    public static void setDir(Path tempDir) {
+        saveFolder = tempDir;
+    }
+}
