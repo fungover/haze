@@ -63,23 +63,16 @@ public class Main {
         }
     }
 
-    private static void authenticateClient(Auth auth, boolean isPasswordSet, Socket client, List<String> inputList, boolean clientAuthenticated) {
+    private static void authenticateClient(Auth auth, boolean isPasswordSet, Socket client, List<String> inputList, boolean clientAuthenticated) throws IOException {
         if (isPasswordSet && !clientAuthenticated)
             clientAuthenticated = auth.authenticate(inputList.get(1), client);
+        if (!clientAuthenticated)
+            client.close();
     }
-
 
     private static void printThreadDebug() {
         Log4j2.debug("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
         Log4j2.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
-    }
-
-    private static void checkPassword(Auth auth, boolean[] passwordSet, Lock lock, Socket client, List<String> inputList) {
-        if (!passwordSet[0] || inputList.contains("AUTH")) {
-            lock.lock();
-            passwordSet[0] = (auth.authenticate(inputList.get(1), client));
-            lock.unlock();
-        }
     }
 
     private static void executeCommand(HazeDatabase hazeDatabase, Socket client, List<String> inputList) throws

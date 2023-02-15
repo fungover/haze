@@ -18,8 +18,9 @@ public class Auth {
                 return true;
             }
             client.getOutputStream().write(printAuthError());
-            client.close();
-        } catch (Exception ignored) {
+
+        } catch (Exception e) {
+            Log4j2.error(String.valueOf(e));
         }
         return false;
     }
