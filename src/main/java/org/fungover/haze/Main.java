@@ -11,22 +11,23 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) {
+
+    public static void main(String[] args) throws IOException {
+        Initialize initialize = new Initialize();
+        initialize.importCliOptions(args);
 
         HazeDatabase hazeDatabase = new HazeDatabase();
 
-
         try (ServerSocket serverSocket = new ServerSocket()) {
             serverSocket.setReuseAddress(true);
-            serverSocket.bind(new InetSocketAddress(6379));
+            serverSocket.bind(new InetSocketAddress(initialize.getPort()));
             while (true) {
                 var client = serverSocket.accept();
 
                 Runnable newThread = () -> {
                     try {
-
-
                         BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
+
                         List<String> inputList = new ArrayList<>();
 
                         String firstReading = input.readLine();
@@ -57,6 +58,7 @@ public class Main {
     }
 
     private static void executeCommand(HazeDatabase hazeDatabase, Socket client, List<String> inputList) throws IOException {
+
         String command = inputList.get(0);
         String key = inputList.get(1);
         String value = getValueIfExist(inputList);
@@ -65,6 +67,7 @@ public class Main {
             case "SETNX" -> client.getOutputStream().write(hazeDatabase.setNX(key, value).getBytes());
             case "DEL" ->
                     client.getOutputStream().write(hazeDatabase.delete(inputList.subList(1, inputList.size())).getBytes());
+
             default -> client.getOutputStream().write("-ERR unknown command\r\n".getBytes());
         }
     }
@@ -75,7 +78,9 @@ public class Main {
         return "";
     }
 
+
     private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws IOException {
+
         int size;
         if (firstReading.startsWith("*")) {
             size = Integer.parseInt(firstReading.substring(1)) * 2;

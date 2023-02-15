@@ -17,15 +17,16 @@ public class HazeDatabase {
         this.lock = new ReentrantLock();
     }
 
-
     public String set(String key, String value) {
         lock.lock();
         try {
             //add code for setting value when when key exists
+            database.put(key, value);
+
         } finally {
             lock.unlock();
         }
-        return "";
+        return "+OK\r\n";
     }
 
     public String get(String key) {

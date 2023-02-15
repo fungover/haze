@@ -6,21 +6,11 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HazeDatabaseTest {
 
     HazeDatabase testDatabase = new HazeDatabase();
-
-    @Test
-    void testSetNxReturnZeroWhenExistingKeyAreUsedWithDifferentValue() {
-        testDatabase.setNX("1", "Hej");
-        assertThat(testDatabase.setNX("1", "Då")).isEqualTo(":0\r\n");
-    }
-
-    @Test
-    void testSetNxReturnOneWhenKeyDontExist() {
-        assertThat(testDatabase.setNX("2", "Då")).isEqualTo(":1\r\n");
-    }
 
     @Test
     void callingDeleteReturnsZeroWhenKeyDoesNotExist() {
@@ -46,5 +36,47 @@ class HazeDatabaseTest {
     void callingGetReturnsTheCorrectValueIfItExists() {
         testDatabase.setNX("someKey", "someValue");
         assertThat(testDatabase.get("someKey")).isEqualTo("$9\r\nsomeValue\r\n");
+    }
+
+    @Test
+    void testSetNxReturnZeroWhenExistingKeyAreUsedWithDifferentValue() {
+        testDatabase.setNX("1", "Hej");
+        assertThat(testDatabase.setNX("1", "Då")).isEqualTo(":0\r\n");
+    }
+
+    @Test
+    void testSetNxReturnOneWhenKeyDontExist() {
+        assertThat(testDatabase.setNX("2", "Då")).isEqualTo(":1\r\n");
+    }
+
+    @Test
+    void testSetWithValidKeyValuePair() {
+        String result = testDatabase.set("key", "value");
+        assertEquals("+OK\r\n", result);
+    }
+
+    @Test
+    void testSetWithNullValue() {
+        String result = testDatabase.set("key", null);
+        assertEquals("+OK\r\n", result);
+    }
+
+    @Test
+    void testGetWithValidKey() {
+        testDatabase.set("key", "value");
+        String result = testDatabase.get("key");
+        assertEquals("$5\r\nvalue\r\n", result);
+    }
+
+    @Test
+    void testGetWithInvalidKey() {
+        String result = testDatabase.get("invalidKey");
+        assertEquals("$-1\r\n", result);
+    }
+
+    @Test
+    void testGetWithNullKey() {
+        String result = testDatabase.get(null);
+        assertEquals("$-1\r\n", result);
     }
 }
