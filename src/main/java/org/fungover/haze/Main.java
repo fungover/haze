@@ -1,5 +1,8 @@
 package org.fungover.haze;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -11,7 +14,7 @@ import java.util.List;
 public class Main {
 
     static boolean serverOpen = true;
-    static Log4j2 log4j2 = new Log4j2();
+    static Logger logger = LogManager.getLogger(Main.class);
 
 
     public static void main(String[] args) throws IOException {
@@ -68,7 +71,7 @@ public class Main {
 
     private static void shutdown() {
         //Todo: Save data to file before application shuts down
-        log4j2.info("Shutting down....");
+        logger.info("Shutting down....");
     }
 
     private static void printThreadDebug() {
