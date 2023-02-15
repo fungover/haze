@@ -11,7 +11,6 @@ public class HazeList {
     final Map<String, List<String>> database;
     final ReentrantLock lock;
 
-
     public HazeList() {
         this.database = new HashMap<>();
         this.lock = new ReentrantLock();

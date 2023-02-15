@@ -9,7 +9,7 @@ class HazeListTest {
     HazeList hazeList = new HazeList();
 
     @Test
-    void assertThatLPUSHWithMiltipleValuesAddsInReverseOrder() {
+    void assertThatLPUSHWithMultipleValuesAddsInReverseOrder() {
         hazeList.lPush("key1", "value1", "value2");
         String indexZero = hazeList.database.get("key1").get(0);
         assertEquals("value2", indexZero);
