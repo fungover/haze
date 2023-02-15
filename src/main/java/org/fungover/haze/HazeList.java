@@ -5,9 +5,9 @@ import java.util.concurrent.locks.*;
 
 public class HazeList {
 
-    final static String NIL_RESPONSE = "$5\r\n(nil)\r\n";
-    final static String LEFT = "LEFT";
-    final static String RIGHT = "RIGHT";
+    static final String NIL_RESPONSE = "$5\r\n(nil)\r\n";
+    static final String LEFT = "LEFT";
+    static final String RIGHT = "RIGHT";
     final Map<String, List<String>> database;
     final ReentrantLock lock;
 
