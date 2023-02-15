@@ -118,9 +118,7 @@
           </execution>
         </executions>
         <configuration>
-          <argLine>
-            --enable-preview
-          </argLine>
+          <argLine>--enable-preview</argLine>
         </configuration>
       </plugin>
       <plugin>
