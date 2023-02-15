@@ -56,7 +56,6 @@ public class Main {
     }
 
 
-
     private static void printThreadDebug() {
         Log4j2.debug("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
         Log4j2.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
