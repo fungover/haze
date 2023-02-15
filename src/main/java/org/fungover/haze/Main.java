@@ -23,6 +23,8 @@ public class Main {
             serverSocket.bind(new InetSocketAddress(initialize.getPort()));
             while (true) {
                 var client = serverSocket.accept();
+                Log4j2.debug(String.valueOf(client));
+                Log4j2.info("Application started: serverSocket.accept()");
 
                 Runnable newThread = () -> {
                     try {
@@ -40,25 +42,27 @@ public class Main {
                         printThreadDebug();
 
                         client.close();
+                        Log4j2.info("Client closed");
 
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        Log4j2.error(String.valueOf(e));
                     }
                 };
                 Thread.startVirtualThread(newThread);
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            Log4j2.error(String.valueOf(e));
         }
     }
 
     private static void printThreadDebug() {
-        System.out.println("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
-        System.out.println("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
+        Log4j2.debug("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
+        Log4j2.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
     }
 
-    private static void executeCommand(HazeDatabase hazeDatabase, Socket client, List<String> inputList) throws IOException {
-
+    private static void executeCommand(HazeDatabase hazeDatabase, Socket client, List<String> inputList) throws
+            IOException {
+        Log4j2.debug("executeCommand: " + hazeDatabase + " " + client + " " + inputList);
         String command = inputList.get(0);
         String key = inputList.get(1);
         String value = getValueIfExist(inputList);
@@ -73,14 +77,16 @@ public class Main {
     }
 
     private static String getValueIfExist(List<String> inputList) {
+        Log4j2.debug("getValueIfExist: " + inputList);
         if (inputList.size() == 3)
             return inputList.get(2);
         return "";
     }
 
 
-    private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws IOException {
-
+    private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
+            IOException {
+        Log4j2.debug("readInputStream: " + input + " " + inputList + " " + firstReading);
         int size;
         if (firstReading.startsWith("*")) {
             size = Integer.parseInt(firstReading.substring(1)) * 2;
