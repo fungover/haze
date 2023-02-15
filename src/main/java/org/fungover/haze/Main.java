@@ -74,6 +74,7 @@ public class Main {
 
         return switch (command) {
             case "SETNX" -> hazeDatabase.setNX(inputList);
+            case "SAVE" -> SaveFile.writeOnFile(hazeDatabase.copy());
             case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
             case "QUIT" -> "+OK\r\n";
             default -> "-ERR unknown command\r\n";
