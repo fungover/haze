@@ -37,9 +37,9 @@ public class Main {
 
                             client.getOutputStream().write(executeCommand(hazeDatabase, inputList).getBytes());
 
-                        inputList.forEach(System.out::println); // For checking incoming message
+                            inputList.forEach(System.out::println); // For checking incoming message
 
-						printThreadDebug();
+                            printThreadDebug();
                         }
 
                     } catch (IOException e) {
