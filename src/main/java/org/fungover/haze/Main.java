@@ -3,6 +3,7 @@ package org.fungover.haze;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -12,21 +13,25 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        Initialize initialize = new Initialize();
+        initialize.importCliOptions(args);
 
         HazeDatabase hazeDatabase = new HazeDatabase();
         Auth auth = new Auth();
         final boolean[] passwordSet = {auth.isPasswordSet()};
         Lock lock = new ReentrantLock();
 
-        try (ServerSocket serverSocket = new ServerSocket(6379)) {
+        try (ServerSocket serverSocket = new ServerSocket()) {
+            serverSocket.setReuseAddress(true);
+            serverSocket.bind(new InetSocketAddress(initialize.getPort()));
             while (true) {
                 var client = serverSocket.accept();
+                Log4j2.debug(String.valueOf(client));
+                Log4j2.info("Application started: serverSocket.accept()");
 
                 Runnable newThread = () -> {
                     try {
-
-
                         BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
                         List<String> inputList = new ArrayList<>();
 
@@ -40,20 +45,26 @@ public class Main {
                         inputList.forEach(System.out::println); // For checking incoming message
 
                         printThreadDebug();
-                        System.out.println(hazeDatabase.get("test"));
+
                         client.close();
+                        Log4j2.info("Client closed");
 
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        Log4j2.error(String.valueOf(e));
                     }
                 };
                 Thread.startVirtualThread(newThread);
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            Log4j2.error(String.valueOf(e));
         }
     }
 
+
+    private static void printThreadDebug() {
+        Log4j2.debug("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
+        Log4j2.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
+    }
     private static void checkPassword(Auth auth, boolean[] passwordSet, Lock lock, Socket client, List<String> inputList) {
         if (!passwordSet[0] || inputList.contains("AUTH")) {
             lock.lock();
@@ -62,12 +73,9 @@ public class Main {
         }
     }
 
-    private static void printThreadDebug() {
-        System.out.println("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
-        System.out.println("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
-    }
-
-    private static void executeCommand(HazeDatabase hazeDatabase, Socket client, List<String> inputList) throws IOException {
+    private static void executeCommand(HazeDatabase hazeDatabase, Socket client, List<String> inputList) throws
+            IOException {
+        Log4j2.debug("executeCommand: " + hazeDatabase + " " + client + " " + inputList);
         String command = inputList.get(0);
         String key = inputList.get(1);
         String value = getValueIfExist(inputList);
@@ -79,12 +87,15 @@ public class Main {
     }
 
     private static String getValueIfExist(List<String> inputList) {
+        Log4j2.debug("getValueIfExist: " + inputList);
         if (inputList.size() == 3)
             return inputList.get(2);
         return "";
     }
 
-    private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws IOException {
+    private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
+            IOException {
+        Log4j2.debug("readInputStream: " + input + " " + inputList + " " + firstReading);
         int size;
         if (firstReading.startsWith("*")) {
             size = Integer.parseInt(firstReading.substring(1)) * 2;
