@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main {
+
     public static void main(String[] args) throws IOException {
         Initialize initialize = new Initialize();
         initialize.importCliOptions(args);
@@ -54,7 +55,6 @@ public class Main {
         }
     }
 
-
     private static void printThreadDebug() {
         Log4j2.debug("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
         Log4j2.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
@@ -69,6 +69,9 @@ public class Main {
 
         switch (command) {
             case "SETNX" -> client.getOutputStream().write(hazeDatabase.setNX(key, value).getBytes());
+            case "DEL" ->
+                    client.getOutputStream().write(hazeDatabase.delete(inputList.subList(1, inputList.size())).getBytes());
+
             default -> client.getOutputStream().write("-ERR unknown command\r\n".getBytes());
         }
     }
@@ -79,6 +82,7 @@ public class Main {
             return inputList.get(2);
         return "";
     }
+
 
     private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
             IOException {
