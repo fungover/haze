@@ -3,7 +3,6 @@ package org.fungover.haze;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,7 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.linesOf;
 
 class SaveFileTest {
-    HazeDatabase database;
 
     @Test
     @DisplayName("saveToFile should save all key value pairs to a file")
@@ -41,14 +39,33 @@ class SaveFileTest {
     @Test
     @DisplayName("saveToFile with unknown path should return -Err")
     void saveToFileFails(@TempDir Path tempDir) {
-        //Mock HazeDatabase, we don't need a real version
-        database = Mockito.mock(HazeDatabase.class);
         var map = Map.of("key", "value");
         Path invalidPath = Paths.get(tempDir.toString(), "unknownFolder");
         SaveFile.setDir(invalidPath);
 
         assertThat(SaveFile.writeOnFile(map)).isEqualTo("-Error 'message'\r\n");
         assertThat(tempDir).isEmptyDirectory();
+    }
+
+    @Test
+    @DisplayName("saveToFile should save all key value pairs to a file")
+    void saveToFileShouldWork(@TempDir Path tempDir) throws IOException {
+        //https://dev.to/beatngu1101/handling-system-properties-in-junit-5-4iom
+        //String userHome = System.getProperty("user.home");
+        System.setProperty("user.home", tempDir.toString());
+        var map = Map.of("key", "value");
+        SaveFile.setDir(null);
+
+        assertThat(SaveFile.writeOnFile(map)).isEqualTo("+OK\r\n");
+
+        var actualFile = findLastModifiedFile(Path.of(tempDir.toString(), "fungover", "haze"));
+        assertThat(actualFile).isNotEmpty();
+
+        assertThat(linesOf(actualFile.get()))
+                .hasSize(2)
+                .contains(
+                        "key",
+                        "value");
     }
 
     Optional<Path> findLastModifiedFile(Path directory) throws IOException {
