@@ -38,7 +38,6 @@ public class SaveFile {
     public static void createFile() {
         Path filePath = getPath();
         try {
-            //System.out.println(Files.exists(filePath));
             if (!Files.exists(filePath)) {
                 System.out.println("The file is now Created.");
                 Files.createFile(filePath);
@@ -54,11 +53,10 @@ public class SaveFile {
         String onSuccess = "+OK\r\n";
         String onError = "-Error 'message'\r\n";
         createFile();
-        String str = keyValues.entrySet().stream().map(e -> e.getKey() + "\n" + e.getValue() + "\n").collect(Collectors.joining());
-        System.out.println(str);
-
+        String convertMapToString = keyValues.entrySet().stream().map(e -> e.getKey() + "\n" + e.getValue() + "\n").collect(Collectors.joining());
+        System.out.println(convertMapToString);
         try {
-            Files.writeString(getPath(), str + "\n", StandardOpenOption.APPEND);
+            Files.writeString(getPath(), convertMapToString + "\n", StandardOpenOption.APPEND);
             System.out.println(onSuccess);
             return onSuccess;
         } catch (IOException e) {
