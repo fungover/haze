@@ -10,6 +10,7 @@ import java.util.List;
 
 public class Main {
     static boolean serverOpen = true;
+    static Log4j2 log4j2 = new Log4j2();
     public static void main(String[] args) throws IOException {
 
 
@@ -50,6 +51,7 @@ public class Main {
 
                     } catch (IOException e) {
                         Log4j2.error(String.valueOf(e));
+                        throw new RuntimeException(e);
                     }
                 };
                 Thread.startVirtualThread(newThread);
@@ -62,10 +64,8 @@ public class Main {
     }
 
     private static void shutdown() {
-        //Todo: Replace with logging messages
-        System.out.println("Shutting down...");
         //Todo: Save data to file before application shuts down
-        System.out.println("Shutdown Done.");
+        log4j2.info("Shutting down....");
     }
 
 
