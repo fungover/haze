@@ -20,7 +20,7 @@ public class HazeDatabase {
     public String set(String key, String value) {
         lock.lock();
         try {
-            //add code for setting value when when key exists
+            //add code for setting value when key exists
             database.put(key, value);
 
         } finally {

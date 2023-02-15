@@ -53,10 +53,12 @@ public class SaveFile {
         String onSuccess = "+OK\r\n";
         String onError = "-Error 'message'\r\n";
         createFile();
-        String convertMapToString = keyValues.entrySet().stream().map(e -> e.getKey() + "\n" + e.getValue() + "\n").collect(Collectors.joining());
+        String convertMapToString = keyValues.entrySet().stream()
+                .map(e -> e.getKey() + "\n" + e.getValue() + "\n")
+                .collect(Collectors.joining());
         System.out.println(convertMapToString);
         try {
-            Files.writeString(getPath(), convertMapToString + "\n", StandardOpenOption.APPEND);
+            Files.writeString(getPath(), convertMapToString, StandardOpenOption.APPEND);
             System.out.println(onSuccess);
             return onSuccess;
         } catch (IOException e) {
