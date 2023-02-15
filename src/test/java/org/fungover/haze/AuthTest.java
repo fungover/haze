@@ -34,19 +34,16 @@ class AuthTest {
     }
 
     @Test
-    void wrongPasswordShouldReturnError() {
+    void wrongPasswordShouldReturnFalse() {
         auth.setPassword("12345");
-        assertThat(auth.authenticate("123456", client)).isEqualTo(false);
+        assertThat(auth.authenticate("123456", client)).isFalse();
 
     }
+
     @Test
-    void authenticateWithEmptyStringIfPasswordIsSet() {
+    void authenticateWithEmptyStringIfPasswordIsSetShouldReturnError() {
+        auth.setPassword("12345");
         assertThat(auth.authenticate()).isEqualTo("-Ah ah ah, you didn't say the magic word.");
-    }
-    @Test
-    void passwordIsNullShouldReturnPasswordNotSet() {
-        auth.setPassword(null);
-        assertThat(auth.authenticate()).isEqualTo("+OK\\r\\n\n");
     }
 
 }

@@ -3,7 +3,7 @@ package org.fungover.haze;
 import java.net.Socket;
 
 public class Auth {
-    private String password = System.getenv("PASSWORD");
+    private String password;
     private static final String OK = "+OK\\r\\n\n";
 
 

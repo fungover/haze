@@ -15,12 +15,13 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Main {
     public static void main(String[] args) throws IOException {
         Initialize initialize = new Initialize();
-        initialize.importCliOptions(args);
-
         HazeDatabase hazeDatabase = new HazeDatabase();
         Auth auth = new Auth();
-        final boolean[] passwordSet = {auth.isPasswordSet()};
         Lock lock = new ReentrantLock();
+        initializeServer(args, initialize, auth);
+
+        final boolean isPasswordSet = auth.isPasswordSet();
+
 
         try (ServerSocket serverSocket = new ServerSocket()) {
             serverSocket.setReuseAddress(true);
@@ -32,19 +33,19 @@ public class Main {
 
                 Runnable newThread = () -> {
                     try {
+
                         BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
                         List<String> inputList = new ArrayList<>();
-
                         String firstReading = input.readLine();
-                        readInputStream(input, inputList, firstReading);
 
-                        checkPassword(auth, passwordSet, lock, client, inputList);
 
-                        executeCommand(hazeDatabase, client, inputList);
+                            readInputStream(input, inputList, firstReading);
 
-                        inputList.forEach(System.out::println); // For checking incoming message
+                            executeCommand(hazeDatabase, client, inputList);
 
-                        printThreadDebug();
+                            inputList.forEach(System.out::println); // For checking incoming message
+
+                            printThreadDebug();
 
                         client.close();
                         Log4j2.info("Client closed");
@@ -65,6 +66,7 @@ public class Main {
         Log4j2.debug("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
         Log4j2.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
     }
+
     private static void checkPassword(Auth auth, boolean[] passwordSet, Lock lock, Socket client, List<String> inputList) {
         if (!passwordSet[0] || inputList.contains("AUTH")) {
             lock.lock();
@@ -108,5 +110,10 @@ public class Main {
             String[] seperated = firstReading.split("\\s");
             inputList.addAll(Arrays.asList(seperated));
         }
+    }
+
+    private static void initializeServer(String[] args, Initialize initialize, Auth auth) {
+        initialize.importCliOptions(args);
+        auth.setPassword(initialize.getPassword());
     }
 }
