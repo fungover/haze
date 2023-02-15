@@ -3,6 +3,7 @@ package org.fungover.haze;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -16,7 +17,9 @@ public class Main {
 
         HazeDatabase hazeDatabase = new HazeDatabase();
 
-        try (ServerSocket serverSocket = new ServerSocket(initialize.setPort())) {
+        try (ServerSocket serverSocket = new ServerSocket()) {
+            serverSocket.setReuseAddress(true);
+            serverSocket.bind(new InetSocketAddress(initialize.setPort()));
             while (true) {
                 var client = serverSocket.accept();
 
