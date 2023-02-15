@@ -32,11 +32,11 @@ public class SaveFile {
         final String dateAndTimes = "yyyy-MM-dd-HH-mm-ss";
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat format = new SimpleDateFormat(dateAndTimes);
-        String NameFile = "Data" + "-" + format.format(date);
-        String FormatFile = ".txt";
+        String fileName = "Data" + "-" + format.format(date);
+        String fileFormat = ".txt";
         if (saveFolder == null)
             createFolder();
-        return Path.of(saveFolder.toString(), NameFile + FormatFile);
+        return Path.of(saveFolder.toString(), fileName + fileFormat);
     }
 
 
