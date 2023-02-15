@@ -57,7 +57,7 @@ public class HazeDatabase {
         }
     }
 
-    public String exists(String... key) {
+    public String exists(List<String> keys) {
         lock.lock();
         int numberOfKeys = 0;
         try {
