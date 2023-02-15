@@ -1,6 +1,7 @@
 package org.fungover.haze;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -65,7 +66,12 @@ public class HazeDatabase {
         return "";
     }
 
-    public String setNX(String key, String value) {
+    public String setNX(List<String> inputList) {
+        if (inputList.size() != 3)
+            return "-ERR wrong number of arguments for command\r\n";
+        String key = inputList.get(1);
+        String value = inputList.get(2);
+
         String replyWhenKeyNotSet = ":0\r\n";
         String replyWhenKeySet = ":1\r\n";
         lock.lock();

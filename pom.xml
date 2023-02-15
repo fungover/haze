@@ -53,6 +53,8 @@
           <compilerArgs>
             --enable-preview
           </compilerArgs>
+          <source>19</source>
+          <target>19</target>
         </configuration>
       </plugin>
       <plugin>
@@ -117,6 +119,9 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <argLine>--enable-preview</argLine>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
@@ -150,6 +155,7 @@
           <environmentVariables>
             <HAZE_PORT>6380</HAZE_PORT>
           </environmentVariables>
+          <argLine>--enable-preview</argLine>
         </configuration>
       </plugin>
     </plugins>
