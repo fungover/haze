@@ -68,7 +68,12 @@ public class HazeDatabase {
         return "";
     }
 
-    public String setNX(String key, String value) {
+    public String setNX(List<String> inputList) {
+        if (inputList.size() != 3)
+            return "-ERR wrong number of arguments for command\r\n";
+        String key = inputList.get(1);
+        String value = inputList.get(2);
+
         String replyWhenKeyNotSet = ":0\r\n";
         String replyWhenKeySet = ":1\r\n";
         lock.lock();

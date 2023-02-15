@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +34,7 @@ public class Main {
                         String firstReading = input.readLine();
                         readInputStream(input, inputList, firstReading);
 
-                        executeCommand(hazeDatabase, client, inputList);
+                        client.getOutputStream().write(executeCommand(hazeDatabase, inputList).getBytes());
 
                         inputList.forEach(System.out::println); // For checking incoming message
 
@@ -60,27 +59,15 @@ public class Main {
         Log4j2.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
     }
 
-    private static void executeCommand(HazeDatabase hazeDatabase, Socket client, List<String> inputList) throws
-            IOException {
-        Log4j2.debug("executeCommand: " + hazeDatabase + " " + client + " " + inputList);
-        String command = inputList.get(0);
-        String key = inputList.get(1);
-        String value = getValueIfExist(inputList);
+    public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList) {
+        Log4j2.debug("executeCommand: " + hazeDatabase + " " + inputList);
+        String command = inputList.get(0).toUpperCase();
 
-        switch (command) {
-            case "SETNX" -> client.getOutputStream().write(hazeDatabase.setNX(key, value).getBytes());
-            case "DEL" ->
-                    client.getOutputStream().write(hazeDatabase.delete(inputList.subList(1, inputList.size())).getBytes());
-
-            default -> client.getOutputStream().write("-ERR unknown command\r\n".getBytes());
-        }
-    }
-
-    private static String getValueIfExist(List<String> inputList) {
-        Log4j2.debug("getValueIfExist: " + inputList);
-        if (inputList.size() == 3)
-            return inputList.get(2);
-        return "";
+        return switch (command) {
+            case "SETNX" -> hazeDatabase.setNX(inputList);
+            case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
+            default -> "-ERR unknown command\r\n";
+        };
     }
 
 
