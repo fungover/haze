@@ -63,10 +63,12 @@ public class HazeList {
             if (!database.containsKey(key) || database.get(key).isEmpty())
                 return NIL_RESPONSE;
 
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("*").append(count).append("\r\n");
+            int actualCount = getActualCount(key, count);
 
-            for (int i = 0; i < count; i++) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("*").append(actualCount).append("\r\n");
+
+            for (int i = 0; i < actualCount; i++) {
                 String value = database.get(key).remove(0);
                 stringBuilder.append("$").append(value.length()).append("\r\n").append(value).append("\r\n");
             }
@@ -75,6 +77,12 @@ public class HazeList {
         finally {
             lock.unlock();
         }
+    }
+
+    private int getActualCount(String key, int count) {
+        List<String> values = database.get(key);
+        values.removeIf(String::isEmpty);
+        return Math.min(count, values.size());
     }
 
     //OVERLOAD
@@ -100,10 +108,12 @@ public class HazeList {
             if (!database.containsKey(key) || database.get(key).isEmpty())
                 return NIL_RESPONSE;
 
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("*").append(count).append("\r\n");
+            int actualCount = getActualCount(key, count);
 
-            for (int i = 0; i < count; i++) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("*").append(actualCount).append("\r\n");
+
+            for (int i = 0; i < actualCount; i++) {
                 int lastIndex = database.get(key).size()-1;
                 String value = database.get(key).remove(lastIndex);
                 stringBuilder.append("$").append(value.length()).append("\r\n").append(value).append("\r\n");

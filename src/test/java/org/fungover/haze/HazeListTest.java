@@ -46,7 +46,6 @@ class HazeListTest {
     @Test
     void lPopShouldReturnCorrectValues() {
         hazeList.rPush("key1", "value1", "value2");
-
         String expected = "*2\r\n$6\r\nvalue1\r\n$6\r\nvalue2\r\n";
 
         assertEquals(expected, hazeList.lPop("key1", 2));
