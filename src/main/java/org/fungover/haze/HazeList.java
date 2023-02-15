@@ -58,6 +58,7 @@ public class HazeList {
     }
 
     //OVERLOAD
+    @java.lang.SuppressWarnings("squid:S5413")
     public String lPop(String key, int count) {
         lock.lock();
         try {
@@ -102,6 +103,7 @@ public class HazeList {
     }
 
     //OVERLOAD
+    @java.lang.SuppressWarnings("squid:S5413")
     public String rPop(String key, int count) {
         lock.lock();
         try {
