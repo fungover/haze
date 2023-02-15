@@ -1,11 +1,10 @@
 package org.fungover.haze;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,8 +51,6 @@ public class Main {
 
                     } catch (IOException e) {
                         Log4j2.error(String.valueOf(e));
-
-                        throw new RuntimeException(e);
                     }
                 };
                 Thread.startVirtualThread(newThread);
