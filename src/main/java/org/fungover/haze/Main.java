@@ -15,7 +15,7 @@ public class Main {
 
     private static Logger logger = LogManager.getLogger(Main.class);
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         Initialize initialize = new Initialize();
         initialize.importCliOptions(args);
 
@@ -34,16 +34,21 @@ public class Main {
                         BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
                         List<String> inputList = new ArrayList<>();
+                        boolean connectionAlive = true;
+                        while (connectionAlive) {
+                            String firstReading = input.readLine();
+                            readInputStream(input, inputList, firstReading);
+                            connectionAlive = keepConnectionAlive(inputList);
 
-                        String firstReading = input.readLine();
-                        readInputStream(input, inputList, firstReading);
 
-                        client.getOutputStream().write(executeCommand(hazeDatabase, inputList).getBytes());
+                            client.getOutputStream().write(executeCommand(hazeDatabase, inputList).getBytes());
 
-                        inputList.forEach(System.out::println); // For checking incoming message
+                            inputList.forEach(System.out::println); // For checking incoming message
 
-                        printThreadDebug();
+                            printThreadDebug();
 
+                            inputList.clear();
+                        }
                         client.close();
                         logger.info("Client closed");
 
@@ -58,6 +63,10 @@ public class Main {
         }
     }
 
+    private static boolean keepConnectionAlive(List<String> inputList) {
+        return !inputList.contains("QUIT");
+    }
+
     private static void printThreadDebug() {
         logger.debug("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
         logger.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
@@ -70,6 +79,7 @@ public class Main {
         return switch (command) {
             case "SETNX" -> hazeDatabase.setNX(inputList);
             case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
+            case "QUIT" -> "+OK\r\n";
             default -> "-ERR unknown command\r\n";
         };
     }
