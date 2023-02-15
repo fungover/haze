@@ -27,10 +27,10 @@ public class SaveFile {
         String homeFolder = System.getProperty("user.home");
         Path f = Path.of(homeFolder, "fungover");
         Path h = Path.of(homeFolder, "fungover\\haze");
+        saveFolder = h;
         try {
             createDirectory(f);
             createDirectory(h);
-            saveFolder = h;
         } catch (IOException e) {
             logger.error(MessageFormat.format("Failed creating save folder:{0}", e.getMessage()));
         }
@@ -42,8 +42,7 @@ public class SaveFile {
         SimpleDateFormat format = new SimpleDateFormat(dateAndTimes);
         String fileName = "Data" + "-" + format.format(date);
         String fileFormat = ".txt";
-        if (saveFolder == null)
-            createFolder();
+        createFolder();
         return Path.of(saveFolder.toString(), fileName + fileFormat);
     }
 
@@ -75,9 +74,5 @@ public class SaveFile {
             logger.error(MessageFormat.format("Failed to save database to file: {0}", e.getMessage()));
             return onError;
         }
-    }
-
-    public static void setDir(Path tempDir) {
-        saveFolder = tempDir;
     }
 }

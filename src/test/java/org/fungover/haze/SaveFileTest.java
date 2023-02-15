@@ -1,5 +1,7 @@
 package org.fungover.haze;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -7,7 +9,6 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Optional;
 
@@ -16,45 +17,34 @@ import static org.assertj.core.api.Assertions.linesOf;
 
 class SaveFileTest {
 
-    @Test
-    @DisplayName("saveToFile should save all key value pairs to a file")
-    void saveToFileSuccess(@TempDir Path tempDir) throws IOException {
-        var map = Map.of("key", "value", "secondKey", "secondValue");
-        SaveFile.setDir(tempDir);
+    String userHome;
 
-        assertThat(SaveFile.writeOnFile(map)).isEqualTo("+OK\r\n");
+    @BeforeEach
+    void beforeEach() {
+        userHome = System.getProperty("user.home");
+    }
 
-        var actualFile = findLastModifiedFile(tempDir);
-        assertThat(actualFile).isNotEmpty();
-
-        assertThat(linesOf(actualFile.get()))
-                .hasSize(4)
-                .contains(
-                        "key",
-                        "value",
-                        "secondKey",
-                        "secondValue");
+    @AfterEach
+    void afterEach() {
+        System.setProperty("user.home", userHome);
     }
 
     @Test
-    @DisplayName("saveToFile with unknown path should return -Err")
+    @DisplayName("Failing to save file returns -Err")
     void saveToFileFails(@TempDir Path tempDir) {
+        Path invalidPath = Path.of(tempDir.toString(), "unknownFolder");
+        System.setProperty("user.home", invalidPath.toString());
         var map = Map.of("key", "value");
-        Path invalidPath = Paths.get(tempDir.toString(), "unknownFolder");
-        SaveFile.setDir(invalidPath);
 
         assertThat(SaveFile.writeOnFile(map)).isEqualTo("-Error 'message'\r\n");
         assertThat(tempDir).isEmptyDirectory();
     }
 
     @Test
-    @DisplayName("saveToFile should save all key value pairs to a file")
+    @DisplayName("Saving successfully to file returns +OK\\r\\n")
     void saveToFileShouldWork(@TempDir Path tempDir) throws IOException {
-        //https://dev.to/beatngu1101/handling-system-properties-in-junit-5-4iom
-        //String userHome = System.getProperty("user.home");
         System.setProperty("user.home", tempDir.toString());
         var map = Map.of("key", "value");
-        SaveFile.setDir(null);
 
         assertThat(SaveFile.writeOnFile(map)).isEqualTo("+OK\r\n");
 
@@ -68,13 +58,13 @@ class SaveFileTest {
                         "value");
     }
 
-    Optional<Path> findLastModifiedFile(Path directory) throws IOException {
+    private Optional<Path> findLastModifiedFile(Path directory) throws IOException {
         try (var stream = Files.list(directory)) {
             return stream.max(this::compareLastModified);
         }
     }
 
-    int compareLastModified(Path p1, Path p2) {
+    private int compareLastModified(Path p1, Path p2) {
         try {
             return Files.getLastModifiedTime(p1).compareTo(Files.getLastModifiedTime(p2));
         } catch (IOException e) {
