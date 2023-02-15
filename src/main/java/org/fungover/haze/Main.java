@@ -8,8 +8,12 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.*;
 
 public class Main {
+
+    private static Logger logger = LogManager.getLogger(Main.class);
 
     public static void main(String[] args) throws IOException {
         Initialize initialize = new Initialize();
@@ -22,8 +26,8 @@ public class Main {
             serverSocket.bind(new InetSocketAddress(initialize.getPort()));
             while (true) {
                 var client = serverSocket.accept();
-                Log4j2.debug(String.valueOf(client));
-                Log4j2.info("Application started: serverSocket.accept()");
+                logger.debug(String.valueOf(client));
+                logger.info("Application started: serverSocket.accept()");
 
                 Runnable newThread = () -> {
                     try {
@@ -41,26 +45,26 @@ public class Main {
                         printThreadDebug();
 
                         client.close();
-                        Log4j2.info("Client closed");
+                        logger.info("Client closed");
 
                     } catch (IOException e) {
-                        Log4j2.error(String.valueOf(e));
+                        logger.error(String.valueOf(e));
                     }
                 };
                 Thread.startVirtualThread(newThread);
             }
         } catch (IOException e) {
-            Log4j2.error(String.valueOf(e));
+            logger.error(String.valueOf(e));
         }
     }
 
     private static void printThreadDebug() {
-        Log4j2.debug("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
-        Log4j2.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
+        logger.debug("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
+        logger.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
     }
 
     public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList) {
-        Log4j2.debug("executeCommand: " + hazeDatabase + " " + inputList);
+        logger.debug("executeCommand: " + hazeDatabase + " " + inputList);
         String command = inputList.get(0).toUpperCase();
 
         return switch (command) {
@@ -73,7 +77,7 @@ public class Main {
 
     private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
             IOException {
-        Log4j2.debug("readInputStream: " + input + " " + inputList + " " + firstReading);
+        logger.debug("readInputStream: " + input + " " + inputList + " " + firstReading);
         int size;
         if (firstReading.startsWith("*")) {
             size = Integer.parseInt(firstReading.substring(1)) * 2;
