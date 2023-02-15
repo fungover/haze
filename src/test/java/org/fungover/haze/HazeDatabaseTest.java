@@ -77,7 +77,7 @@ class HazeDatabaseTest {
         testDatabase.setNX("name", "saher");
         testDatabase.setNX("1", "Hej");
 
-        assertThat(testDatabase.exists()).isEqualTo(":0\r\n");
+        assertThat(testDatabase.exists(Collections.EMPTY_LIST)).isEqualTo(":0\r\n");
     }
 
     @Test
