@@ -37,15 +37,17 @@ public class Main {
                         BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
                         List<String> inputList = new ArrayList<>();
                         String firstReading = input.readLine();
+                        boolean clientAuthenticated = false;
 
+                        readInputStream(input, inputList, firstReading);
 
-                            readInputStream(input, inputList, firstReading);
+                        authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
 
-                            executeCommand(hazeDatabase, client, inputList);
+                        executeCommand(hazeDatabase, client, inputList);
 
-                            inputList.forEach(System.out::println); // For checking incoming message
+                        inputList.forEach(System.out::println); // For checking incoming message
 
-                            printThreadDebug();
+                        printThreadDebug();
 
                         client.close();
                         Log4j2.info("Client closed");
@@ -59,6 +61,11 @@ public class Main {
         } catch (IOException e) {
             Log4j2.error(String.valueOf(e));
         }
+    }
+
+    private static void authenticateClient(Auth auth, boolean isPasswordSet, Socket client, List<String> inputList, boolean clientAuthenticated) {
+        if (isPasswordSet && !clientAuthenticated)
+            clientAuthenticated = auth.authenticate(inputList.get(1), client);
     }
 
 

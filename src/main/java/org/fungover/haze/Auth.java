@@ -13,19 +13,19 @@ public class Auth {
 
     public boolean authenticate(String password, Socket client) {
         try {
-            if (passwordNotSet()) {
-                client.getOutputStream().write(OK.getBytes());
-                return true;
-            }
-
             if (this.password.equals(password)) {
                 client.getOutputStream().write(OK.getBytes());
                 return true;
             }
-            client.getOutputStream().write("-Ah ah ah, you didn't say the magic word. \nRead more Here: https://tinyurl.com/38e7yvp8 ".getBytes());
+            client.getOutputStream().write(printAuthError());
+            client.close();
         } catch (Exception ignored) {
         }
         return false;
+    }
+
+    private static byte[] printAuthError() {
+        return "-Ah ah ah, you didn't say the magic word. \nRead more Here: https://tinyurl.com/38e7yvp8 ".getBytes();
     }
 
     public String authenticate() {
