@@ -64,9 +64,6 @@ public class HazeList {
             stringBuilder.append("*").append(count).append("\r\n");
 
             for (int i = 0; i < count; i++) {
-                if (database.get(key).isEmpty())
-                    return stringBuilder.toString();
-
                 String value = database.get(key).remove(0);
                 stringBuilder.append("$").append(value.length()).append("\r\n").append(value).append("\r\n");
             }
@@ -104,9 +101,6 @@ public class HazeList {
             stringBuilder.append("*").append(count).append("\r\n");
 
             for (int i = 0; i < count; i++) {
-                if (database.get(key).isEmpty())
-                    return stringBuilder.toString();
-
                 int lastIndex = database.get(key).size()-1;
                 String value = database.get(key).remove(lastIndex);
                 stringBuilder.append("$").append(value.length()).append("\r\n").append(value).append("\r\n");
@@ -136,7 +130,7 @@ public class HazeList {
         lock.lock();
         try {
             if (database.get(source) == null || database.get(destination) == null)
-                return "-One or both keys do not contain lists.\r\n";
+                return "-One or both keys is missing.\r\n";
             else if (database.get(source).isEmpty())
                 return "-The source list is empty.\r\n";
 

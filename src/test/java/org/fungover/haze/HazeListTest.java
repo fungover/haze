@@ -32,7 +32,13 @@ class HazeListTest {
     }
 
     @Test
-    void lpopShouldReturnNilStringWhenNoKeyIsPressent() {
+    void alLenWithMissingKeyShouldReturRspZero() {
+        assertEquals(hazeList.lLen("missingKey"),":0\r\n");
+    }
+
+
+    @Test
+    void lPopShouldReturnNilStringWhenNoKeyIsPresent() {
         String nilTest= hazeList.lPop("keyThatDontExist");
         assertEquals("$5\r\n(nil)\r\n", nilTest);
     }
@@ -47,12 +53,31 @@ class HazeListTest {
     }
 
     @Test
+    void lPopShouldReturnBulkStringWithSix(){
+        hazeList.rPush("key1", "value1", "value2");
+        String bulkStringSixChars = "$6\r\nvalue1\r\n";
+        assertEquals(bulkStringSixChars, hazeList.lPop("key1"));
+    }
+
+    @Test
+    void lPopWithoutKeyShouldReturnCorrectErrorText(){
+        assertEquals("$5\r\n(nil)\r\n", hazeList.lPop("key1",1));
+    }
+
+    @Test
+    void rPopShouldReturnNilStringWhenNoKeyIsPresent() {
+        String nilTest = hazeList.rPop("keyThatDontExist");
+        assertEquals("$5\r\n(nil)\r\n", nilTest);
+    }
+
+    @Test
     void rPopShouldReturnValue2RespString() {
         hazeList.rPush("key1", "value1", "value2");
 
         String expected = "$6\r\nvalue2\r\n";
         assertEquals(expected, hazeList.rPop("key1" ));
     }
+
 
     @Test
     void rPopShouldReturnValuesInReverseOrder() {
@@ -61,6 +86,15 @@ class HazeListTest {
         String expected = "*2\r\n$6\r\nvalue2\r\n$6\r\nvalue1\r\n";
         assertEquals(expected, hazeList.rPop("key1", 2));
     }
+
+    @Test
+    void rPopWithCountShouldReturnNilBulkStringWhenKeyIsMissing(){
+        String nilFiveBulk = "$5\r\n(nil)\r\n";
+        assertEquals(nilFiveBulk, hazeList.rPop("noKey", 2));
+    }
+
+
+
     @Test
     void lMoveShouldMoveVal1FromLeftToLeft(){
         hazeList.rPush("key1", "val1", "val2");
@@ -89,12 +123,35 @@ class HazeListTest {
     }
 
     @Test
+    void lMoveShouldReturnCorrectErrorMessageWhenKeyIsMissing(){
+        String errorText = "-One or both keys is missing.\r\n";
+        assertEquals(errorText,hazeList.lMove("key1", "key2", "LEFT", "RIGHT"));
+    }
+
+    @Test
+    void lMoveShouldReturnCorrectErrorMessageWhenListIsEmpty(){
+        hazeList.rPush("key1", "val1");
+        hazeList.rPush("key2", "val2");
+        hazeList.lMove("key1", "key2", "LEFT", "RIGHT");
+        String errorText = "-The source list is empty.\r\n";
+        assertEquals(errorText,hazeList.lMove("key1", "key2", "LEFT", "RIGHT"));
+    }
+
+    @Test
     void destinationShouldHaveCorrectSizeAfterLmove(){
         hazeList.rPush("key1", "val1", "val2");
         hazeList.rPush("key2", "val3", "val4");
         hazeList.lMove("key1", "key2", "RIGHT", "RIGHT");
         int shouldBeSizeThree = hazeList.database.get("key2").size();
         assertEquals(shouldBeSizeThree, 3);
+    }
+
+    @Test
+    public void testLMoveInvalidFromAndTo() {
+        hazeList.lPush("key1", "val1");
+        hazeList.lPush("key2", "val2");
+        String result = hazeList.lMove("key1", "key2", "UPP", "DOWN");
+        assertEquals("-Invalid input for FROM and WHERE.\r\n", result);
     }
 
     @Test
@@ -112,4 +169,14 @@ class HazeListTest {
         String correctErrorText = "-The inputs are outside the range of the list.\r\n";
         assertEquals(correctErrorText, hazeList.lTrim("key1", 2, 7));
     }
+
+    @Test
+    void toStringShouldContainDatabaseContents() {
+        HazeList hazeList = new HazeList();
+        hazeList.rPush("key1", "val1", "val2");
+        hazeList.rPush("key2", "val3");
+        String expectedString = "HazeList{database={key1=[val1, val2], key2=[val3]}}";
+        assertEquals(expectedString, hazeList.toString());
+    }
+
 }
