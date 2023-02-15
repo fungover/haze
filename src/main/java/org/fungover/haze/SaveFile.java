@@ -27,7 +27,7 @@ public class SaveFile {
         final String dateAndTimes = "yyyy-MM-dd-HH-mm-ss";
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat format = new SimpleDateFormat(dateAndTimes);
-        String NameFile = "test" + "-" + format.format(date);
+        String NameFile = "Data" + "-" + format.format(date);
         String FormatFile = ".txt";
         createFolder();
         String homeFolder = System.getProperty("user.home");
