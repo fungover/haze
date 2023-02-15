@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main {
+
     public static void main(String[] args) throws IOException {
         Initialize initialize = new Initialize();
         initialize.importCliOptions(args);
@@ -53,7 +54,6 @@ public class Main {
         }
     }
 
-
     private static void printThreadDebug() {
         Log4j2.debug("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
         Log4j2.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
@@ -65,9 +65,11 @@ public class Main {
 
         return switch (command) {
             case "SETNX" -> hazeDatabase.setNX(inputList);
+            case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
             default -> "-ERR unknown command\r\n";
         };
     }
+
 
     private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
             IOException {
