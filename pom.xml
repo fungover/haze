@@ -87,11 +87,6 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0-M8</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
         <version>3.0.0</version>
       </plugin>
@@ -136,6 +131,16 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.0.0-M8</version>
+        <configuration>
+          <environmentVariables>
+            <HAZE_PORT>6380</HAZE_PORT>
+          </environmentVariables>
+        </configuration>
       </plugin>
     </plugins>
   </build>
