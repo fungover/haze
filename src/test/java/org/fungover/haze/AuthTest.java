@@ -25,8 +25,17 @@ class AuthTest {
     void wrongPasswordShouldReturnFalse() {
         auth.setPassword("12345");
         assertThat(auth.authenticate("123456", client)).isFalse();
-
     }
 
+    @Test
+    void isPasswordSetShouldReturnTrue() {
+        auth.setPassword("12345");
+        assertThat(auth.isPasswordSet()).isTrue();
+    }
+    @Test
+    void isPasswordSetShouldReturnFalseIfNotSet() {
+        auth.setPassword(null);
+        assertThat(auth.isPasswordSet()).isFalse();
+    }
 
 }
