@@ -67,7 +67,7 @@ public class Main {
 
     private static void shutdown() {
         //Todo: Replace with logging messages
-        Log4j2.info("Shutting down...");
+        System.out.println("Shutting down...");
         //Todo: Save data to file before application shuts down
         System.out.println("Shutdown Done.");
     }
