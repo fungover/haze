@@ -20,18 +20,6 @@ class AuthTest {
     Auth auth = new Auth();
     @Mock
     Socket client = new Socket();
-    @Mock
-    private OutputStream myOutputStream;
-
-    @Captor
-    private ArgumentCaptor<byte[]> valueCapture;
-
-
-    @Test
-    void passwordIsNotSetShouldReturnOK() {
-        auth.setPassword(null);
-        assertThat(auth.authenticate()).isEqualTo("+OK\\r\\n\n");
-    }
 
     @Test
     void wrongPasswordShouldReturnFalse() {
@@ -40,10 +28,5 @@ class AuthTest {
 
     }
 
-    @Test
-    void authenticateWithEmptyStringIfPasswordIsSetShouldReturnError() {
-        auth.setPassword("12345");
-        assertThat(auth.authenticate()).isEqualTo("-Ah ah ah, you didn't say the magic word.");
-    }
 
 }

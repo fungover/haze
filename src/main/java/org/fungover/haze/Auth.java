@@ -28,16 +28,6 @@ public class Auth {
         return "-Ah ah ah, you didn't say the magic word. \nRead more Here: https://tinyurl.com/38e7yvp8 ".getBytes();
     }
 
-    public String authenticate() {
-        if (passwordNotSet())
-            return OK;
-        return "-Ah ah ah, you didn't say the magic word.";
-    }
-
-    private boolean passwordNotSet() {
-        return (this.password == null || this.password.isBlank());
-    }
-
     public boolean isPasswordSet() {
         return password != null;
     }
