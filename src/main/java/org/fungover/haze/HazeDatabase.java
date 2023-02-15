@@ -57,15 +57,20 @@ public class HazeDatabase {
         }
     }
 
-    public String exists(String key) {
+    public String exists(List<String> keys) {
         lock.lock();
+        int numberOfKeys = 0;
         try {
-            //gets key as parameter and returns an integer representing how many keys exists
+            for (String i : keys) {
+                if (database.containsKey(i)) {
+                    numberOfKeys++;
+                }
+            }
         } finally {
             lock.unlock();
 
         }
-        return "";
+        return ":" + numberOfKeys + "\r\n";
     }
 
     public String setNX(List<String> inputList) {

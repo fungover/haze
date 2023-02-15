@@ -2,8 +2,8 @@ package org.fungover.haze;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,6 +42,38 @@ class HazeDatabaseTest {
     void testSetNxReturnZeroWhenExistingKeyAreUsedWithDifferentValue() {
         testDatabase.setNX(List.of("", "1", "Hej"));
         assertThat(testDatabase.setNX(List.of("", "1", "Då"))).isEqualTo(":0\r\n");
+    }
+
+
+    @Test
+    void testSettingOneKeyInDatabaseMakesExistsFunctionReturnOneInstanceOfKeyExistingInTheDatabase() {
+        testDatabase.setNX(List.of("", "name", "saher"));
+
+        assertThat(testDatabase.exists(List.of("name"))).isEqualTo(":1\r\n");
+    }
+
+    @Test
+    void testSettingTwoKeysInDatabaseMakesExistsFunctionReturnOneInstanceOfKeyExistingInTheDatabase() {
+        testDatabase.setNX(List.of("", "name", "saher"));
+        testDatabase.setNX(List.of("", "1", "Hej"));
+
+        assertThat(testDatabase.exists(List.of("name"))).isEqualTo(":1\r\n");
+    }
+
+    @Test
+    void testAskingExistsFunctionForNumerousKeysWhereOneKeyHasTwoOccurrencesAndTheOtherKeyHasOneOccurrenceShouldReturnThree() {
+        testDatabase.setNX(List.of("", "name", "saher"));
+        testDatabase.setNX(List.of("", "1", "Hej"));
+
+        assertThat(testDatabase.exists(List.of("name", "1", "name", "2"))).isEqualTo(":3\r\n");
+    }
+
+    @Test
+    void testSendingInNoParametersToExistsMethodReturnsZero() {
+        testDatabase.setNX(List.of("", "name", "saher"));
+        testDatabase.setNX(List.of("", "1", "Hej"));
+
+        assertThat(testDatabase.exists(Collections.EMPTY_LIST)).isEqualTo(":0\r\n");
     }
 
     @Test
