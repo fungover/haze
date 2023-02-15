@@ -13,10 +13,14 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Get Java Version
+        run: |
+          Java_Version=$(mvn help:evaluate "-Dexpression=maven.compiler.release" -q -DforceStdout | sed -e 's/^1\./1.0./')
+          echo "Java_Version=$Java_Version" >> $GITHUB_ENV
       - name: Set up JDK 19
         uses: actions/setup-java@v3
         with:
-          java-version: 19
+          java-version: ${{ env.Java_Version }}
           distribution: 'temurin'
           cache: maven
       - name: Cache SonarCloud packages
@@ -29,5 +33,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=fungover_haze
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=fungover_haze -Pcoverage
         
