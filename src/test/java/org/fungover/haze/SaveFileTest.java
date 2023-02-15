@@ -1,7 +1,6 @@
 package org.fungover.haze;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class SaveFileTest {
+    // I know there is no test. There are on the way.
 
 }

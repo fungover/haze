@@ -35,16 +35,17 @@ public class Main {
                             String firstReading = input.readLine();
                             readInputStream(input, inputList, firstReading);
 
-                        client.getOutputStream().write(executeCommand(hazeDatabase, inputList).getBytes());
+                            client.getOutputStream().write(executeCommand(hazeDatabase, inputList).getBytes());
 
-				        inputList.forEach(System.out::println); // For checking incoming message
+                            inputList.forEach(System.out::println); // For checking incoming message
 
-						printThreadDebug();
+                            printThreadDebug();
+
+                        }
+                        } catch(IOException e){
+                            Log4j2.error(String.valueOf(e));
                         }
 
-                    } catch (IOException e) {
-                        Log4j2.error(String.valueOf(e));
-                    }
                     Log4j2.info("Client closed");
                 };
                 Thread.startVirtualThread(newThread);
@@ -53,6 +54,8 @@ public class Main {
             Log4j2.error(String.valueOf(e));
         }
     }
+
+
 
     private static void printThreadDebug() {
         Log4j2.debug("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
