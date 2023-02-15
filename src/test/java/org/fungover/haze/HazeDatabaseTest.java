@@ -69,7 +69,7 @@ class HazeDatabaseTest {
         testDatabase.setNX("name", "saher");
         testDatabase.setNX("1", "Hej");
 
-        assertThat(testDatabase.exists("name", "1", "name", "2")).isEqualTo(":3\r\n");
+        assertThat(testDatabase.exists(List.of("name", "1", "name", "2"))).isEqualTo(":3\r\n");
     }
 
     @Test
