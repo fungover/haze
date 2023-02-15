@@ -8,7 +8,6 @@ class HazeListTest {
 
     HazeList hazeList = new HazeList();
 
-
     @Test
     void assertThatLPUSHWithMiltipleValuesAddsInReverseOrder() {
         hazeList.lPush("key1", "value1", "value2");

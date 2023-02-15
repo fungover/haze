@@ -101,7 +101,6 @@ public class HazeList {
         }
     }
 
-
     //OVERLOAD
     public String rPop(String key, int count) {
         lock.lock();
