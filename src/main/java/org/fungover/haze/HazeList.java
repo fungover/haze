@@ -5,11 +5,12 @@ import java.util.concurrent.locks.*;
 
 public class HazeList {
 
-    final Map<String, List<String>> database;
-    final ReentrantLock lock;
     final static String NIL_RESPONSE = "$5\r\n(nil)\r\n";
     final static String LEFT = "LEFT";
     final static String RIGHT = "RIGHT";
+    final Map<String, List<String>> database;
+    final ReentrantLock lock;
+
 
     public HazeList() {
         this.database = new HashMap<>();
