@@ -11,16 +11,23 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main {
+    static boolean serverOpen = true;
     public static void main(String[] args) throws IOException {
+
+
         Initialize initialize = new Initialize();
         initialize.importCliOptions(args);
 
+
         HazeDatabase hazeDatabase = new HazeDatabase();
+        Thread printingHook = new Thread(Main::shutdown);
+        Runtime.getRuntime().addShutdownHook(printingHook);
+
 
         try (ServerSocket serverSocket = new ServerSocket()) {
             serverSocket.setReuseAddress(true);
             serverSocket.bind(new InetSocketAddress(initialize.getPort()));
-            while (true) {
+            while (serverOpen) {
                 var client = serverSocket.accept();
                 Log4j2.debug(String.valueOf(client));
                 Log4j2.info("Application started: serverSocket.accept()");
@@ -41,17 +48,30 @@ public class Main {
                         printThreadDebug();
 
                         client.close();
-                        Log4j2.info("Client closed");
+                        System.out.println("Client closed");
 
                     } catch (IOException e) {
-                        Log4j2.error(String.valueOf(e));
+                        //Todo: Add nice logging for client socket error
+                        System.out.println("Client socket error.");
+
+                        throw new RuntimeException(e);
                     }
                 };
                 Thread.startVirtualThread(newThread);
             }
         } catch (IOException e) {
-            Log4j2.error(String.valueOf(e));
+            //Todo: Add nice logging for server socket error
+            System.out.println("Client server socket error.");
+
         }
+        System.out.println("Shutting down....");
+    }
+
+    private static void shutdown() {
+        //Todo: Replace with logging messages
+        System.out.println("Shutting down...");
+        //Todo: Save data to file before application shuts down
+        System.out.println("Shutdown Done.");
     }
 
 
