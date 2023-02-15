@@ -48,7 +48,7 @@ public class Main {
                         printThreadDebug();
 
                         client.close();
-                        System.out.println("Client closed");
+                        Log4j2.info("Client closed");
 
                     } catch (IOException e) {
                         Log4j2.error(String.valueOf(e));
@@ -62,7 +62,7 @@ public class Main {
             Log4j2.error(String.valueOf(e));
 
         }
-        System.out.println("Shutting down....");
+        Log4j2.info("Shutting down....");
     }
 
     private static void shutdown() {
