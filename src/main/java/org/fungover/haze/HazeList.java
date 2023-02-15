@@ -7,9 +7,9 @@ public class HazeList {
 
     final Map<String, List<String>> database;
     final ReentrantLock lock;
-    final String NIL_RESPONSE = "$5\r\n(nil)\r\n";
-    final String LEFT = "LEFT";
-    final String RIGHT = "RIGHT";
+    final static String NIL_RESPONSE = "$5\r\n(nil)\r\n";
+    final static String LEFT = "LEFT";
+    final static String RIGHT = "RIGHT";
 
     public HazeList() {
         this.database = new HashMap<>();

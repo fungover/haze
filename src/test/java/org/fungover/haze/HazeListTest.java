@@ -71,6 +71,15 @@ class HazeListTest {
     }
 
     @Test
+    void rPopShouldReturnNilStringWhenNoKeyIsEmpty() {
+        hazeList.rPush("key1", "val1");
+        hazeList.rPush("key2", "val");
+        hazeList.lMove("key1", "key2", "LEFT", "RIGHT");
+        String nilTest = hazeList.rPop("keyThatDontExist");
+        assertEquals("$5\r\n(nil)\r\n", nilTest);
+    }
+
+    @Test
     void rPopShouldReturnValue2RespString() {
         hazeList.rPush("key1", "value1", "value2");
 
@@ -110,7 +119,7 @@ class HazeListTest {
         hazeList.rPush("key2", "val3", "val4");
         hazeList.lMove("key1", "key2", "LEFT", "RIGHT");
         String shouldBeVal1 = hazeList.database.get("key2").get(2);
-        assertEquals(shouldBeVal1, "val1");
+        assertEquals("val1", shouldBeVal1);
     }
 
     @Test
@@ -167,6 +176,12 @@ class HazeListTest {
     void lTrimShouldReturnErrorCorrectErrorTextWhenInputsAreOutOfRange(){
         hazeList.rPush("key1", "val1", "val2", "val3", "val4", "val5");
         String correctErrorText = "-The inputs are outside the range of the list.\r\n";
+        assertEquals(correctErrorText, hazeList.lTrim("key1", 2, 7));
+    }
+
+    @Test
+    void lTrimShouldReturnCorrectErrorTextWhenKeyIsMissing(){
+        String correctErrorText = "-The key is not present in the database.\r\n";
         assertEquals(correctErrorText, hazeList.lTrim("key1", 2, 7));
     }
 
