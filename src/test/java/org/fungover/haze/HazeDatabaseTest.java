@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 
+import java.util.Collections;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -53,7 +56,7 @@ class HazeDatabaseTest {
     void testSettingOneKeyInDatabaseMakesExistsFunctionReturnOneInstanceOfKeyExistingInTheDatabase() {
         testDatabase.setNX("name", "saher");
 
-        assertThat(testDatabase.exists("name")).isEqualTo(":1\r\n");
+        assertThat(testDatabase.exists(List.of("name"))).isEqualTo(":1\r\n");
     }
 
     @Test
