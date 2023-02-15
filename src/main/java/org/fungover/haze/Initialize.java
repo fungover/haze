@@ -17,7 +17,7 @@ public class Initialize {
 		}
 	}
 
-	public int setPort() {
+	public int getPort() {
 
 		if (cliOptions.containsKey("-p")) {
 			return Integer.parseInt(cliOptions.get("-p"));

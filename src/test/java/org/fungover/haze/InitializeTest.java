@@ -19,12 +19,12 @@ class InitializeTest {
 		String[] args = {"-p", "1234"};
 		initialize.importCliOptions(args);
 
-		assertThat(initialize.setPort()).isEqualTo(1234);
+		assertThat(initialize.getPort()).isEqualTo(1234);
 	}
 
 	@Test
 	void portSetByEnvironmentVariableShouldReturn6380() {
-		assertThat(initialize.setPort()).isEqualTo(6380);
+		assertThat(initialize.getPort()).isEqualTo(6380);
 	}
 
 	@Test
@@ -32,6 +32,6 @@ class InitializeTest {
 		String[] args = {"--port", "1233"};
 		initialize.importCliOptions(args);
 
-		assertThat(initialize.setPort()).isEqualTo(1233);
+		assertThat(initialize.getPort()).isEqualTo(1233);
 	}
 }

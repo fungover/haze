@@ -19,7 +19,7 @@ public class Main {
 
         try (ServerSocket serverSocket = new ServerSocket()) {
             serverSocket.setReuseAddress(true);
-            serverSocket.bind(new InetSocketAddress(initialize.setPort()));
+            serverSocket.bind(new InetSocketAddress(initialize.getPort()));
             while (true) {
                 var client = serverSocket.accept();
 
