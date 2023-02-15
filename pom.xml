@@ -149,7 +149,7 @@
         <configuration>
           <environmentVariables>
             <HAZE_PORT>6380</HAZE_PORT>
-            <PASSWORD>12345</PASSWORD>
+            <HAZE_PASSWORD>12345</HAZE_PASSWORD>
           </environmentVariables>
         </configuration>
       </plugin>
