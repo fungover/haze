@@ -26,7 +26,7 @@ public class SaveFile {
     private static void createFolder() {
         String homeFolder = System.getProperty("user.home");
         Path f = Path.of(homeFolder, "fungover");
-        Path h = Path.of(homeFolder, "fungover\\haze");
+        Path h = Path.of(homeFolder, "fungover", "haze");
         saveFolder = h;
         try {
             createDirectory(f);
