@@ -9,14 +9,19 @@ import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.List;
+
+import static org.fungover.haze.RespInputParser.readInputStream;
 
 public class Main {
     static boolean serverOpen = true;
     static Logger logger = LogManager.getLogger(Main.class);
 
+
     public static void main(String[] args) {
+
+
         Initialize initialize = new Initialize();
         initialize.importCliOptions(args);
 
@@ -41,7 +46,8 @@ public class Main {
                             List<String> inputList = new ArrayList<>();
 
                             String firstReading = input.readLine();
-                            readInputStream(input, inputList, firstReading);
+
+                            readInputStream(input,inputList,firstReading);
 
                             client.getOutputStream().write(executeCommand(hazeDatabase, inputList).getBytes());
 
@@ -84,23 +90,5 @@ public class Main {
             case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
             default -> "-ERR unknown command\r\n";
         };
-    }
-
-
-    private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
-            IOException {
-        Log4j2.debug("readInputStream: " + input + " " + inputList + " " + firstReading);
-        int size;
-        if (firstReading.startsWith("*")) {
-            size = Integer.parseInt(firstReading.substring(1)) * 2;
-            for (int i = 0; i < size; i++) {
-                String temp = input.readLine();
-                if (!temp.contains("$"))
-                    inputList.add(temp);
-            }
-        } else {
-            String[] seperated = firstReading.split("\\s");
-            inputList.addAll(Arrays.asList(seperated));
-        }
     }
 }
