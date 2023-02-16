@@ -64,6 +64,7 @@ public class Main {
         String command = inputList.get(0).toUpperCase();
 
         return switch (command) {
+            case "PING" -> hazeDatabase.ping(inputList);
             case "SETNX" -> hazeDatabase.setNX(inputList);
             case "SAVE" -> SaveFile.writeOnFile(hazeDatabase.copy());
             case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));

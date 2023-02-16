@@ -104,4 +104,11 @@ public class HazeDatabase {
         }
         return shallowCopy;
     }
+    
+    public String ping(List<String> messageList) {
+
+        if (messageList.size() == 1)
+            return "+PONG\r\n";
+        else return "$" + (messageList.get(1)).length() + "\r\n" + messageList.get(1) + "\r\n";
+    }
 }

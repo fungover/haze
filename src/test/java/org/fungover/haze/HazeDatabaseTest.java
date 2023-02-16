@@ -82,6 +82,16 @@ class HazeDatabaseTest {
     }
 
     @Test
+    void testPingResponseReturnsPong() {
+        assertThat(testDatabase.ping(List.of("PING"))).isEqualTo("+PONG\r\n");
+    }
+
+    @Test
+    void testPingResponseShouldBeSameAsValue() {
+        assertThat(testDatabase.ping(List.of("PING", "test message"))).isEqualTo("$12\r\ntest message\r\n");
+    }
+
+    @Test
     void testSetWithValidKeyValuePair() {
         String result = testDatabase.set("key", "value");
         assertEquals("+OK\r\n", result);
