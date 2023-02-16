@@ -2,23 +2,83 @@ package org.fungover.haze;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 class HazeDatabaseTest {
 
     HazeDatabase testDatabase = new HazeDatabase();
 
     @Test
+    void callingDeleteReturnsZeroWhenKeyDoesNotExist() {
+        assertThat(testDatabase.delete(Collections.singletonList("2"))).isEqualTo(":0\r\n");
+    }
+
+    @Test
+    void callingDeleteReturnsNumberOfSuccessfullyRemovedKeys() {
+        testDatabase.setNX(List.of("SETNX", "1", "test"));
+        testDatabase.setNX(List.of("SETNX", "2", "test"));
+        testDatabase.setNX(List.of("SETNX", "22", "thisShouldNotBeRemoved"));
+        assertThat(testDatabase.delete(List.of("1", "2", "3", "4"))).isEqualTo(":2\r\n");
+    }
+
+    @Test
+    void callingDeleteRemovesTheSpecifiedKey() {
+        testDatabase.setNX(List.of("SETNX", "1", "thisWillBeRemoved"));
+        testDatabase.delete(Collections.singletonList("1"));
+        assertThat(testDatabase.get("1")).isEqualTo("$-1\r\n");
+    }
+
+    @Test
+    void callingGetReturnsTheCorrectValueIfItExists() {
+        testDatabase.setNX(List.of("SETNX", "someKey", "someValue"));
+        assertThat(testDatabase.get("someKey")).isEqualTo("$9\r\nsomeValue\r\n");
+    }
+
+    @Test
     void testSetNxReturnZeroWhenExistingKeyAreUsedWithDifferentValue() {
-        testDatabase.setNX("1", "Hej");
-        assertThat(testDatabase.setNX("1", "Då")).isEqualTo(":0\r\n");
+        testDatabase.setNX(List.of("", "1", "Hej"));
+        assertThat(testDatabase.setNX(List.of("", "1", "Då"))).isEqualTo(":0\r\n");
+    }
+
+
+    @Test
+    void testSettingOneKeyInDatabaseMakesExistsFunctionReturnOneInstanceOfKeyExistingInTheDatabase() {
+        testDatabase.setNX(List.of("", "name", "saher"));
+
+        assertThat(testDatabase.exists(List.of("name"))).isEqualTo(":1\r\n");
+    }
+
+    @Test
+    void testSettingTwoKeysInDatabaseMakesExistsFunctionReturnOneInstanceOfKeyExistingInTheDatabase() {
+        testDatabase.setNX(List.of("", "name", "saher"));
+        testDatabase.setNX(List.of("", "1", "Hej"));
+
+        assertThat(testDatabase.exists(List.of("name"))).isEqualTo(":1\r\n");
+    }
+
+    @Test
+    void testAskingExistsFunctionForNumerousKeysWhereOneKeyHasTwoOccurrencesAndTheOtherKeyHasOneOccurrenceShouldReturnThree() {
+        testDatabase.setNX(List.of("", "name", "saher"));
+        testDatabase.setNX(List.of("", "1", "Hej"));
+
+        assertThat(testDatabase.exists(List.of("name", "1", "name", "2"))).isEqualTo(":3\r\n");
+    }
+
+    @Test
+    void testSendingInNoParametersToExistsMethodReturnsZero() {
+        testDatabase.setNX(List.of("", "name", "saher"));
+        testDatabase.setNX(List.of("", "1", "Hej"));
+
+        assertThat(testDatabase.exists(Collections.EMPTY_LIST)).isEqualTo(":0\r\n");
     }
 
     @Test
     void testSetNxReturnOneWhenKeyDontExist() {
-        assertThat(testDatabase.setNX("2", "Då")).isEqualTo(":1\r\n");
+        assertThat(testDatabase.setNX(List.of("", "2", "Då"))).isEqualTo(":1\r\n");
     }
 
     @Test
@@ -50,22 +110,5 @@ class HazeDatabaseTest {
     void testGetWithNullKey() {
         String result = testDatabase.get(null);
         assertEquals("$-1\r\n", result);
-    }
-
-    @Test
-    void testGetStringWithValidKey() {
-        testDatabase.set("key", "value");
-        String result = testDatabase.getString("key");
-        assertEquals("$5\r\nvalue\r\n", result);
-    }
-
-    @Test
-    void testGetStringWithNullKey() {
-        try {
-            testDatabase.getString(null);
-            fail();
-        } catch (NullPointerException npe) {
-
-        }
     }
 }

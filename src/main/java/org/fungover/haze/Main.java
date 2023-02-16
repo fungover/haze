@@ -9,17 +9,15 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+
+    public static void main(String[] args) {
         Initialize initialize = new Initialize();
         HazeDatabase hazeDatabase = new HazeDatabase();
         Auth auth = new Auth();
-        Lock lock = new ReentrantLock();
         initializeServer(args, initialize, auth);
-
+        auth.setPassword("123");
         final boolean isPasswordSet = auth.isPasswordSet();
 
 
@@ -36,19 +34,26 @@ public class Main {
 
                         BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
                         List<String> inputList = new ArrayList<>();
-                        String firstReading = input.readLine();
+                        boolean connectionAlive = true;
                         boolean clientAuthenticated = false;
 
-                        readInputStream(input, inputList, firstReading);
+                        while (connectionAlive) {
+                            String firstReading = input.readLine();
+                            readInputStream(input, inputList, firstReading);
+                            connectionAlive = keepConnectionAlive(inputList);
 
-                        authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
+                            clientAuthenticated = authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
 
-                        executeCommand(hazeDatabase, client, inputList);
+                            if (tryAgainIfNotAuthenticated(isPasswordSet, inputList, clientAuthenticated)) continue;
 
-                        inputList.forEach(System.out::println); // For checking incoming message
+                            client.getOutputStream().write(executeCommand(hazeDatabase, inputList).getBytes());
 
-                        printThreadDebug();
+                            inputList.forEach(System.out::println); // For checking incoming message
 
+                            printThreadDebug();
+
+                            inputList.clear();
+                        }
                         client.close();
                         Log4j2.info("Client closed");
 
@@ -63,11 +68,22 @@ public class Main {
         }
     }
 
-    private static void authenticateClient(Auth auth, boolean isPasswordSet, Socket client, List<String> inputList, boolean clientAuthenticated) throws IOException {
-        if (isPasswordSet && !clientAuthenticated)
+    private static boolean authenticateClient(Auth auth, boolean isPasswordSet, Socket client, List<String> inputList, boolean clientAuthenticated) {
+        if (isPasswordSet && !clientAuthenticated && inputList.size() >= 2)
             clientAuthenticated = auth.authenticate(inputList.get(1), client);
-        if (!clientAuthenticated)
-            client.close();
+        return clientAuthenticated;
+    }
+
+    private static boolean tryAgainIfNotAuthenticated(boolean isPasswordSet, List<String> inputList, boolean clientAuthenticated) {
+        if (isPasswordSet && !clientAuthenticated) {
+            inputList.clear();
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean keepConnectionAlive(List<String> inputList) {
+        return !inputList.contains("QUIT");
     }
 
     private static void printThreadDebug() {
@@ -75,24 +91,16 @@ public class Main {
         Log4j2.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
     }
 
-    private static void executeCommand(HazeDatabase hazeDatabase, Socket client, List<String> inputList) throws
-            IOException {
-        Log4j2.debug("executeCommand: " + hazeDatabase + " " + client + " " + inputList);
-        String command = inputList.get(0);
-        String key = inputList.get(1);
-        String value = getValueIfExist(inputList);
+    public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList) {
+        Log4j2.debug("executeCommand: " + hazeDatabase + " " + inputList);
+        String command = inputList.get(0).toUpperCase();
 
-        switch (command) {
-            case "SETNX" -> client.getOutputStream().write(hazeDatabase.setNX(key, value).getBytes());
-            default -> client.getOutputStream().write("-ERR unknown command\r\n".getBytes());
-        }
-    }
-
-    private static String getValueIfExist(List<String> inputList) {
-        Log4j2.debug("getValueIfExist: " + inputList);
-        if (inputList.size() == 3)
-            return inputList.get(2);
-        return "";
+        return switch (command) {
+            case "SETNX" -> hazeDatabase.setNX(inputList);
+            case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
+            case "QUIT" -> "+OK\r\n";
+            default -> "-ERR unknown command\r\n";
+        };
     }
 
     private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
