@@ -141,10 +141,6 @@ public class HazeList {
 
 
     public String lMove(String source, String destination, String whereFrom, String whereTo) {
-        System.out.println(source);
-        System.out.println(destination);
-        System.out.println(whereFrom);
-        System.out.println(whereTo);
 
         lock.lock();
         try {
@@ -229,7 +225,9 @@ public class HazeList {
         if (args.length != 2)
             return "-Wrong number of arguments for LTRIM\r\n";
 
-        int start, stop;
+        int start;
+        int stop;
+
         try {
             start = Integer.parseInt(args[0]);
             stop = Integer.parseInt(args[1]);
