@@ -1,5 +1,8 @@
 package org.fungover.haze;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,12 +11,10 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.*;
 
 public class Main {
-
-    private static Logger logger = LogManager.getLogger(Main.class);
+    static boolean serverOpen = true;
+    static Logger logger = LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
         Initialize initialize = new Initialize();
@@ -21,10 +22,13 @@ public class Main {
 
         HazeDatabase hazeDatabase = new HazeDatabase();
 
+        Thread printingHook = new Thread(() -> shutdown(hazeDatabase));
+        Runtime.getRuntime().addShutdownHook(printingHook);
+
         try (ServerSocket serverSocket = new ServerSocket()) {
             serverSocket.setReuseAddress(true);
             serverSocket.bind(new InetSocketAddress(initialize.getPort()));
-            while (true) {
+            while (serverOpen) {
                 var client = serverSocket.accept();
                 logger.debug(String.valueOf(client));
                 logger.info("Application started: serverSocket.accept()");
@@ -33,38 +37,35 @@ public class Main {
                     try {
                         BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
-                        List<String> inputList = new ArrayList<>();
-                        boolean connectionAlive = true;
-                        while (connectionAlive) {
+                        while (true) {
+                            List<String> inputList = new ArrayList<>();
+
                             String firstReading = input.readLine();
                             readInputStream(input, inputList, firstReading);
-                            connectionAlive = keepConnectionAlive(inputList);
-
 
                             client.getOutputStream().write(executeCommand(hazeDatabase, inputList).getBytes());
 
                             inputList.forEach(System.out::println); // For checking incoming message
 
                             printThreadDebug();
-
-                            inputList.clear();
                         }
-                        client.close();
-                        logger.info("Client closed");
 
                     } catch (IOException e) {
                         logger.error(String.valueOf(e));
                     }
+                    logger.info("Client closed");
                 };
                 Thread.startVirtualThread(newThread);
             }
         } catch (IOException e) {
             logger.error(String.valueOf(e));
         }
+        logger.info("Shutting down....");
     }
 
-    private static boolean keepConnectionAlive(List<String> inputList) {
-        return !inputList.contains("QUIT");
+    private static void shutdown(HazeDatabase hazeDatabase) {
+        SaveFile.writeOnFile(hazeDatabase.copy());
+        logger.info("Shutting down....");
     }
 
     private static void printThreadDebug() {
@@ -77,9 +78,10 @@ public class Main {
         String command = inputList.get(0).toUpperCase();
 
         return switch (command) {
+            case "PING" -> hazeDatabase.ping(inputList);
             case "SETNX" -> hazeDatabase.setNX(inputList);
+            case "SAVE" -> SaveFile.writeOnFile(hazeDatabase.copy());
             case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
-            case "QUIT" -> "+OK\r\n";
             default -> "-ERR unknown command\r\n";
         };
     }

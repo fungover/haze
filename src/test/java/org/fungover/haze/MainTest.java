@@ -24,4 +24,15 @@ class MainTest {
         Main.executeCommand(database, List.of("sEtNx", "1", "This is a value"));
         assertThat(Main.executeCommand(database, List.of("sEtNx", "1", "This is also a value"))).isEqualTo(":0\r\n");
     }
+
+    @Test
+    void callExecuteCommandWithAnEmptyPingShouldReturnPong() {
+        assertThat(Main.executeCommand(database, List.of("Ping"))).isEqualTo("+PONG\r\n");
+    }
+
+    @Test
+    void callExecuteCommandWithPingAndMessageShouldReturnTheMessage() {
+        assertThat(Main.executeCommand(database, List.of("Ping", "test message")))
+                .isEqualTo("$12\r\ntest message\r\n");
+    }
 }
