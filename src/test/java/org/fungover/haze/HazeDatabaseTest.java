@@ -82,6 +82,16 @@ class HazeDatabaseTest {
     }
 
     @Test
+    void testPingResponseReturnsPong() {
+        assertThat(testDatabase.ping(List.of("PING"))).isEqualTo("+PONG\r\n");
+    }
+
+    @Test
+    void testPingResponseShouldBeSameAsValue() {
+        assertThat(testDatabase.ping(List.of("PING", "test message"))).isEqualTo("$12\r\ntest message\r\n");
+    }
+
+    @Test
     void testSetWithValidKeyValuePair() {
         String result = testDatabase.set("key", "value");
         assertEquals("+OK\r\n", result);
@@ -110,5 +120,14 @@ class HazeDatabaseTest {
     void testGetWithNullKey() {
         String result = testDatabase.get(null);
         assertEquals("$-1\r\n", result);
+    }
+
+    @Test
+    void testThatIfYouPutKeyAndValueYouGetOutAMap() {
+        testDatabase.set("1", "test");
+        testDatabase.set("2", "hast");
+        assertThat(testDatabase.copy())
+                .containsEntry("1", "test")
+                .containsEntry("2", "hast");
     }
 }

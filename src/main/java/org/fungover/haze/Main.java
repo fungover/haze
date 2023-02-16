@@ -1,5 +1,8 @@
 package org.fungover.haze;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,6 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main {
+    static boolean serverOpen = true;
+    static Logger logger = LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
         Initialize initialize = new Initialize();
@@ -21,26 +26,26 @@ public class Main {
         final boolean isPasswordSet = auth.isPasswordSet();
 
 
+        Thread printingHook = new Thread(() -> shutdown(hazeDatabase));
+        Runtime.getRuntime().addShutdownHook(printingHook);
+
         try (ServerSocket serverSocket = new ServerSocket()) {
             serverSocket.setReuseAddress(true);
             serverSocket.bind(new InetSocketAddress(initialize.getPort()));
-            while (true) {
+            while (serverOpen) {
                 var client = serverSocket.accept();
                 Log4j2.debug(String.valueOf(client));
                 Log4j2.info("Application started: serverSocket.accept()");
 
                 Runnable newThread = () -> {
                     try {
-
                         BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                        List<String> inputList = new ArrayList<>();
-                        boolean connectionAlive = true;
                         boolean clientAuthenticated = false;
+                        while (true) {
+                            List<String> inputList = new ArrayList<>();
 
-                        while (connectionAlive) {
                             String firstReading = input.readLine();
                             readInputStream(input, inputList, firstReading);
-                            connectionAlive = keepConnectionAlive(inputList);
 
                             clientAuthenticated = authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
 
@@ -60,14 +65,20 @@ public class Main {
                     } catch (IOException e) {
                         Log4j2.error(String.valueOf(e));
                     }
+                    Log4j2.info("Client closed");
                 };
                 Thread.startVirtualThread(newThread);
             }
         } catch (IOException e) {
             Log4j2.error(String.valueOf(e));
         }
+        Log4j2.info("Shutting down....");
     }
 
+    private static void shutdown(HazeDatabase hazeDatabase) {
+        SaveFile.writeOnFile(hazeDatabase.copy());
+        logger.info("Shutting down....");
+    }
     private static boolean authenticateClient(Auth auth, boolean isPasswordSet, Socket client, List<String> inputList, boolean clientAuthenticated) {
         if (isPasswordSet && !clientAuthenticated && inputList.size() >= 2)
             clientAuthenticated = auth.authenticate(inputList.get(1), client);
@@ -96,9 +107,10 @@ public class Main {
         String command = inputList.get(0).toUpperCase();
 
         return switch (command) {
+            case "PING" -> hazeDatabase.ping(inputList);
             case "SETNX" -> hazeDatabase.setNX(inputList);
+            case "SAVE" -> SaveFile.writeOnFile(hazeDatabase.copy());
             case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
-            case "QUIT" -> "+OK\r\n";
             default -> "-ERR unknown command\r\n";
         };
     }
