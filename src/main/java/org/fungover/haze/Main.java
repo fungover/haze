@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Initialize initialize = new Initialize();
         initialize.importCliOptions(args);
 
@@ -29,38 +29,29 @@ public class Main {
                     try {
                         BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
-                        List<String> inputList = new ArrayList<>();
-                        boolean connectionAlive = true;
-                        while (connectionAlive) {
+                        while (true) {
+                            List<String> inputList = new ArrayList<>();
+
                             String firstReading = input.readLine();
                             readInputStream(input, inputList, firstReading);
-                            connectionAlive = keepConnectionAlive(inputList);
-
 
                             client.getOutputStream().write(executeCommand(hazeDatabase, inputList).getBytes());
 
                             inputList.forEach(System.out::println); // For checking incoming message
 
                             printThreadDebug();
-
-                            inputList.clear();
                         }
-                        client.close();
-                        Log4j2.info("Client closed");
 
                     } catch (IOException e) {
                         Log4j2.error(String.valueOf(e));
                     }
+                    Log4j2.info("Client closed");
                 };
                 Thread.startVirtualThread(newThread);
             }
         } catch (IOException e) {
             Log4j2.error(String.valueOf(e));
         }
-    }
-
-    private static boolean keepConnectionAlive(List<String> inputList) {
-        return !inputList.contains("QUIT");
     }
 
     private static void printThreadDebug() {
@@ -74,8 +65,8 @@ public class Main {
 
         return switch (command) {
             case "SETNX" -> hazeDatabase.setNX(inputList);
+            case "SAVE" -> SaveFile.writeOnFile(hazeDatabase.copy());
             case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
-            case "QUIT" -> "+OK\r\n";
             default -> "-ERR unknown command\r\n";
         };
     }
