@@ -85,20 +85,16 @@ public class Main {
 
         try {
             commandEnum = Command.valueOf(command);
-
-            return switch (commandEnum) {
-                case PING -> hazeDatabase.ping(inputList);
-                case SETNX -> hazeDatabase.setNX(inputList);
-                case SAVE -> SaveFile.writeOnFile(hazeDatabase.copy());
-                case SET -> null;
-                case GET -> null;
-                case DEL -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
-
-                case EXISTS -> null;
-            };
         } catch (IllegalArgumentException ex) {
             return "-ERR unknown command\r\n";
         }
+        return switch (commandEnum) {
+            case PING -> hazeDatabase.ping(inputList);
+            case SETNX -> hazeDatabase.setNX(inputList);
+            case SAVE -> SaveFile.writeOnFile(hazeDatabase.copy());
+            case DEL -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
+            default -> "-ERR unknown command\r\n";
+        };
     }
 
 
