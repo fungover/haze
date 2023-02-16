@@ -93,7 +93,6 @@ public class Main {
             case SETNX -> hazeDatabase.setNX(inputList);
             case SAVE -> SaveFile.writeOnFile(hazeDatabase.copy());
             case DEL -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
-            default -> "-ERR unknown command\r\n";
         };
     }
 
