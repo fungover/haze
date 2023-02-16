@@ -119,9 +119,13 @@ public class Main {
     }
 
     private static boolean authenticateClient(Auth auth, boolean isPasswordSet, Socket client, List<String> inputList, boolean clientAuthenticated) {
-        if (isPasswordSet && !clientAuthenticated && inputList.size() >= 2 && inputList.get(0).equals("AUTH"))
+        if (authCommandReceived(isPasswordSet, inputList, clientAuthenticated))
             clientAuthenticated = auth.authenticate(inputList.get(1), client);
         return clientAuthenticated;
+    }
+
+    private static boolean authCommandReceived(boolean isPasswordSet, List<String> inputList, boolean clientAuthenticated) {
+        return isPasswordSet && !clientAuthenticated && inputList.size() >= 2 && inputList.get(0).equals("AUTH");
     }
 
     private static boolean tryAgainIfNotAuthenticated(boolean isPasswordSet, List<String> inputList, boolean clientAuthenticated) {

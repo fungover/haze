@@ -11,13 +11,12 @@ public class Auth {
     }
 
     public boolean authenticate(String password, Socket client) {
+
+        if (this.password.equals(password)) {
+            return true;
+        }
         try {
-            if (this.password.equals(password)) {
-                return true;
-            }
-
             client.getOutputStream().write(printAuthError());
-
         } catch (Exception e) {
             Log4j2.error(String.valueOf(e));
         }
