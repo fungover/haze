@@ -1,12 +1,12 @@
 package org.fungover.haze;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class HazeListTest {
 
     HazeList hazeList = new HazeList();
+
 
     @Test
     void assertThatLPUSHWithMultipleValuesAddsInReverseOrder() {
@@ -187,8 +187,67 @@ class HazeListTest {
         HazeList hazeList = new HazeList();
         hazeList.rPush("key1", "val1", "val2");
         hazeList.rPush("key2", "val3");
-        String expectedString = "HazeList{database={key1=[val1, val2], key2=[val3]}}";
-        assertEquals(expectedString, hazeList.toString());
+        String expected = "HazeList{database={key1=[val1, val2], key2=[val3]}}";
+        assertEquals(expected, hazeList.toString());
     }
 
+    @Test
+    void callLPopWithEmptyCountArrayShouldCallLopWithoutCount(){
+        hazeList.rPush("key1", "val1", "val2", "val3");
+        String[] emptyStringArray = {};
+        String result = hazeList.callLPop("key1", emptyStringArray);
+        String expected = "$4\r\nval1\r\n";
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void callLPopWithPopulatedArrayShouldCallLPopWithCount(){
+        hazeList.rPush("key1", "val1", "val2", "val3");
+        String[] hasSomeNumbers = {"2", "3"};
+        String result = hazeList.callLPop("key1", hasSomeNumbers);
+        String expected = "*2\r\n$4\r\nval1\r\n$4\r\nval2\r\n";
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void callRPopWithEmptyCountArrayShouldCallRopWithoutCount(){
+        hazeList.rPush("key1", "val1", "val2", "val3");
+        String[] emptyStringArray = {};
+        String result = hazeList.callRpop("key1", emptyStringArray);
+        String expected = "$4\r\nval3\r\n";
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void callLRopWithPopulatedArrayShouldCallRPopWithCount(){
+        hazeList.rPush("key1", "val1", "val2", "val3");
+        String[] hasSomeNumbers = {"2", "3"};
+        String result = hazeList.callRpop("key1", hasSomeNumbers);
+        String expected = "*2\r\n$4\r\nval3\r\n$4\r\nval2\r\n";
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void CallLtrimShouldCallLtrimWhenGivenAKeyAndTwoNummersAsArgument(){
+        hazeList.rPush("key1", "val1", "val2", "val3", "val4", "val5");
+        String actual = hazeList.callLtrim("key1","2", "4");
+        assertEquals("+OK\r\n", actual);
+    }
+
+    @Test
+    void CallLReturnCorrectErrorMessageWhenIncorrectNumberOfArgumentsIsReceived () {
+        String expected = "-Wrong number of arguments for LTRIM\r\n";
+        assertEquals(expected, hazeList.callLtrim("key1"));
+    }
+
+    @Test
+    void CallLReturnCorrectErrorMessageWhenNotGivenNumbersAsArguments () {
+        String expected = "-Value is not an integer or out of range\r\n";
+        assertEquals(expected, hazeList.callLtrim("key1", "horse", "Gunnar!"));
+    }
+
+    @Test
+    void parserWithBadInputShouldReturnZero(){
+        assertEquals(0, HazeList.parser("This is not a number"));
+    }
 }

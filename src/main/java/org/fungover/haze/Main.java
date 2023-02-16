@@ -21,6 +21,7 @@ public class Main {
         initialize.importCliOptions(args);
 
         HazeDatabase hazeDatabase = new HazeDatabase();
+        HazeList hazeList = new HazeList();
 
         Thread printingHook = new Thread(() -> shutdown(hazeDatabase));
         Runtime.getRuntime().addShutdownHook(printingHook);
@@ -43,7 +44,7 @@ public class Main {
                             String firstReading = input.readLine();
                             readInputStream(input, inputList, firstReading);
 
-                            client.getOutputStream().write(executeCommand(hazeDatabase, inputList).getBytes());
+                            client.getOutputStream().write(executeCommand(hazeDatabase, inputList, hazeList).getBytes());
 
                             inputList.forEach(System.out::println); // For checking incoming message
 
@@ -73,15 +74,26 @@ public class Main {
         Log4j2.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
     }
 
-    public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList) {
+    public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList, HazeList hazeList) {
         Log4j2.debug("executeCommand: " + hazeDatabase + " " + inputList);
         String command = inputList.get(0).toUpperCase();
+
+        String key = null;
+        if (inputList.size() > 1)
+            key = inputList.get(1);
 
         return switch (command) {
             case "PING" -> hazeDatabase.ping(inputList);
             case "SETNX" -> hazeDatabase.setNX(inputList);
             case "SAVE" -> SaveFile.writeOnFile(hazeDatabase.copy());
             case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
+            case "RPUSH" -> hazeList.rPush(key, listToArraySkipFirstTwo(inputList));
+            case "LPUSH" -> hazeList.lPush(key, listToArraySkipFirstTwo(inputList));
+            case "LPOP" -> hazeList.callLPop(key, listToArraySkipFirstTwo(inputList));
+            case "RPOP" -> hazeList.callRpop(key, listToArraySkipFirstTwo(inputList));
+            case "LLEN" -> hazeList.lLen(key);
+            case "LMOVE" -> hazeList.lMove(key,inputList.get(2),inputList.get(3).toUpperCase(),inputList.get(4).toUpperCase());
+            case "LTRIM" -> hazeList.callLtrim(key,listToArraySkipFirstTwo(inputList));
             default -> "-ERR unknown command\r\n";
         };
     }
@@ -103,4 +115,10 @@ public class Main {
             inputList.addAll(Arrays.asList(seperated));
         }
     }
+    public static String[] listToArraySkipFirstTwo(List<String> list) {
+        return list.stream()
+                .skip(2)
+                .toArray(String[]::new);
+    }
+
 }
