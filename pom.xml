@@ -120,7 +120,7 @@
           </execution>
         </executions>
         <configuration>
-          <argLine>--enable-preview</argLine>
+          <argLine>@{argLine} --enable-preview</argLine>
         </configuration>
       </plugin>
       <plugin>
@@ -155,7 +155,7 @@
           <environmentVariables>
             <HAZE_PORT>6380</HAZE_PORT>
           </environmentVariables>
-          <argLine>--enable-preview</argLine>
+          <argLine>@{argLine} --enable-preview</argLine>
         </configuration>
       </plugin>
     </plugins>
