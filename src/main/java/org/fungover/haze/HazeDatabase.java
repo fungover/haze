@@ -9,8 +9,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class HazeDatabase {
 
-    private Map<String, String> database;
-    private Lock lock;
+    private final Map<String, String> database;
+    private final Lock lock;
 
     public HazeDatabase() {
         this.database = new HashMap<>();
@@ -20,8 +20,7 @@ public class HazeDatabase {
     public String set(String key, String value) {
         lock.lock();
         try {
-            //add code for setting value when when key exists
-
+            //add code for setting value when key exists
             database.put(key, value);
 
         } finally {
@@ -95,6 +94,17 @@ public class HazeDatabase {
         }
     }
 
+    public Map<String, String> copy() {
+        Map<String, String> shallowCopy;
+        lock.lock();
+        try {
+            shallowCopy = Map.copyOf(database);
+        } finally {
+            lock.unlock();
+        }
+        return shallowCopy;
+    }
+    
     public String ping(List<String> messageList) {
 
         if (messageList.size() == 1)

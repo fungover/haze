@@ -121,4 +121,13 @@ class HazeDatabaseTest {
         String result = testDatabase.get(null);
         assertEquals("$-1\r\n", result);
     }
+
+    @Test
+    void testThatIfYouPutKeyAndValueYouGetOutAMap() {
+        testDatabase.set("1", "test");
+        testDatabase.set("2", "hast");
+        assertThat(testDatabase.copy())
+                .containsEntry("1", "test")
+                .containsEntry("2", "hast");
+    }
 }
