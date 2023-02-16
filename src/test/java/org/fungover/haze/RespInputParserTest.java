@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class RespInputParserTest {
     RespInputParser respInputParser = new RespInputParser();
     @Test
-    public void testReadInputStreamBulk() throws IOException {
+    void testReadInputStreamBulk() throws IOException {
         String inputString = "*3\r\n$5\r\nHello\r\n$5\r\nWorld\r\n$5\r\nRedis\r\n";
         List<String> expectedOutput = Arrays.asList("Hello", "World", "Redis");
 
@@ -26,7 +26,7 @@ class RespInputParserTest {
     }
 
     @Test
-    public void testReadInputStreamSimple() throws IOException {
+    void testReadInputStreamSimple() throws IOException {
         String inputString = "+OK\r\n";
         List<String> expectedOutput = Arrays.asList("+OK");
 
@@ -38,7 +38,7 @@ class RespInputParserTest {
     }
 
     @Test
-    public void testReadInputStreamError() throws IOException {
+    void testReadInputStreamError() throws IOException {
         String inputString = "-ERR unknown command\r\n";
         List<String> expectedOutput = Arrays.asList("-ERR", "unknown", "command");
 

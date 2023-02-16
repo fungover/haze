@@ -50,7 +50,7 @@ class MainTest {
     }
 
     @Test
-    public void testPrintThreadDebug() {
+    void testPrintThreadDebug() {
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
 
