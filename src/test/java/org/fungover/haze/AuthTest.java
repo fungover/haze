@@ -38,4 +38,15 @@ class AuthTest {
         assertThat(auth.isPasswordSet()).isFalse();
     }
 
+    @Test
+    void authenticateReturnTrueIfCorrectPassword() {
+        auth.setPassword("1234");
+        assertThat(auth.authenticate("123",client)).isFalse();
+    }
+
+    @Test
+    void authErrorMessage() {
+        assertThat(Auth.printAuthError()).isEqualTo("-Ah ah ah, you didn't say the magic word. https://tinyurl.com/38e7yvp8".getBytes());
+    }
+
 }
