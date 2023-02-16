@@ -79,7 +79,7 @@ public class Main {
 
         return switch (command) {
             case "SET" -> hazeDatabase.set(inputList);
-            case "GET" -> hazeDatabase.get(inputList.get(1));
+            case "GET" -> hazeDatabase.get(inputList);
             case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
             case "PING" -> hazeDatabase.ping(inputList);
             case "SETNX" -> hazeDatabase.setNX(inputList);
