@@ -3,85 +3,98 @@ package org.fungover.haze;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Main {
-	public static void main(String[] args) {
 
-		HazeDatabase hazeDatabase = new HazeDatabase();
+    public static void main(String[] args) {
+        Initialize initialize = new Initialize();
+        initialize.importCliOptions(args);
 
-		try (ServerSocket serverSocket = new ServerSocket(6379)) {
-			while (true) {
-				var client = serverSocket.accept();
+        HazeDatabase hazeDatabase = new HazeDatabase();
 
-				Runnable newThread = () -> {
-					try {
+        try (ServerSocket serverSocket = new ServerSocket()) {
+            serverSocket.setReuseAddress(true);
+            serverSocket.bind(new InetSocketAddress(initialize.getPort()));
+            while (true) {
+                var client = serverSocket.accept();
+                Log4j2.debug(String.valueOf(client));
+                Log4j2.info("Application started: serverSocket.accept()");
 
-
+                Runnable newThread = () -> {
+                    try {
                         BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
+
                         List<String> inputList = new ArrayList<>();
+                        boolean connectionAlive = true;
+                        while (connectionAlive) {
+                            String firstReading = input.readLine();
+                            readInputStream(input, inputList, firstReading);
+                            connectionAlive = keepConnectionAlive(inputList);
 
 
-                        String firstReading = input.readLine();
-                        readInputStream(input, inputList, firstReading);
-				        executeCommand(hazeDatabase, client, inputList);
+                            client.getOutputStream().write(executeCommand(hazeDatabase, inputList).getBytes());
 
-				        inputList.forEach(System.out::println); // For checking incoming message
+                            inputList.forEach(System.out::println); // For checking incoming message
 
-						printThreadDebug();
+                            printThreadDebug();
 
-						client.close();
+                            inputList.clear();
+                        }
+                        client.close();
+                        Log4j2.info("Client closed");
 
-					} catch (IOException e) {
-						throw new RuntimeException(e);
-					}
-				};
-				Thread.startVirtualThread(newThread);
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+                    } catch (IOException e) {
+                        Log4j2.error(String.valueOf(e));
+                    }
+                };
+                Thread.startVirtualThread(newThread);
+            }
+        } catch (IOException e) {
+            Log4j2.error(String.valueOf(e));
+        }
+    }
 
-	private static void printThreadDebug() {
-		System.out.println("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
-		System.out.println("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
-	}
+    private static boolean keepConnectionAlive(List<String> inputList) {
+        return !inputList.contains("QUIT");
+    }
 
-	private static void executeCommand(HazeDatabase hazeDatabase, Socket client, List<String> inputList) throws IOException {
+    private static void printThreadDebug() {
+        Log4j2.debug("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
+        Log4j2.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
+    }
 
-		String command = inputList.get(0);
-		String key = inputList.get(1);
-		String value = getValueIfExist(inputList);
+    public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList) {
+        Log4j2.debug("executeCommand: " + hazeDatabase + " " + inputList);
+        String command = inputList.get(0).toUpperCase();
 
-		switch (command) {
-			case "SETNX" -> client.getOutputStream().write(hazeDatabase.setNX(key, value).getBytes());
-			default -> client.getOutputStream().write("-ERR unknown command\r\n".getBytes());
-		}
-	}
+        return switch (command) {
+            case "SETNX" -> hazeDatabase.setNX(inputList);
+            case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
+            case "QUIT" -> "+OK\r\n";
+            default -> "-ERR unknown command\r\n";
+        };
+    }
 
-	private static String getValueIfExist(List<String> inputList) {
-		if (inputList.size() == 3)
-			return inputList.get(2);
-		return "";
-	}
 
-	private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws IOException {
-		int size;
-		if (firstReading.startsWith("*")) {
-			size = Integer.parseInt(firstReading.substring(1)) * 2;
-			for (int i = 0; i < size; i++) {
-				String temp = input.readLine();
-				if (!temp.contains("$"))
-					inputList.add(temp);
-			}
-		} else {
-			String[] seperated = firstReading.split("\\s");
-			inputList.addAll(Arrays.asList(seperated));
-		}
-	}
+    private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
+            IOException {
+        Log4j2.debug("readInputStream: " + input + " " + inputList + " " + firstReading);
+        int size;
+        if (firstReading.startsWith("*")) {
+            size = Integer.parseInt(firstReading.substring(1)) * 2;
+            for (int i = 0; i < size; i++) {
+                String temp = input.readLine();
+                if (!temp.contains("$"))
+                    inputList.add(temp);
+            }
+        } else {
+            String[] seperated = firstReading.split("\\s");
+            inputList.addAll(Arrays.asList(seperated));
+        }
+    }
 }
