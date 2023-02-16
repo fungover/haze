@@ -57,7 +57,6 @@ public class Main {
 
                     } catch (IOException e) {
                         Log4j2.error(String.valueOf(e));
-                        throw new RuntimeException(e);
                     }
                 };
                 Thread.startVirtualThread(newThread);
