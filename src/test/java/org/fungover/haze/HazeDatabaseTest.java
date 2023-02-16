@@ -1,8 +1,6 @@
 package org.fungover.haze;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,13 +30,13 @@ class HazeDatabaseTest {
     void callingDeleteRemovesTheSpecifiedKey() {
         testDatabase.setNX(List.of("SETNX", "1", "thisWillBeRemoved"));
         testDatabase.delete(Collections.singletonList("1"));
-        assertThat(testDatabase.get("1")).isEqualTo("$-1\r\n");
+        assertThat(testDatabase.get(List.of("", "1"))).isEqualTo("$-1\r\n");
     }
 
     @Test
     void callingGetReturnsTheCorrectValueIfItExists() {
         testDatabase.setNX(List.of("SETNX", "someKey", "someValue"));
-        assertThat(testDatabase.get("someKey")).isEqualTo("$9\r\nsomeValue\r\n");
+        assertThat(testDatabase.get(List.of("", "someKey"))).isEqualTo("$9\r\nsomeValue\r\n");
     }
 
     @Test
@@ -109,19 +107,19 @@ class HazeDatabaseTest {
     @Test
     void testGetWithValidKey() {
         testDatabase.set(List.of("", "key", "value"));
-        String result = testDatabase.get("key");
+        String result = testDatabase.get(List.of("", "key"));
         assertEquals("$5\r\nvalue\r\n", result);
     }
 
     @Test
     void testGetWithInvalidKey() {
-        String result = testDatabase.get("invalidKey");
+        String result = testDatabase.get(List.of("", "invalidKey"));
         assertEquals("$-1\r\n", result);
     }
 
     @Test
     void testGetWithNullKey() {
-        String result = testDatabase.get(null);
+        String result = testDatabase.get(Arrays.asList("", null));
         assertEquals("$-1\r\n", result);
     }
 
@@ -134,13 +132,18 @@ class HazeDatabaseTest {
                 .containsEntry("2", "hast");
     }
 
-    @ParameterizedTest
-    @CsvSource({
-            "SET, key",
-            "SETNX, key"
-    })
-    void callingExecuteCommandWithWrongNumberOfArgumentsResultsInErrorMessage(String command, String message) {
-        assertThat(Main.executeCommand(testDatabase, List.of(command, message)))
-                .isEqualTo("-ERR wrong number of arguments for command\r\n");
+    @Test
+    void callingSetWithWrongNumberOfArgumentsResultsInErrorMessage() {
+        assertThat(testDatabase.set(List.of("", "key"))).isEqualTo("-ERR wrong number of arguments for command\r\n");
+    }
+
+    @Test
+    void callingSetNXWithWrongNumberOfArgumentsResultsInErrorMessage() {
+        assertThat(testDatabase.setNX(List.of("", "key"))).isEqualTo("-ERR wrong number of arguments for command\r\n");
+    }
+
+    @Test
+    void callingGetWithWrongNumberOfArgumentsResultsInErrorMessage() {
+        assertThat(testDatabase.get(List.of(""))).isEqualTo("-ERR wrong number of arguments for command\r\n");
     }
 }
