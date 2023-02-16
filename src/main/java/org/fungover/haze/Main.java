@@ -22,7 +22,7 @@ public class Main {
         HazeDatabase hazeDatabase = new HazeDatabase();
         Auth auth = new Auth();
         initializeServer(args, initialize, auth);
-        auth.setPassword("123");
+        
         final boolean isPasswordSet = auth.isPasswordSet();
 
 
