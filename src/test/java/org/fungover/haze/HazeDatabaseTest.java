@@ -139,7 +139,7 @@ class HazeDatabaseTest {
             "SET, key",
             "SETNX, key"
     })
-    void test(String command, String message) {
+    void callingExecuteCommandWithWrongNumberOfArgumentsResultsInErrorMessage(String command, String message) {
         assertThat(Main.executeCommand(testDatabase, List.of(command, message)))
                 .isEqualTo("-ERR wrong number of arguments for command\r\n");
     }
