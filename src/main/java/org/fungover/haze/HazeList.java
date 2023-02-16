@@ -1,6 +1,5 @@
 package org.fungover.haze;
 
-
 import java.util.*;
 import java.util.concurrent.locks.*;
 
@@ -142,6 +141,11 @@ public class HazeList {
 
 
     public String lMove(String source, String destination, String whereFrom, String whereTo) {
+        System.out.println(source);
+        System.out.println(destination);
+        System.out.println(whereFrom);
+        System.out.println(whereTo);
+
         lock.lock();
         try {
             if (database.get(source) == null || database.get(destination) == null)
@@ -178,7 +182,6 @@ public class HazeList {
     }
 
 
-
     public String lTrim(String key, int start, int stop) {
         lock.lock();
         try {
@@ -201,8 +204,49 @@ public class HazeList {
 
     @Override
     public String toString() {
+
         return "HazeList{" +
                 "database=" + database +
                 '}';
+    }
+
+    public String callLPop(String key, String... count) {
+        if (count.length > 0)
+            return lPop(key, HazeList.parser(count[0]));
+        else
+            return lPop(key);
+    }
+
+    public String callRpop(String key, String... count) {
+        if (count.length > 0)
+            return rPop(key, HazeList.parser(count[0]));
+        else
+            return rPop(key);
+    }
+
+    public String callLtrim(String key, String... args) {
+
+        if (args.length != 2)
+            return "-Wrong number of arguments for LTRIM\r\n";
+
+        int start, stop;
+        try {
+            start = Integer.parseInt(args[0]);
+            stop = Integer.parseInt(args[1]);
+        }
+        catch (NumberFormatException e) {
+            return "-Value is not an integer or out of range\r\n";
+        }
+        return lTrim(key, start, stop);
+    }
+
+    public static int parser(String inputString) {
+        //Do not call this when zero messes up your algorithm with a bad parse.
+        try {
+            return Integer.parseInt(inputString);
+        }
+        catch (NumberFormatException e) {
+            return 0;
+        }
     }
 }
