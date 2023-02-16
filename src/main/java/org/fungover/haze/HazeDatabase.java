@@ -17,7 +17,12 @@ public class HazeDatabase {
         this.lock = new ReentrantLock();
     }
 
-    public String set(String key, String value) {
+    public String set(List<String> inputList) {
+        if (inputList.size() != 3)
+            return "-ERR wrong number of arguments for command\r\n";
+        String key = inputList.get(1);
+        String value = inputList.get(2);
+
         lock.lock();
         try {
             //add code for setting value when key exists

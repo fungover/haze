@@ -1,7 +1,10 @@
 package org.fungover.haze;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -93,19 +96,19 @@ class HazeDatabaseTest {
 
     @Test
     void testSetWithValidKeyValuePair() {
-        String result = testDatabase.set("key", "value");
+        String result = testDatabase.set(List.of("", "key", "value"));
         assertEquals("+OK\r\n", result);
     }
 
     @Test
     void testSetWithNullValue() {
-        String result = testDatabase.set("key", null);
+        String result = testDatabase.set(Arrays.asList("", "key", null));
         assertEquals("+OK\r\n", result);
     }
 
     @Test
     void testGetWithValidKey() {
-        testDatabase.set("key", "value");
+        testDatabase.set(List.of("", "key", "value"));
         String result = testDatabase.get("key");
         assertEquals("$5\r\nvalue\r\n", result);
     }
@@ -124,10 +127,20 @@ class HazeDatabaseTest {
 
     @Test
     void testThatIfYouPutKeyAndValueYouGetOutAMap() {
-        testDatabase.set("1", "test");
-        testDatabase.set("2", "hast");
+        testDatabase.set(List.of("", "1", "test"));
+        testDatabase.set(List.of("", "2", "hast"));
         assertThat(testDatabase.copy())
                 .containsEntry("1", "test")
                 .containsEntry("2", "hast");
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "SET, key",
+            "SETNX, key"
+    })
+    void test(String command, String message) {
+        assertThat(Main.executeCommand(testDatabase, List.of(command, message)))
+                .isEqualTo("-ERR wrong number of arguments for command\r\n");
     }
 }
