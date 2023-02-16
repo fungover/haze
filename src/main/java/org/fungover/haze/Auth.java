@@ -24,7 +24,7 @@ public class Auth {
         return false;
     }
 
-    private static byte[] printAuthError() {
+    public static byte[] printAuthError() {
         return "-Ah ah ah, you didn't say the magic word. https://tinyurl.com/38e7yvp8".getBytes();
     }
 

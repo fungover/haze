@@ -48,8 +48,6 @@ public class Main {
 
                             clientAuthenticated = authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
 
-                            if (tryAgainIfNotAuthenticated(isPasswordSet, inputList, clientAuthenticated)) continue;
-
                             client.getOutputStream().write(executeCommand(hazeDatabase, inputList).getBytes());
 
                             inputList.forEach(System.out::println); // For checking incoming message
@@ -118,21 +116,22 @@ public class Main {
         auth.setPassword(initialize.getPassword());
     }
 
-    private static boolean authenticateClient(Auth auth, boolean isPasswordSet, Socket client, List<String> inputList, boolean clientAuthenticated) {
+    private static boolean authenticateClient(Auth auth, boolean isPasswordSet, Socket client, List<String> inputList, boolean clientAuthenticated) throws IOException {
         if (authCommandReceived(isPasswordSet, inputList, clientAuthenticated))
-            clientAuthenticated = auth.authenticate(inputList.get(1), client);
+            return auth.authenticate(inputList.get(1), client);
+
+        shutdownClientIfNotAuthenticated(client, clientAuthenticated);
         return clientAuthenticated;
+    }
+
+    private static void shutdownClientIfNotAuthenticated(Socket client, boolean clientAuthenticated) throws IOException {
+        if (!clientAuthenticated) {
+            client.getOutputStream().write(Auth.printAuthError());
+            client.shutdownOutput();
+        }
     }
 
     private static boolean authCommandReceived(boolean isPasswordSet, List<String> inputList, boolean clientAuthenticated) {
         return isPasswordSet && !clientAuthenticated && inputList.size() >= 2 && inputList.get(0).equals("AUTH");
-    }
-
-    private static boolean tryAgainIfNotAuthenticated(boolean isPasswordSet, List<String> inputList, boolean clientAuthenticated) {
-        if (isPasswordSet && !clientAuthenticated) {
-            inputList.clear();
-            return true;
-        }
-        return false;
     }
 }
