@@ -22,7 +22,6 @@ public class Main {
         HazeDatabase hazeDatabase = new HazeDatabase();
         Auth auth = new Auth();
         initializeServer(args, initialize, auth);
-        
         final boolean isPasswordSet = auth.isPasswordSet();
 
 
@@ -92,6 +91,7 @@ public class Main {
             case "SETNX" -> hazeDatabase.setNX(inputList);
             case "SAVE" -> SaveFile.writeOnFile(hazeDatabase.copy());
             case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
+            case "AUTH" -> "+OK\r\n";
             default -> "-ERR unknown command\r\n";
         };
     }
@@ -119,7 +119,7 @@ public class Main {
     }
 
     private static boolean authenticateClient(Auth auth, boolean isPasswordSet, Socket client, List<String> inputList, boolean clientAuthenticated) {
-        if (isPasswordSet && !clientAuthenticated && inputList.size() >= 2)
+        if (isPasswordSet && !clientAuthenticated && inputList.size() >= 2 && inputList.get(0).equals("AUTH"))
             clientAuthenticated = auth.authenticate(inputList.get(1), client);
         return clientAuthenticated;
     }

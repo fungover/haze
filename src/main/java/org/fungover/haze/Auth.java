@@ -4,7 +4,6 @@ import java.net.Socket;
 
 public class Auth {
     private String password;
-    private static final String OK = "+OK\\r\\n\n";
 
 
     public void setPassword(String password) {
@@ -14,7 +13,6 @@ public class Auth {
     public boolean authenticate(String password, Socket client) {
         try {
             if (this.password.equals(password)) {
-                client.getOutputStream().write(OK.getBytes());
                 return true;
             }
 
