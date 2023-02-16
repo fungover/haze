@@ -113,7 +113,7 @@ class HazeDatabaseTest {
     }
 
     @Test
-    void test() {
+    void testThatIfYouPutKeyAndValueYouGetOutAMap() {
         testDatabase.set("1", "test");
         testDatabase.set("2", "hast");
         assertThat(testDatabase.copy())
