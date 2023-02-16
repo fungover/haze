@@ -10,20 +10,28 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main {
-
+  static boolean serverOpen = true;
     public static void main(String[] args) throws IOException {
         Initialize initialize = new Initialize();
         initialize.importCliOptions(args);
 
         HazeDatabase hazeDatabase = new HazeDatabase();
+        Thread printingHook = new Thread(Main::shutdown);
+        Runtime.getRuntime().addShutdownHook(printingHook);
 
         try (ServerSocket serverSocket = new ServerSocket()) {
             serverSocket.setReuseAddress(true);
             serverSocket.bind(new InetSocketAddress(initialize.getPort()));
-            while (true) {
+          while (serverOpen) {
                 var client = serverSocket.accept();
                 Log4j2.debug(String.valueOf(client));
                 Log4j2.info("Application started: serverSocket.accept()");
+
+                printThreadDebug();
+
+                client.close();
+                System.out.println("Client closed");
+
 
                 Runnable newThread = () -> {
                     try {
@@ -88,4 +96,11 @@ public class Main {
             inputList.addAll(Arrays.asList(seperated));
         }
     }
+
+  private static void shutdown() {
+    //Todo: Replace with logging messages
+    System.out.println("Shutting down...");
+    //Todo: Save data to file before application shuts down
+    System.out.println("Shutdown Done.");
+  }
 }
