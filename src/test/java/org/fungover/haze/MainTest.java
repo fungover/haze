@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.in;
 import static org.fungover.haze.Main.printThreadDebug;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,7 +46,6 @@ class MainTest {
         inputList = new ArrayList<>();
         inputList.add("DEL");
         inputList.add("key1");
-        var result= Main.executeCommand(database, inputList);
         assertThat(Main.executeCommand(database,inputList)).isEqualTo(":0\r\n");
     }
 
