@@ -1,5 +1,8 @@
 package org.fungover.haze;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,17 +13,22 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main {
+    static boolean serverOpen = true;
+    static Logger logger = LogManager.getLogger(Main.class);
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         Initialize initialize = new Initialize();
         initialize.importCliOptions(args);
 
         HazeDatabase hazeDatabase = new HazeDatabase();
 
+        Thread printingHook = new Thread(() -> shutdown(hazeDatabase));
+        Runtime.getRuntime().addShutdownHook(printingHook);
+
         try (ServerSocket serverSocket = new ServerSocket()) {
             serverSocket.setReuseAddress(true);
             serverSocket.bind(new InetSocketAddress(initialize.getPort()));
-            while (true) {
+            while (serverOpen) {
                 var client = serverSocket.accept();
                 Log4j2.debug(String.valueOf(client));
                 Log4j2.info("Application started: serverSocket.accept()");
@@ -52,6 +60,12 @@ public class Main {
         } catch (IOException e) {
             Log4j2.error(String.valueOf(e));
         }
+        Log4j2.info("Shutting down....");
+    }
+
+    private static void shutdown(HazeDatabase hazeDatabase) {
+        SaveFile.writeOnFile(hazeDatabase.copy());
+        logger.info("Shutting down....");
     }
 
     private static void printThreadDebug() {
