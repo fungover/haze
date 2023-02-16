@@ -97,8 +97,8 @@ public class HazeDatabase {
 
     public String ping(List<String> messageList) {
 
-        if (messageList.isEmpty())
+        if (messageList.size() == 1)
             return "+PONG\r\n";
-        else return "$" + (messageList.get(0)).length() + "\r\n" + messageList.get(0) + "\r\n";
+        else return "$" + (messageList.get(1)).length() + "\r\n" + messageList.get(1) + "\r\n";
     }
 }
