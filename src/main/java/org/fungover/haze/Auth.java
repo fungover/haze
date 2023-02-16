@@ -17,6 +17,7 @@ public class Auth {
                 client.getOutputStream().write(OK.getBytes());
                 return true;
             }
+
             client.getOutputStream().write(printAuthError());
 
         } catch (Exception e) {
@@ -26,7 +27,7 @@ public class Auth {
     }
 
     private static byte[] printAuthError() {
-        return "-Ah ah ah, you didn't say the magic word. \nRead more Here: https://tinyurl.com/38e7yvp8 ".getBytes();
+        return "-Ah ah ah, you didn't say the magic word. https://tinyurl.com/38e7yvp8".getBytes();
     }
 
     public boolean isPasswordSet() {

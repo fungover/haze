@@ -59,8 +59,6 @@ public class Main {
 
                             inputList.clear();
                         }
-                        client.close();
-                        Log4j2.info("Client closed");
 
                     } catch (IOException e) {
                         Log4j2.error(String.valueOf(e));
@@ -78,23 +76,6 @@ public class Main {
     private static void shutdown(HazeDatabase hazeDatabase) {
         SaveFile.writeOnFile(hazeDatabase.copy());
         logger.info("Shutting down....");
-    }
-    private static boolean authenticateClient(Auth auth, boolean isPasswordSet, Socket client, List<String> inputList, boolean clientAuthenticated) {
-        if (isPasswordSet && !clientAuthenticated && inputList.size() >= 2)
-            clientAuthenticated = auth.authenticate(inputList.get(1), client);
-        return clientAuthenticated;
-    }
-
-    private static boolean tryAgainIfNotAuthenticated(boolean isPasswordSet, List<String> inputList, boolean clientAuthenticated) {
-        if (isPasswordSet && !clientAuthenticated) {
-            inputList.clear();
-            return true;
-        }
-        return false;
-    }
-
-    private static boolean keepConnectionAlive(List<String> inputList) {
-        return !inputList.contains("QUIT");
     }
 
     private static void printThreadDebug() {
@@ -135,5 +116,19 @@ public class Main {
     private static void initializeServer(String[] args, Initialize initialize, Auth auth) {
         initialize.importCliOptions(args);
         auth.setPassword(initialize.getPassword());
+    }
+
+    private static boolean authenticateClient(Auth auth, boolean isPasswordSet, Socket client, List<String> inputList, boolean clientAuthenticated) {
+        if (isPasswordSet && !clientAuthenticated && inputList.size() >= 2)
+            clientAuthenticated = auth.authenticate(inputList.get(1), client);
+        return clientAuthenticated;
+    }
+
+    private static boolean tryAgainIfNotAuthenticated(boolean isPasswordSet, List<String> inputList, boolean clientAuthenticated) {
+        if (isPasswordSet && !clientAuthenticated) {
+            inputList.clear();
+            return true;
+        }
+        return false;
     }
 }
