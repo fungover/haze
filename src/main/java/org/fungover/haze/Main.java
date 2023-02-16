@@ -74,14 +74,25 @@ public class Main {
     }
 
     public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList) {
+        if (inputList == null || inputList.isEmpty() || inputList.get(0) == null || inputList.get(0).isEmpty()) {
+            return "-ERR no command provided\r\n";
+        }
+
         Log4j2.debug("executeCommand: " + hazeDatabase + " " + inputList);
         String command = inputList.get(0).toUpperCase();
 
-        return switch (command) {
-            case "PING" -> hazeDatabase.ping(inputList);
-            case "SETNX" -> hazeDatabase.setNX(inputList);
-            case "SAVE" -> SaveFile.writeOnFile(hazeDatabase.copy());
-            case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
+        Command commandEnum;
+
+        try {
+            commandEnum = Command.valueOf(command);
+        } catch (IllegalArgumentException ex) {
+            return "-ERR unknown command\r\n";
+        }
+        return switch (commandEnum) {
+            case PING -> hazeDatabase.ping(inputList);
+            case SETNX -> hazeDatabase.setNX(inputList);
+            case SAVE -> SaveFile.writeOnFile(hazeDatabase.copy());
+            case DEL -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
             default -> "-ERR unknown command\r\n";
         };
     }

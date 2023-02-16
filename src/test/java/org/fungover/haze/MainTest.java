@@ -11,18 +11,20 @@ class MainTest {
 
     @Test
     void callingExecuteCommandWithValidNonExistingInputReturnsColonOne() {
-        assertThat(Main.executeCommand(database, List.of("SETNX", "1", "This is a value"))).isEqualTo(":1\r\n");
+        assertThat(Main.executeCommand(database, List.of("SETNX", "1", "This is a value")))
+                .isEqualTo(":1\r\n");
     }
 
     @Test
     void callingExecuteCommandWithInvalidInputStringReturnsErrorMessage() {
-        assertThat(Main.executeCommand(database, List.of(""))).isEqualTo("-ERR unknown command\r\n");
+        assertThat(Main.executeCommand(database, List.of(""))).isEqualTo("-ERR no command provided\r\n");
     }
 
     @Test
     void executeCommandCanHandleCommandsInBothUpperAndLowerCase() {
         Main.executeCommand(database, List.of("sEtNx", "1", "This is a value"));
-        assertThat(Main.executeCommand(database, List.of("sEtNx", "1", "This is also a value"))).isEqualTo(":0\r\n");
+        assertThat(Main.executeCommand(database, List.of("sEtNx", "1", "This is also a value")))
+                .isEqualTo(":0\r\n");
     }
 
     @Test
