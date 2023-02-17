@@ -19,6 +19,8 @@ public class Main {
 
     public static void main(String[] args) {
         Initialize initialize = new Initialize();
+        initialize.importCliOptions(args);
+
         HazeDatabase hazeDatabase = new HazeDatabase();
         Auth auth = new Auth();
         initializeServer(args, initialize, auth);
@@ -33,8 +35,7 @@ public class Main {
             serverSocket.bind(new InetSocketAddress(initialize.getPort()));
             while (serverOpen) {
                 var client = serverSocket.accept();
-                Log4j2.debug(String.valueOf(client));
-                Log4j2.info("Application started: serverSocket.accept()");
+                logger.info("Application started: serverSocket.accept()");
 
                 Runnable newThread = () -> {
                     try {
@@ -58,16 +59,15 @@ public class Main {
                         }
 
                     } catch (IOException e) {
-                        Log4j2.error(String.valueOf(e));
+                        logger.error(e);
                     }
-                    Log4j2.info("Client closed");
                 };
                 Thread.startVirtualThread(newThread);
             }
         } catch (IOException e) {
-            Log4j2.error(String.valueOf(e));
+            logger.error(e);
         }
-        Log4j2.info("Shutting down....");
+        logger.info("Shutting down....");
     }
 
     private static void shutdown(HazeDatabase hazeDatabase) {
@@ -76,12 +76,12 @@ public class Main {
     }
 
     private static void printThreadDebug() {
-        Log4j2.debug("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
-        Log4j2.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
+        logger.debug("ThreadID {}", () -> Thread.currentThread().threadId());  // Only for Debug
+        logger.debug("Is virtual Thread {}", () -> Thread.currentThread().isVirtual()); // Only for Debug
     }
 
-    public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList) {
-        Log4j2.debug("executeCommand: " + hazeDatabase + " " + inputList);
+    public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList, HazeList hazeList) {
+        logger.debug("executeCommand: {} {} ", ()->  hazeDatabase, ()-> inputList);
         String command = inputList.get(0).toUpperCase();
 
         return switch (command) {
@@ -92,6 +92,13 @@ public class Main {
             case "SETNX" -> hazeDatabase.setNX(inputList);
             case "EXISTS" -> hazeDatabase.exists(inputList.subList(1, inputList.size()));
             case "SAVE" -> SaveFile.writeOnFile(hazeDatabase.copy());
+            case "RPUSH" -> hazeList.rPush(inputList);
+            case "LPUSH" -> hazeList.lPush(inputList);
+            case "LPOP" -> hazeList.callLPop(inputList);
+            case "RPOP" -> hazeList.callRpop(inputList);
+            case "LLEN" -> hazeList.lLen(inputList);
+            case "LMOVE" -> hazeList.lMove(inputList);
+            case "LTRIM" -> hazeList.callLtrim(inputList);
             case "AUTH" -> "+OK\r\n";
             default -> "-ERR unknown command\r\n";
         };
@@ -99,7 +106,7 @@ public class Main {
 
     private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
             IOException {
-        Log4j2.debug("readInputStream: " + input + " " + inputList + " " + firstReading);
+        logger.debug("readInputStream: {} {} {}", ()-> input, () ->  inputList, () -> firstReading);
         int size;
         if (firstReading.startsWith("*")) {
             size = Integer.parseInt(firstReading.substring(1)) * 2;
