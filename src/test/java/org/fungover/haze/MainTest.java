@@ -2,6 +2,7 @@ package org.fungover.haze;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -9,6 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MainTest {
     HazeDatabase database = new HazeDatabase();
     HazeList hazeList = new HazeList();
+
 
     @Test
     void callingExecuteCommandWithValidNonExistingInputReturnsColonOne() {
@@ -35,5 +37,15 @@ class MainTest {
     void callExecuteCommandWithPingAndMessageShouldReturnTheMessage() {
         assertThat(Main.executeCommand(database, List.of("Ping", "test message"),hazeList))
                 .isEqualTo("$12\r\ntest message\r\n");
+    }
+    @Test
+    void listToArraySkipFirstTwoShouldReturnThirdValue(){
+        List <String> testList = new ArrayList<>();
+        testList.add("Value1");
+        testList.add("Value2");
+        testList.add("Value3");
+        String[] testArray = Main.listToArraySkipFirstTwo(testList);
+        assertThat(testArray[0]).isEqualTo("Value3");
+
     }
 }
