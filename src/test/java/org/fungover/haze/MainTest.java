@@ -1,10 +1,13 @@
 package org.fungover.haze;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 
 class MainTest {
     HazeDatabase database = new HazeDatabase();
@@ -31,8 +34,38 @@ class MainTest {
     }
 
     @Test
-    void callExecuteCommandWithPingAndMessageShouldReturnTheMessage() {
-        assertThat(Main.executeCommand(database, List.of("Ping", "test message")))
-                .isEqualTo("$12\r\ntest message\r\n");
+    void callExecuteCommandWithPingAndMessageShouldReturnTheMessageAsBulkString() {
+        assertThat(Main.executeCommand(database, List.of("Ping", "test message"))).isEqualTo("$12\r\ntest message\r\n");
+    }
+
+    @Test
+    void callExecuteCommandWithGetAndKeyShouldReturnTheValueAsBulkString() {
+        Main.executeCommand(database, List.of("SET", "theKey", "theValue"));
+        assertThat(Main.executeCommand(database, List.of("GET", "theKey"))).isEqualTo("$8\r\ntheValue\r\n");
+    }
+
+    @Test
+    void callExecuteCommandWithDelAndExistingKeyShouldReturnOne() {
+        Main.executeCommand(database, List.of("SET", "theKey", "theValue"));
+        assertThat(Main.executeCommand(database, List.of("Del", "theKey"))).isEqualTo(":1\r\n");
+    }
+
+    @Test
+    void callExecuteCommandWithExistsAndOneExistingKeyShouldReturnOne() {
+        Main.executeCommand(database, List.of("SET", "theKey", "theValue"));
+        assertThat(Main.executeCommand(database, List.of("Exists", "theKey", "secondKey"))).isEqualTo(":1\r\n");
+    }
+
+    @Test
+    void callExecuteCommandWithSaveShouldReturnOK() {
+        Main.executeCommand(database, List.of("SAVE"));
+        assertThat(SaveFile.writeOnFile(database.copy())).isEqualTo("+OK\r\n");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"SET", "SETNX"})
+    void callingExecuteCommandWithWrongNumberOfArgumentsResultsInErrorMessage(String command) {
+        assertThat(Main.executeCommand(database, List.of(command, "key")))
+                .isEqualTo("-ERR wrong number of arguments for command\r\n");
     }
 }
