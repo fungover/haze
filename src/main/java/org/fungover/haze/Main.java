@@ -85,10 +85,13 @@ public class Main {
         String command = inputList.get(0).toUpperCase();
 
         return switch (command) {
+            case "SET" -> hazeDatabase.set(inputList);
+            case "GET" -> hazeDatabase.get(inputList);
+            case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
             case "PING" -> hazeDatabase.ping(inputList);
             case "SETNX" -> hazeDatabase.setNX(inputList);
+            case "EXISTS" -> hazeDatabase.exists(inputList.subList(1, inputList.size()));
             case "SAVE" -> SaveFile.writeOnFile(hazeDatabase.copy());
-            case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
             case "AUTH" -> "+OK\r\n";
             default -> "-ERR unknown command\r\n";
         };

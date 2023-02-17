@@ -8,7 +8,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class HazeDatabase {
-
+    private static final String ARGUMENT_ERROR = "-ERR wrong number of arguments for command\r\n";
     private final Map<String, String> database;
     private final Lock lock;
 
@@ -17,23 +17,27 @@ public class HazeDatabase {
         this.lock = new ReentrantLock();
     }
 
-    public String set(String key, String value) {
+    public String set(List<String> inputList) {
+        if (inputList.size() != 3)
+            return ARGUMENT_ERROR;
+        String key = inputList.get(1);
+        String value = inputList.get(2);
         lock.lock();
         try {
-            //add code for setting value when key exists
             database.put(key, value);
-
         } finally {
             lock.unlock();
         }
         return "+OK\r\n";
     }
 
-    public String get(String key) {
+    public String get(List<String> inputList) {
+        if (inputList.size() != 2)
+            return ARGUMENT_ERROR;
         lock.lock();
         try {
-            if (database.containsKey(key)) {
-                var value = database.get(key);
+            if (database.containsKey(inputList.get(1))) {
+                var value = database.get(inputList.get(1));
                 return "$" + value.length() + "\r\n" + value + "\r\n";
             } else return "$-1\r\n";
         } finally {
@@ -68,14 +72,13 @@ public class HazeDatabase {
             }
         } finally {
             lock.unlock();
-
         }
         return ":" + numberOfKeys + "\r\n";
     }
 
     public String setNX(List<String> inputList) {
         if (inputList.size() != 3)
-            return "-ERR wrong number of arguments for command\r\n";
+            return ARGUMENT_ERROR;
         String key = inputList.get(1);
         String value = inputList.get(2);
 
@@ -104,9 +107,8 @@ public class HazeDatabase {
         }
         return shallowCopy;
     }
-    
-    public String ping(List<String> messageList) {
 
+    public String ping(List<String> messageList) {
         if (messageList.size() == 1)
             return "+PONG\r\n";
         else return "$" + (messageList.get(1)).length() + "\r\n" + messageList.get(1) + "\r\n";
