@@ -123,12 +123,12 @@ public class Main {
         if (authCommandReceived(isPasswordSet, inputList, clientAuthenticated))
             return auth.authenticate(inputList.get(1), client);
 
-        shutdownClientIfNotAuthenticated(client, clientAuthenticated);
+        shutdownClientIfNotAuthenticated(client, clientAuthenticated,isPasswordSet);
         return clientAuthenticated;
     }
 
-    private static void shutdownClientIfNotAuthenticated(Socket client, boolean clientAuthenticated) throws IOException {
-        if (!clientAuthenticated) {
+    private static void shutdownClientIfNotAuthenticated(Socket client, boolean clientAuthenticated, boolean isPasswordSet) throws IOException {
+        if (!clientAuthenticated && isPasswordSet) {
             client.getOutputStream().write(Auth.printAuthError());
             client.shutdownOutput();
         }
