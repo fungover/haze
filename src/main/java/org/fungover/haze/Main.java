@@ -81,26 +81,38 @@ public class Main {
     }
 
     public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList, HazeList hazeList) {
+        if (inputList.isEmpty() || inputList.get(0).isEmpty()) {
+            return "-ERR no command provided\r\n";
+        }
+
         logger.debug("executeCommand: {} {} ", () -> hazeDatabase, () -> inputList);
         String command = inputList.get(0).toUpperCase();
 
-        return switch (command) {
-            case "SET" -> hazeDatabase.set(inputList);
-            case "GET" -> hazeDatabase.get(inputList);
-            case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
-            case "PING" -> hazeDatabase.ping(inputList);
-            case "SETNX" -> hazeDatabase.setNX(inputList);
-            case "EXISTS" -> hazeDatabase.exists(inputList.subList(1, inputList.size()));
-            case "SAVE" -> SaveFile.writeOnFile(hazeDatabase.copy());
-            case "RPUSH" -> hazeList.rPush(inputList);
-            case "LPUSH" -> hazeList.lPush(inputList);
-            case "LPOP" -> hazeList.callLPop(inputList);
-            case "RPOP" -> hazeList.callRpop(inputList);
-            case "LLEN" -> hazeList.lLen(inputList);
-            case "LMOVE" -> hazeList.lMove(inputList);
-            case "LTRIM" -> hazeList.callLtrim(inputList);
-            case "AUTH" -> "+OK\r\n";
-            default -> "-ERR unknown command\r\n";
+        Command commandEnum;
+
+        try {
+            commandEnum = Command.valueOf(command);
+        } catch (IllegalArgumentException ex) {
+            return "-ERR unknown command\r\n";
+        }
+
+        return switch (commandEnum) {
+            case SET -> hazeDatabase.set(inputList);
+            case GET -> hazeDatabase.get(inputList);
+            case DEL -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
+            case PING -> hazeDatabase.ping(inputList);
+            case SETNX -> hazeDatabase.setNX(inputList);
+            case EXISTS -> hazeDatabase.exists(inputList.subList(1, inputList.size()));
+            case SAVE -> SaveFile.writeOnFile(hazeDatabase.copy());
+            case RPUSH -> hazeList.rPush(inputList);
+            case LPUSH -> hazeList.lPush(inputList);
+            case LPOP -> hazeList.callLPop(inputList);
+            case RPOP -> hazeList.callRpop(inputList);
+            case LLEN -> hazeList.lLen(inputList);
+            case LMOVE -> hazeList.lMove(inputList);
+            case LTRIM -> hazeList.callLtrim(inputList);
+            case AUTH -> "+OK\r\n";
+
         };
     }
 
