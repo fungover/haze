@@ -32,9 +32,9 @@ class AuthTest {
     }
 
     @Test
-    void authenticateReturnTrueIfCorrectPassword() {
-        auth.setPassword("1234");
-        assertThat(auth.authenticate("123",client)).isFalse();
+    void authenticateReturnsTrueIfCorrectPassword() {
+        auth.setPassword("123");
+        assertThat(auth.authenticate("123",client)).isTrue();
     }
 
     @Test
