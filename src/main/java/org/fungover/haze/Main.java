@@ -30,7 +30,6 @@ public class Main {
             serverSocket.bind(new InetSocketAddress(initialize.getPort()));
             while (serverOpen) {
                 var client = serverSocket.accept();
-                logger.debug(String.valueOf(client));
                 logger.info("Application started: serverSocket.accept()");
 
                 Runnable newThread = () -> {
@@ -51,14 +50,13 @@ public class Main {
                         }
 
                     } catch (IOException e) {
-                        logger.error(String.valueOf(e));
+                        logger.error(e);
                     }
-                    logger.info("Client closed");
                 };
                 Thread.startVirtualThread(newThread);
             }
         } catch (IOException e) {
-            logger.error(String.valueOf(e));
+            logger.error(e);
         }
         logger.info("Shutting down....");
     }
@@ -69,27 +67,29 @@ public class Main {
     }
 
     private static void printThreadDebug() {
-        logger.debug("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
-        logger.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
+        logger.debug("ThreadID {}", () -> Thread.currentThread().threadId());  // Only for Debug
+        logger.debug("Is virtual Thread {}", () -> Thread.currentThread().isVirtual()); // Only for Debug
     }
 
     public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList) {
-        logger.debug("executeCommand: " + hazeDatabase + " " + inputList);
+        logger.debug("executeCommand: {} {} ", ()->  hazeDatabase, ()-> inputList);
         String command = inputList.get(0).toUpperCase();
 
         return switch (command) {
+            case "SET" -> hazeDatabase.set(inputList);
+            case "GET" -> hazeDatabase.get(inputList);
+            case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
             case "PING" -> hazeDatabase.ping(inputList);
             case "SETNX" -> hazeDatabase.setNX(inputList);
+            case "EXISTS" -> hazeDatabase.exists(inputList.subList(1, inputList.size()));
             case "SAVE" -> SaveFile.writeOnFile(hazeDatabase.copy());
-            case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
             default -> "-ERR unknown command\r\n";
         };
     }
 
-
     private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
             IOException {
-        logger.debug("readInputStream: " + input + " " + inputList + " " + firstReading);
+        logger.debug("readInputStream: {} {} {}", ()-> input, () ->  inputList, () -> firstReading);
         int size;
         if (firstReading.startsWith("*")) {
             size = Integer.parseInt(firstReading.substring(1)) * 2;
