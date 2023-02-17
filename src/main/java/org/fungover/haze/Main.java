@@ -20,7 +20,7 @@ public class Main {
     public static void main(String[] args) {
         Initialize initialize = new Initialize();
         initialize.importCliOptions(args);
-
+        HazeList hazeList = new HazeList();
         HazeDatabase hazeDatabase = new HazeDatabase();
         Auth auth = new Auth();
         initializeServer(args, initialize, auth);
@@ -49,7 +49,7 @@ public class Main {
 
                             clientAuthenticated = authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
 
-                            client.getOutputStream().write(executeCommand(hazeDatabase, inputList).getBytes());
+                            client.getOutputStream().write(executeCommand(hazeDatabase, inputList, hazeList).getBytes());
 
                             inputList.forEach(System.out::println); // For checking incoming message
 
@@ -81,7 +81,7 @@ public class Main {
     }
 
     public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList, HazeList hazeList) {
-        logger.debug("executeCommand: {} {} ", ()->  hazeDatabase, ()-> inputList);
+        logger.debug("executeCommand: {} {} ", () -> hazeDatabase, () -> inputList);
         String command = inputList.get(0).toUpperCase();
 
         return switch (command) {
@@ -106,7 +106,7 @@ public class Main {
 
     private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
             IOException {
-        logger.debug("readInputStream: {} {} {}", ()-> input, () ->  inputList, () -> firstReading);
+        logger.debug("readInputStream: {} {} {}", () -> input, () -> inputList, () -> firstReading);
         int size;
         if (firstReading.startsWith("*")) {
             size = Integer.parseInt(firstReading.substring(1)) * 2;
@@ -130,7 +130,7 @@ public class Main {
         if (authCommandReceived(isPasswordSet, inputList, clientAuthenticated))
             return auth.authenticate(inputList.get(1), client);
 
-        shutdownClientIfNotAuthenticated(client, clientAuthenticated,isPasswordSet);
+        shutdownClientIfNotAuthenticated(client, clientAuthenticated, isPasswordSet);
         return clientAuthenticated;
     }
 
