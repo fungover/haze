@@ -83,8 +83,12 @@ public class Main {
             key = inputList.get(1);
 
         return switch (command) {
+            case "SET" -> hazeDatabase.set(inputList);
+            case "GET" -> hazeDatabase.get(inputList);
+            case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
             case "PING" -> hazeDatabase.ping(inputList);
             case "SETNX" -> hazeDatabase.setNX(inputList);
+            case "EXISTS" -> hazeDatabase.exists(inputList.subList(1, inputList.size()));
             case "SAVE" -> SaveFile.writeOnFile(hazeDatabase.copy());
             case "DEL" -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
             case "RPUSH" -> hazeList.rPush(key, listToArraySkipFirstTwo(inputList));
@@ -94,10 +98,10 @@ public class Main {
             case "LLEN" -> hazeList.lLen(key);
             case "LMOVE" -> hazeList.lMove(key,inputList.get(2),inputList.get(3).toUpperCase(),inputList.get(4).toUpperCase());
             case "LTRIM" -> hazeList.callLtrim(key,listToArraySkipFirstTwo(inputList));
+
             default -> "-ERR unknown command\r\n";
         };
     }
-
 
     private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
             IOException {
