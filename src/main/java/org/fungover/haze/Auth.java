@@ -2,6 +2,8 @@ package org.fungover.haze;
 
 import java.net.Socket;
 
+import static org.fungover.haze.Main.logger;
+
 public class Auth {
     private String password;
 
@@ -19,7 +21,7 @@ public class Auth {
             client.getOutputStream().write(printAuthError());
             client.shutdownOutput();
         } catch (Exception e) {
-            Log4j2.error(String.valueOf(e));
+            logger.error(String.valueOf(e));
         }
         return false;
     }
