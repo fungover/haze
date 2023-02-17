@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,9 +19,11 @@ public class Main {
 
     public static void main(String[] args) {
         Initialize initialize = new Initialize();
-        initialize.importCliOptions(args);
-
         HazeDatabase hazeDatabase = new HazeDatabase();
+        Auth auth = new Auth();
+        initializeServer(args, initialize, auth);
+        final boolean isPasswordSet = auth.isPasswordSet();
+
 
         Thread printingHook = new Thread(() -> shutdown(hazeDatabase));
         Runtime.getRuntime().addShutdownHook(printingHook);
@@ -35,18 +38,22 @@ public class Main {
                 Runnable newThread = () -> {
                     try {
                         BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
-
+                        boolean clientAuthenticated = false;
                         while (true) {
                             List<String> inputList = new ArrayList<>();
 
                             String firstReading = input.readLine();
                             readInputStream(input, inputList, firstReading);
 
+                            clientAuthenticated = authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
+
                             client.getOutputStream().write(executeCommand(hazeDatabase, inputList).getBytes());
 
                             inputList.forEach(System.out::println); // For checking incoming message
 
                             printThreadDebug();
+
+                            inputList.clear();
                         }
 
                     } catch (IOException e) {
@@ -83,6 +90,7 @@ public class Main {
             case "SETNX" -> hazeDatabase.setNX(inputList);
             case "EXISTS" -> hazeDatabase.exists(inputList.subList(1, inputList.size()));
             case "SAVE" -> SaveFile.writeOnFile(hazeDatabase.copy());
+            case "AUTH" -> "+OK\r\n";
             default -> "-ERR unknown command\r\n";
         };
     }
@@ -102,5 +110,29 @@ public class Main {
             String[] seperated = firstReading.split("\\s");
             inputList.addAll(Arrays.asList(seperated));
         }
+    }
+
+    private static void initializeServer(String[] args, Initialize initialize, Auth auth) {
+        initialize.importCliOptions(args);
+        auth.setPassword(initialize.getPassword());
+    }
+
+    private static boolean authenticateClient(Auth auth, boolean isPasswordSet, Socket client, List<String> inputList, boolean clientAuthenticated) throws IOException {
+        if (authCommandReceived(isPasswordSet, inputList, clientAuthenticated))
+            return auth.authenticate(inputList.get(1), client);
+
+        shutdownClientIfNotAuthenticated(client, clientAuthenticated);
+        return clientAuthenticated;
+    }
+
+    private static void shutdownClientIfNotAuthenticated(Socket client, boolean clientAuthenticated) throws IOException {
+        if (!clientAuthenticated) {
+            client.getOutputStream().write(Auth.printAuthError());
+            client.shutdownOutput();
+        }
+    }
+
+    private static boolean authCommandReceived(boolean isPasswordSet, List<String> inputList, boolean clientAuthenticated) {
+        return isPasswordSet && !clientAuthenticated && inputList.size() == 2 && inputList.get(0).equals("AUTH");
     }
 }

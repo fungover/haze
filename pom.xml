@@ -158,6 +158,7 @@
         <configuration>
           <environmentVariables>
             <HAZE_PORT>6380</HAZE_PORT>
+            <HAZE_PASSWORD>12345</HAZE_PASSWORD>
           </environmentVariables>
           <argLine>@{argLine} --enable-preview</argLine>
         </configuration>
