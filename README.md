@@ -1,5 +1,4 @@
-# Haze
-Key-Value database that talks RESP
+
 
 
 
@@ -55,7 +54,10 @@ Key-Value database that talks RESP
 </section>
 
 
-## Instructions for Haze
+# Haze:
+Key-Value database that talks RESP
+
+## Instructions for Haze:
       
     
  1. - Open the command prompt and type in the following:  
@@ -69,7 +71,7 @@ Key-Value database that talks RESP
     ``docker run -p 6440:6440 -e HAZE_PORT=6440 fungover/haze``.
 
 
-## Commands 
+## Commands:
 
        Commands that the Server support:
       
@@ -91,7 +93,7 @@ Returns if key exists, it returns 1 if the key exists, and 0 otherwise.
 
    
 
-## Examples
+## Examples:
   1. ```SET key1 "Hi"```
   2. ```GET key1```
   3. ```DEL key1```
