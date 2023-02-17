@@ -132,6 +132,6 @@ public class Main {
     }
 
     private static boolean authCommandReceived(boolean isPasswordSet, List<String> inputList, boolean clientAuthenticated) {
-        return isPasswordSet && !clientAuthenticated && inputList.size() >= 2 && inputList.get(0).equals("AUTH");
+        return isPasswordSet && !clientAuthenticated && inputList.size() == 2 && inputList.get(0).equals("AUTH");
     }
 }
