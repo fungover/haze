@@ -19,7 +19,7 @@ class MainTest {
 
     @Test
     void callingExecuteCommandWithInvalidInputStringReturnsErrorMessage() {
-        assertThat(Main.executeCommand(database, List.of(""))).isEqualTo("-ERR unknown command\r\n");
+        assertThat(Main.executeCommand(database, List.of(""))).isEqualTo("-ERR no command provided\r\n");
     }
 
     @Test
