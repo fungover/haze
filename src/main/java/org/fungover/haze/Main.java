@@ -11,9 +11,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import java.util.Arrays;
 import java.util.List;
 
-import static org.fungover.haze.RespInputParser.readInputStream;
+
 
 public class Main {
     static boolean serverOpen = true;
@@ -83,8 +84,8 @@ public class Main {
 
 
     public static void printThreadDebug() {
-        Log4j2.debug("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
-        Log4j2.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
+        logger.debug("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
+        logger.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
 
     }
 

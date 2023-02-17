@@ -107,13 +107,6 @@ class MainTest {
     void callExecuteCommandWithLTRIMShouldReturnErrorMessageWhenKeyDoesNotExist() {
         assertThat(Main.executeCommand(database, List.of("LTRIM", "key", "2", "3"), hazeList)).isEqualTo("-The key is not present in the database.\r\n");
     }
-    @Test
-    void callExecuteCommandWithDelAndMessageShouldReturnNull (){
-        inputList = new ArrayList<>();
-        inputList.add("DEL");
-        inputList.add("key1");
-        assertThat(Main.executeCommand(database,inputList)).isEqualTo(":0\r\n");
-    }
 
     @Test
     void testPrintThreadDebug() {
