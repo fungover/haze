@@ -34,7 +34,7 @@ public class Initialize {
             return cliOptions.get("-pw");
         } else if (cliOptions.containsKey("--password")) {
             return cliOptions.get("--password");
-        } else if ((System.getenv("HAZE_PASSWORD") != null)) {
+        } else if (System.getenv("HAZE_PASSWORD") != null) {
             return System.getenv("HAZE_PASSWORD");
         } else return null;
     }
