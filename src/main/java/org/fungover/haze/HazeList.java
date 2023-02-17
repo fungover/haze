@@ -16,28 +16,32 @@ public class HazeList {
         this.lock = new ReentrantLock();
     }
 
-    public String lPush(String key, String... values) {
+    public String lPush(List<String> inputList) {
+        String key = getKey(inputList);
+
+        List<String> values = getValues(inputList);
         lock.lock();
         try {
             List<String> list = database.computeIfAbsent(key, k -> new ArrayList<>());
-            List<String> tempList = Arrays.asList(values);
+            List<String> tempList = new ArrayList<>(List.copyOf(values));
             Collections.reverse(tempList);
             list.addAll(0, tempList);
             return ":" + list.size() + "\r\n";
-        }
-        finally {
+        } finally {
             lock.unlock();
         }
     }
 
-    public String rPush(String key, String... values) {
+    public String rPush(List<String> inputList) {
+        String key = getKey(inputList);
+
+        List<String> values = getValues(inputList);
         lock.lock();
         try {
             List<String> list = database.computeIfAbsent(key, k -> new ArrayList<>());
-            list.addAll(Arrays.asList(values));
+            list.addAll(values);
             return ":" + list.size() + "\r\n";
-        }
-        finally {
+        } finally {
             lock.unlock();
         }
     }
@@ -60,9 +64,8 @@ public class HazeList {
             if (!database.containsKey(key) || database.get(key).isEmpty())
                 return NIL_RESPONSE;
             int lengthOfValue = database.get(key).get(0).length();
-            return "$" + lengthOfValue + "\r\n" +database.get(key).remove(0) + "\r\n";
-        }
-        finally {
+            return "$" + lengthOfValue + "\r\n" + database.get(key).remove(0) + "\r\n";
+        } finally {
             lock.unlock();
         }
     }
@@ -85,8 +88,7 @@ public class HazeList {
                 stringBuilder.append("$").append(value.length()).append("\r\n").append(value).append("\r\n");
             }
             return stringBuilder.toString();
-        }
-        finally {
+        } finally {
             lock.unlock();
         }
     }
@@ -104,10 +106,9 @@ public class HazeList {
             if (!database.containsKey(key) || database.get(key).isEmpty())
                 return NIL_RESPONSE;
             int lengthOfValue = database.get(key).get(0).length();
-            int lastIndex = database.get(key).size()-1;
+            int lastIndex = database.get(key).size() - 1;
             return "$" + lengthOfValue + "\r\n" + database.get(key).remove(lastIndex) + "\r\n";
-        }
-        finally {
+        } finally {
             lock.unlock();
         }
     }
@@ -126,17 +127,15 @@ public class HazeList {
             stringBuilder.append("*").append(actualCount).append("\r\n");
 
             for (int i = 0; i < actualCount; i++) {
-                int lastIndex = database.get(key).size()-1;
+                int lastIndex = database.get(key).size() - 1;
                 String value = database.get(key).remove(lastIndex);
                 stringBuilder.append("$").append(value.length()).append("\r\n").append(value).append("\r\n");
             }
             return stringBuilder.toString();
-        }
-        finally {
+        } finally {
             lock.unlock();
         }
     }
-
 
     public String lLen(String key) {
         lock.lock();
@@ -144,8 +143,7 @@ public class HazeList {
             if (database.get(key) == null)
                 return ":0\r\n";
             return ":" + database.get(key).size() + "\r\n";
-        }
-        finally {
+        } finally {
             lock.unlock();
         }
     }
@@ -172,25 +170,20 @@ public class HazeList {
             if (whereFrom.equals(LEFT) && whereTo.equals(LEFT)) {
                 value = database.get(source).remove(0);
                 database.get(destination).add(0, value);
-            }
-            else if (whereFrom.equals(LEFT) && whereTo.equals(RIGHT)) {
+            } else if (whereFrom.equals(LEFT) && whereTo.equals(RIGHT)) {
                 value = database.get(source).remove(0);
                 database.get(destination).add(value);
-            }
-            else if (whereFrom.equals(RIGHT) && whereTo.equals(LEFT)) {
+            } else if (whereFrom.equals(RIGHT) && whereTo.equals(LEFT)) {
                 value = database.get(source).remove(database.get(source).size() - 1);
                 database.get(destination).add(0, value);
-            }
-            else if (whereFrom.equals(RIGHT) && whereTo.equals(RIGHT)) {
+            } else if (whereFrom.equals(RIGHT) && whereTo.equals(RIGHT)) {
                 value = database.get(source).remove(database.get(source).size() - 1);
                 database.get(destination).add(value);
-            }
-            else
+            } else
                 return "-Invalid input for FROM and WHERE.\r\n";
 
             return "$" + value.length() + "\r\n" + value + "\r\n";
-        }
-        finally {
+        } finally {
             lock.unlock();
         }
     }
@@ -201,17 +194,15 @@ public class HazeList {
         lock.lock();
         try {
             if (!database.containsKey(key))
-                return("-The key is not present in the database.\r\n");
+                return ("-The key is not present in the database.\r\n");
 
             try {
-                database.put(key, new ArrayList<>(database.get(key).subList(start, stop+1)));
+                database.put(key, new ArrayList<>(database.get(key).subList(start, stop + 1)));
                 return "+OK\r\n";
-            }
-            catch (IndexOutOfBoundsException e) {
+            } catch (IndexOutOfBoundsException e) {
                 return "-The inputs are outside the range of the list.\r\n";
             }
-        }
-        finally {
+        } finally {
             lock.unlock();
         }
     }
