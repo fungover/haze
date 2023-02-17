@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class MainTest {
     HazeDatabase database = new HazeDatabase();
+    HazeList hazeList = new HazeList();
 
     @Test
     void callingExecuteCommandWithValidNonExistingInputReturnsColonOne() {

@@ -21,6 +21,7 @@ public class Main {
         initialize.importCliOptions(args);
 
         HazeDatabase hazeDatabase = new HazeDatabase();
+        HazeList hazeList = new HazeList();
 
         Thread printingHook = new Thread(() -> shutdown(hazeDatabase));
         Runtime.getRuntime().addShutdownHook(printingHook);
@@ -43,7 +44,7 @@ public class Main {
                             String firstReading = input.readLine();
                             readInputStream(input, inputList, firstReading);
 
-                            client.getOutputStream().write(executeCommand(hazeDatabase, inputList).getBytes());
+                            client.getOutputStream().write(executeCommand(hazeDatabase, inputList,hazeList ).getBytes());
 
                             inputList.forEach(System.out::println); // For checking incoming message
 
@@ -73,9 +74,13 @@ public class Main {
         Log4j2.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
     }
 
-    public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList) {
+    public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList, HazeList hazeList) {
         Log4j2.debug("executeCommand: " + hazeDatabase + " " + inputList);
         String command = inputList.get(0).toUpperCase();
+
+        String key = null;
+        if (inputList.size() > 1)
+            key = inputList.get(1);
 
         return switch (command) {
             case "SET" -> hazeDatabase.set(inputList);
@@ -85,6 +90,13 @@ public class Main {
             case "SETNX" -> hazeDatabase.setNX(inputList);
             case "EXISTS" -> hazeDatabase.exists(inputList.subList(1, inputList.size()));
             case "SAVE" -> SaveFile.writeOnFile(hazeDatabase.copy());
+            case "RPUSH" -> hazeList.rPush(inputList);
+            case "LPUSH" -> hazeList.lPush(inputList);
+            case "LPOP" -> hazeList.callLPop(inputList);
+            case "RPOP" -> hazeList.callRpop(inputList);
+            case "LLEN" -> hazeList.lLen(key);
+            case "LMOVE" -> hazeList.lMove(inputList);
+            case "LTRIM" -> hazeList.callLtrim(inputList);
             default -> "-ERR unknown command\r\n";
         };
     }
@@ -105,4 +117,5 @@ public class Main {
             inputList.addAll(Arrays.asList(seperated));
         }
     }
+
 }

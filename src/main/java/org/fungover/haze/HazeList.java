@@ -1,6 +1,5 @@
 package org.fungover.haze;
 
-
 import java.util.*;
 import java.util.concurrent.locks.*;
 
@@ -41,6 +40,17 @@ public class HazeList {
         finally {
             lock.unlock();
         }
+    }
+
+    private static List<String> getValues(List<String> inputList) {
+        return inputList.subList(2, inputList.size());
+    }
+
+    private static String getKey(List<String> inputList) {
+        String key = null;
+        if (inputList.size() > 1)
+            key = inputList.get(1);
+        return key;
     }
 
     //OVERLOAD
@@ -140,8 +150,16 @@ public class HazeList {
         }
     }
 
+    public String lMove(List<String> inputList) {
+        String source = getKey(inputList);
+        if (inputList.size() == 2)
+            return "-The source list is empty.\r\n";
 
-    public String lMove(String source, String destination, String whereFrom, String whereTo) {
+        List<String> position = inputList.subList(2, inputList.size());
+        String destination = position.get(0);
+        String whereFrom = position.get(1).toUpperCase();
+        String whereTo = position.get(2).toUpperCase();
+
         lock.lock();
         try {
             if (database.get(source) == null || database.get(destination) == null)
@@ -178,8 +196,8 @@ public class HazeList {
     }
 
 
-
     public String lTrim(String key, int start, int stop) {
+
         lock.lock();
         try {
             if (!database.containsKey(key))
@@ -201,8 +219,55 @@ public class HazeList {
 
     @Override
     public String toString() {
+
         return "HazeList{" +
                 "database=" + database +
                 '}';
+    }
+
+    public String callLPop(List<String> inputList) {
+        String key = getKey(inputList);
+        List<String> count = inputList.subList(2, inputList.size());
+
+        if (count.size() > 0)
+            return lPop(key, HazeList.parser(count.get(0)));
+        else
+            return lPop(key);
+    }
+
+    public String callRpop(List<String> inputList) {
+        String key = getKey(inputList);
+        List<String> count = inputList.subList(2, inputList.size());
+
+
+        if (count.size() > 0)
+            return rPop(key, HazeList.parser(inputList.get(2)));
+        else
+            return rPop(key);
+    }
+
+    public String callLtrim(List<String> inputList) {
+        String key = getKey(inputList);
+
+        if (inputList.size() != 4)
+            return "-Wrong number of arguments for LTRIM\r\n";
+
+        int start, stop;
+        try {
+            start = Integer.parseInt(inputList.get(2));
+            stop = Integer.parseInt(inputList.get(3));
+        } catch (NumberFormatException e) {
+            return "-Value is not an integer or out of range\r\n";
+        }
+        return lTrim(key, start, stop);
+    }
+
+    public static int parser(String inputString) {
+        //Do not call this when zero messes up your algorithm with a bad parse.
+        try {
+            return Integer.parseInt(inputString);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 }
