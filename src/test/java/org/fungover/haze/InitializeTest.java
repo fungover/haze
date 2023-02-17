@@ -34,4 +34,24 @@ class InitializeTest {
 
 		assertThat(initialize.getPort()).isEqualTo(1233);
 	}
+    @Test
+    void passwordSetByCLIWithDashPShouldReturn1234() {
+        String[] args = {"-pw", "1234"};
+        initialize.importCliOptions(args);
+
+        assertThat(initialize.getPassword()).isEqualTo("1234");
+    }
+
+    @Test
+    void passwordSetByEnvironmentVariableShouldReturn12345() {
+        assertThat(initialize.getPassword()).isEqualTo("12345");
+    }
+
+    @Test
+    void passwordSetByCLIWithDashPortShouldReturn1233() {
+        String[] args = {"--password", "1233"};
+        initialize.importCliOptions(args);
+
+        assertThat(initialize.getPassword()).isEqualTo("1233");
+    }
 }

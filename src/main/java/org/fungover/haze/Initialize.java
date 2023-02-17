@@ -28,6 +28,17 @@ public class Initialize {
         } else return 6379;
     }
 
+    public String getPassword() {
+
+        if (cliOptions.containsKey("-pw")) {
+            return cliOptions.get("-pw");
+        } else if (cliOptions.containsKey("--password")) {
+            return cliOptions.get("--password");
+        } else if (System.getenv("HAZE_PASSWORD") != null) {
+            return System.getenv("HAZE_PASSWORD");
+        } else return null;
+    }
+
     public void clearCliOptions() {
         cliOptions.clear();
     }
