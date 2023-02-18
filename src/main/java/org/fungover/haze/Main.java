@@ -20,8 +20,8 @@ public class Main {
     public static void main(String[] args) {
         Initialize initialize = new Initialize();
         initialize.importCliOptions(args);
-        HazeList hazeList = new HazeList();
         HazeDatabase hazeDatabase = new HazeDatabase();
+        HazeList hazeList = new HazeList(hazeDatabase);
         Auth auth = new Auth();
         initializeServer(args, initialize, auth);
         final boolean isPasswordSet = auth.isPasswordSet();
@@ -95,7 +95,7 @@ public class Main {
             case "RPUSH" -> hazeList.rPush(inputList);
             case "LPUSH" -> hazeList.lPush(inputList);
             case "LPOP" -> hazeList.callLPop(inputList);
-            case "RPOP" -> hazeList.callRpop(inputList);
+            case "RPOP" -> hazeList.callRPop(inputList);
             case "LLEN" -> hazeList.lLen(inputList);
             case "LMOVE" -> hazeList.lMove(inputList);
             case "LTRIM" -> hazeList.callLtrim(inputList);
