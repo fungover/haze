@@ -28,7 +28,7 @@ public class HazeList {
         String newListAsString = listValueAsString(newList);
 
         if (!oldListAsString.isEmpty())
-            newListAsString += ",";
+            newListAsString += "\r\n";
 
         hazeDatabase.addValue(key, newListAsString + oldListAsString);
 
@@ -54,11 +54,11 @@ public class HazeList {
 
     //OVERLOAD
     public String lPop(String key) {
-        if (!hazeDatabase.containsKey(key) || hazeDatabase.getValue(key).equals(""))
+
+        if (!hazeDatabase.containsKey(key))
             return NIL_RESPONSE;
 
         List<String> list = getValueAsList(hazeDatabase.getValue(key));
-
         if (list.isEmpty())
             return EMPTY_ARRAY_RESPONSE;
 
@@ -72,38 +72,35 @@ public class HazeList {
     //OVERLOAD
     @java.lang.SuppressWarnings("squid:S5413")
     public String lPop(String key, int count) {
-        if (!hazeDatabase.containsKey(key) || hazeDatabase.getValue(key).equals(""))
+
+        if (!hazeDatabase.containsKey(key))
             return NIL_RESPONSE;
 
         List<String> list = getValueAsList(hazeDatabase.getValue(key));
 
         int actualCount = Math.min(count, list.size());
-
-        if (list.isEmpty())
+        if (actualCount == 0)
             return EMPTY_ARRAY_RESPONSE;
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("*").append(actualCount).append("\r\n");
 
         for (int i = 0; i < actualCount; i++) {
-            String value = list.get(i);
-            stringBuilder.append("$").append(value.length()).append("\r\n").append(value).append("\r\n");
+            String element = list.remove(0);
+            stringBuilder.append("$").append(element.length()).append("\r\n").append(element).append("\r\n");
         }
 
-        List<String> remainingList = list.subList(actualCount, list.size());
-        String remainingValuesAsString = listValueAsString(remainingList);
-        hazeDatabase.addValue(key, remainingValuesAsString);
-
+        hazeDatabase.addValue(key, listValueAsString(list));
         return stringBuilder.toString();
     }
 
     //OVERLOAD
     public String rPop(String key) {
-        if (!hazeDatabase.containsKey(key) || hazeDatabase.getValue(key).equals(""))
+
+        if (!hazeDatabase.containsKey(key))
             return NIL_RESPONSE;
 
         List<String> list = getValueAsList(hazeDatabase.getValue(key));
-
         if (list.isEmpty())
             return EMPTY_ARRAY_RESPONSE;
 
@@ -118,29 +115,25 @@ public class HazeList {
     //OVERLOAD
     @java.lang.SuppressWarnings("squid:S5413")
     public String rPop(String key, int count) {
-        String value = hazeDatabase.getValue(key);
-        if (value == null || value.isEmpty())
+
+        if (!hazeDatabase.containsKey(key))
             return NIL_RESPONSE;
 
-        List<String> list = getValueAsList(value);
-        int actualCount = Math.min(count, list.size());
+        List<String> list = getValueAsList(hazeDatabase.getValue(key));
 
-        if (list.isEmpty())
+        int actualCount = Math.min(count, list.size());
+        if (actualCount == 0)
             return EMPTY_ARRAY_RESPONSE;
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("*").append(actualCount).append("\r\n");
 
         for (int i = 0; i < actualCount; i++) {
-            int lastIndex = list.size() - 1;
-            String lastElement = list.remove(lastIndex);
+            String lastElement = list.remove(list.size()-1);
             stringBuilder.append("$").append(lastElement.length()).append("\r\n").append(lastElement).append("\r\n");
         }
 
-        String newValue = listValueAsString(list);
-        hazeDatabase.addValue(key, newValue);
-
-
+        hazeDatabase.addValue(key, listValueAsString(list));
         return stringBuilder.toString();
     }
 
@@ -154,7 +147,6 @@ public class HazeList {
             return ":" + list.size() + "\r\n";
         }
     }
-
 
     public String lMove(List<String> inputList) {
 
@@ -171,8 +163,7 @@ public class HazeList {
 
         if (sourceValue == null || destinationValue == null)
             return "-One or both keys is missing.\r\n";
-
-        if (sourceValue.isEmpty())
+        else if (sourceValue.isEmpty())
             return "-The source list is empty.\r\n";
 
         List<String> sourceList = getValueAsList(sourceValue);
@@ -204,7 +195,6 @@ public class HazeList {
         return "$" + value.length() + "\r\n" + value + "\r\n";
     }
 
-
     public String lTrim(String key, int start, int stop) {
         if (!hazeDatabase.containsKey(key)) {
             return "-The key is not present in the database.\r\n";
@@ -220,8 +210,6 @@ public class HazeList {
             return "-The inputs are outside the range of the list.\r\n";
         }
     }
-
-
 
     public String callLPop(List<String> inputList) {
         String key = getKey(inputList);
@@ -270,7 +258,7 @@ public class HazeList {
             return 0;
         }
     }
-
+    @java.lang.SuppressWarnings("squid:S6204")
     public static List<String> getValueAsList(String csv) {
         return Stream.of(csv.split("\r\n", -1))
                 .collect(Collectors.toList());
@@ -286,8 +274,4 @@ public class HazeList {
             key = inputList.get(1);
         return key;
     }
-
-
-
-
 }
