@@ -1,5 +1,4 @@
 package org.fungover.haze;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -59,8 +58,6 @@ public class HazeList {
             return NIL_RESPONSE;
 
         List<String> list = getValueAsList(hazeDatabase.getValue(key));
-        if (list.isEmpty())
-            return EMPTY_ARRAY_RESPONSE;
 
         String firstElement = list.remove(0);
         String newValue = listValueAsString(list);
@@ -79,8 +76,6 @@ public class HazeList {
         List<String> list = getValueAsList(hazeDatabase.getValue(key));
 
         int actualCount = Math.min(count, list.size());
-        if (actualCount == 0)
-            return EMPTY_ARRAY_RESPONSE;
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("*").append(actualCount).append("\r\n");
@@ -101,8 +96,6 @@ public class HazeList {
             return NIL_RESPONSE;
 
         List<String> list = getValueAsList(hazeDatabase.getValue(key));
-        if (list.isEmpty())
-            return EMPTY_ARRAY_RESPONSE;
 
         int lastIndex = list.size() - 1;
         String lastElement = list.remove(lastIndex);
@@ -152,7 +145,7 @@ public class HazeList {
 
         String source = getKey(inputList);
         if (inputList.size() == 2)
-            return "-The source list is empty.\r\n";
+            return "-ERR wrong number of arguments for command.\r\n";
 
         List<String> position = inputList.subList(2, inputList.size());
         String destination = position.get(0);

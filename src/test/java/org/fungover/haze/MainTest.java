@@ -94,7 +94,7 @@ class MainTest {
 
     @Test
     void callExecuteCommandWithLMOVEShouldReturnErrorMessageWhenListIsEmpty() {
-        assertThat(Main.executeCommand(hazeDatabase, List.of("LMOVE", "key"), hazeList)).isEqualTo("-The source list is empty.\r\n");
+        assertThat(Main.executeCommand(hazeDatabase, List.of("LMOVE", "key"), hazeList)).isEqualTo("-ERR wrong number of arguments for command.\r\n");
     }
 
     @Test
