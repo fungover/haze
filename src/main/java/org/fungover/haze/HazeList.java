@@ -39,7 +39,7 @@ public class HazeList {
         String key = getKey(inputList);
 
         String currentValuesAsString = hazeDatabase.getValue(key);
-        List<String> currentValues = currentValuesAsString != null ? parseCSV(currentValuesAsString) : new ArrayList<>();
+        List<String> currentValues = currentValuesAsString != null ? parseCsv(currentValuesAsString) : new ArrayList<>();
 
         List<String> newInputs = inputList.stream()
                 .skip(2)
@@ -57,12 +57,10 @@ public class HazeList {
         if (!hazeDatabase.containsKey(key) || hazeDatabase.getValue(key).equals(""))
             return NIL_RESPONSE;
 
-
-        List<String> list = parseCSV(hazeDatabase.getValue(key));
+        List<String> list = parseCsv(hazeDatabase.getValue(key));
 
         if (list.isEmpty())
             return EMPTY_ARRAY_RESPONSE;
-
 
         String firstElement = list.remove(0);
         String newValue = listToCsv(list);
@@ -77,7 +75,7 @@ public class HazeList {
         if (!hazeDatabase.containsKey(key) || hazeDatabase.getValue(key).equals(""))
             return NIL_RESPONSE;
 
-        List<String> list = parseCSV(hazeDatabase.getValue(key));
+        List<String> list = parseCsv(hazeDatabase.getValue(key));
 
         int actualCount = Math.min(count, list.size());
 
@@ -104,12 +102,10 @@ public class HazeList {
         if (!hazeDatabase.containsKey(key) || hazeDatabase.getValue(key).equals(""))
             return NIL_RESPONSE;
 
-
-        List<String> list = parseCSV(hazeDatabase.getValue(key));
+        List<String> list = parseCsv(hazeDatabase.getValue(key));
 
         if (list.isEmpty())
             return EMPTY_ARRAY_RESPONSE;
-
 
         int lastIndex = list.size() - 1;
         String lastElement = list.remove(lastIndex);
@@ -126,7 +122,7 @@ public class HazeList {
         if (value == null || value.isEmpty())
             return NIL_RESPONSE;
 
-        List<String> list = parseCSV(value);
+        List<String> list = parseCsv(value);
         int actualCount = Math.min(count, list.size());
 
         if (list.isEmpty())
@@ -154,7 +150,7 @@ public class HazeList {
         if (value == null || value.length()==0)
             return ":0\r\n";
         else {
-            List<String> list = parseCSV(value);
+            List<String> list = parseCsv(value);
             return ":" + list.size() + "\r\n";
         }
     }
@@ -179,8 +175,8 @@ public class HazeList {
         if (sourceValue.isEmpty())
             return "-The source list is empty.\r\n";
 
-        List<String> sourceList = parseCSV(sourceValue);
-        List<String> destinationList = parseCSV(destinationValue);
+        List<String> sourceList = parseCsv(sourceValue);
+        List<String> destinationList = parseCsv(destinationValue);
         String value;
 
         if (whereFrom.equals(LEFT) && whereTo.equals(LEFT)) {
@@ -214,7 +210,7 @@ public class HazeList {
             return "-The key is not present in the database.\r\n";
         }
         try {
-            List<String> list = parseCSV(hazeDatabase.getValue(key));
+            List<String> list = parseCsv(hazeDatabase.getValue(key));
             List<String> subList = new ArrayList<>(list.subList(start, stop + 1));
             String newCsv = listToCsv(subList);
             hazeDatabase.addValue(key, newCsv);
@@ -231,7 +227,7 @@ public class HazeList {
         String key = getKey(inputList);
         List<String> count = inputList.subList(2, inputList.size());
 
-        if (count.size() > 0)
+        if (!count.isEmpty())
             return lPop(key, HazeList.parser(inputList.get(2)));
         else
             return lPop(key);
@@ -241,7 +237,7 @@ public class HazeList {
         String key = getKey(inputList);
         List<String> count = inputList.subList(2, inputList.size());
 
-        if (count.size() > 0)
+        if (!count.isEmpty())
             return rPop(key, HazeList.parser(inputList.get(2)));
         else
             return rPop(key);
@@ -275,7 +271,7 @@ public class HazeList {
         }
     }
 
-    public static List<String> parseCSV(String csv) {
+    public static List<String> parseCsv(String csv) {
         return Stream.of(csv.split(",", -1))
                 .collect(Collectors.toList());
     }
@@ -290,6 +286,7 @@ public class HazeList {
             key = inputList.get(1);
         return key;
     }
+
 
 
 

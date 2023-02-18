@@ -146,4 +146,18 @@ class HazeDatabaseTest {
     void callingGetWithWrongNumberOfArgumentsResultsInErrorMessage() {
         assertThat(testDatabase.get(List.of(""))).isEqualTo("-ERR wrong number of arguments for command\r\n");
     }
+
+    @Test
+    void getValueShouldReturnCorrectValue(){
+        testDatabase.addValue("key1", "Gunnar");
+        assertThat(testDatabase.getValue("key1")).isEqualTo("Gunnar");
+    }
+
+    @Test
+    void shouldShouldReturnTrue(){
+        testDatabase.addValue("key1", "Gunnar");
+        assertThat(testDatabase.containsKey("key1")).isTrue();
+    }
+
+
 }

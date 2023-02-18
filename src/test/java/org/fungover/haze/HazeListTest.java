@@ -128,8 +128,8 @@ class HazeListTest {
         String databaseCsv1 = hazeList.hazeDatabase.getValue("key1");
         String databaseCsv2 = hazeList.hazeDatabase.getValue("key2");
 
-        List<String> list1 = HazeList.parseCSV(databaseCsv1);
-        List<String> list2 = HazeList.parseCSV(databaseCsv2);
+        List<String> list1 = HazeList.parseCsv(databaseCsv1);
+        List<String> list2 = HazeList.parseCsv(databaseCsv2);
 
         assertEquals(List.of("val2"), list1);
         assertEquals(List.of("val1", "val3", "val4"), list2);
@@ -145,8 +145,8 @@ class HazeListTest {
         String databaseCsv1 = hazeList.hazeDatabase.getValue("key1");
         String databaseCsv2 = hazeList.hazeDatabase.getValue("key2");
 
-        List<String> list1 = HazeList.parseCSV(databaseCsv1);
-        List<String> list2 = HazeList.parseCSV(databaseCsv2);
+        List<String> list1 = HazeList.parseCsv(databaseCsv1);
+        List<String> list2 = HazeList.parseCsv(databaseCsv2);
 
         assertEquals(List.of("val2"), list1);
         assertEquals(List.of("val3", "val4", "val1"), list2);
@@ -161,8 +161,8 @@ class HazeListTest {
         String databaseCsv1 = hazeList.hazeDatabase.getValue("key1");
         String databaseCsv2 = hazeList.hazeDatabase.getValue("key2");
 
-        List<String> list1 = HazeList.parseCSV(databaseCsv1);
-        List<String> list2 = HazeList.parseCSV(databaseCsv2);
+        List<String> list1 = HazeList.parseCsv(databaseCsv1);
+        List<String> list2 = HazeList.parseCsv(databaseCsv2);
 
         assertEquals(List.of("val2", "val3", "val4"), list2);
         assertEquals(List.of("val1"), list1);
@@ -189,7 +189,7 @@ class HazeListTest {
         hazeList.rPush(List.of("", "key2", "val3", "val4"));
         hazeList.lMove(List.of("", "key1", "key2", "RIGHT", "RIGHT"));
         String destinationList = hazeDatabase.getValue("key2");
-        List<String> parsedList = HazeList.parseCSV(destinationList);
+        List<String> parsedList = HazeList.parseCsv(destinationList);
         assertEquals(3, parsedList.size());
     }
 
@@ -207,7 +207,7 @@ class HazeListTest {
         hazeList.rPush(List.of("", "key1", "val1", "val2", "val3", "val4", "val5"));
         hazeList.lTrim("key1", 1,2);
         String databaseCsv = hazeList.hazeDatabase.getValue("key1");
-        List<String> list1 = HazeList.parseCSV(databaseCsv);
+        List<String> list1 = HazeList.parseCsv(databaseCsv);
 
         assertEquals(List.of("val2", "val3"), list1);
     }
