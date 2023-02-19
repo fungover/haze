@@ -252,8 +252,8 @@ public class HazeList {
         }
     }
     @java.lang.SuppressWarnings("squid:S6204")
-    public static List<String> getValueAsList(String csv) {
-        return Stream.of(csv.split("\r\n", -1))
+    public static List<String> getValueAsList(String textToSplit) {
+        return Stream.of(textToSplit.split("\r\n", -1))
                 .collect(Collectors.toList());
     }
 
