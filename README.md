@@ -57,6 +57,7 @@
 # Haze:
 Key-Value database that talks RESP
 
+
 ## Instructions for Haze:
       
     
@@ -74,6 +75,10 @@ Key-Value database that talks RESP
 ## Commands:
 
        Commands that the Server support:
+       
+       
+## Topics
+  java redis docker-container maven-pom sonarqube sonarcloud log4j2 html
       
  
   - SET:
