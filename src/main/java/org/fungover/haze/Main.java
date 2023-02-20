@@ -108,7 +108,6 @@ public class Main {
             case LPUSH -> hazeList.lPush(inputList);
             case LPOP -> hazeList.callLPop(inputList);
             case RPOP -> hazeList.callRPop(inputList);
-            case RPOP -> hazeList.callRpop(inputList);
             case LLEN -> hazeList.lLen(inputList);
             case LMOVE -> hazeList.lMove(inputList);
             case LTRIM -> hazeList.callLtrim(inputList);
