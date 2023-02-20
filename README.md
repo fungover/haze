@@ -57,6 +57,9 @@
 # Haze:
 Key-Value database that talks RESP
 
+## Topics
+java redis docker-container maven-pom sonarqube sonarcloud log4j2 html
+
 ## Instructions for Haze:
       
     
