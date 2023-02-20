@@ -67,7 +67,7 @@ public class HazeList {
     }
 
     //OVERLOAD
-    @java.lang.SuppressWarnings("squid:S5413")
+    @SuppressWarnings("squid:S5413")
     public String lPop(String key, int count) {
 
         if (!hazeDatabase.containsKey(key))
@@ -106,7 +106,7 @@ public class HazeList {
     }
 
     //OVERLOAD
-    @java.lang.SuppressWarnings("squid:S5413")
+    @SuppressWarnings("squid:S5413")
     public String rPop(String key, int count) {
 
         if (!hazeDatabase.containsKey(key))
@@ -251,7 +251,7 @@ public class HazeList {
             return 0;
         }
     }
-    @java.lang.SuppressWarnings("squid:S6204")
+    @SuppressWarnings("squid:S6204")
     public static List<String> getValueAsList(String textToSplit) {
         return Stream.of(textToSplit.split("\r\n", -1))
                 .collect(Collectors.toList());
