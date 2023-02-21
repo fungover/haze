@@ -20,8 +20,8 @@ public class Main {
     public static void main(String[] args) {
         Initialize initialize = new Initialize();
         initialize.importCliOptions(args);
-        HazeList hazeList = new HazeList();
         HazeDatabase hazeDatabase = new HazeDatabase();
+        HazeList hazeList = new HazeList(hazeDatabase);
         Auth auth = new Auth();
         initializeServer(args, initialize, auth);
         final boolean isPasswordSet = auth.isPasswordSet();
