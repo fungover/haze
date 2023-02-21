@@ -66,8 +66,8 @@ class HazeIT {
         result = pool.sendCommand(Protocol.Command.PING, "HELLO");
         assertThat(SafeEncoder.encode((byte[]) result)).isEqualTo("HELLO");
         //PING with message argument containing space should return bulk string with the argument
-    //    result = pool.sendCommand(Protocol.Command.PING, "HELLO\r\n There");
-    //    assertThat(SafeEncoder.encode((byte[]) result)).isEqualTo("HELLO\r\n There");
+        //    result = pool.sendCommand(Protocol.Command.PING, "HELLO\r\n There");
+        //    assertThat(SafeEncoder.encode((byte[]) result)).isEqualTo("HELLO\r\n There");
     }
 
     @Test
@@ -104,6 +104,20 @@ class HazeIT {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    void listMethods() {
+        assertThat(pool.lpush("mylist", "third")).isEqualTo(1);
+        assertThat(pool.llen("mylist")).isEqualTo(1);
+        assertThat(pool.lpush("mylist", "second","first")).isEqualTo(3);
+        assertThat(pool.llen("mylist")).isEqualTo(3);
+        assertThat(pool.lpop("mylist")).isEqualTo("first");
+        assertThat(pool.llen("mylist")).isEqualTo(2);
+        assertThat(pool.rpush("mylist", "last")).isEqualTo(3);
+        assertThat(pool.rpop("mylist")).isEqualTo("last");
+        assertThat(pool.lset("mylist",0, "test")).isEqualTo("OK");
+        assertThat(pool.del("mylist")).isEqualTo(1);
     }
 
     private static int findFreePort() {
