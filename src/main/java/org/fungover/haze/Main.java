@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +36,6 @@ public class Main {
             serverSocket.bind(new InetSocketAddress(initialize.getPort()));
             while (serverOpen) {
                 var client = serverSocket.accept();
-                logger.info("Application started: serverSocket.accept()");
 
                 Runnable newThread = () -> {
                     try {
@@ -45,19 +45,16 @@ public class Main {
                             List<String> inputList = new ArrayList<>();
 
                             String firstReading = input.readLine();
+                            logger.debug(firstReading);
                             readInputStream(input, inputList, firstReading);
 
                             clientAuthenticated = authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
 
-                            client.getOutputStream().write(executeCommand(hazeDatabase, inputList, hazeList).getBytes());
-
-                            inputList.forEach(System.out::println); // For checking incoming message
-
-                            printThreadDebug();
+                            client.getOutputStream().write(executeCommand(hazeDatabase, inputList, hazeList).getBytes(StandardCharsets.UTF_8));
+                            client.getOutputStream().flush();
 
                             inputList.clear();
                         }
-
                     } catch (IOException e) {
                         logger.error(e);
                     }
@@ -75,14 +72,9 @@ public class Main {
         logger.info("Shutting down....");
     }
 
-    private static void printThreadDebug() {
-        logger.debug("ThreadID {}", () -> Thread.currentThread().threadId());  // Only for Debug
-        logger.debug("Is virtual Thread {}", () -> Thread.currentThread().isVirtual()); // Only for Debug
-    }
-
     public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList, HazeList hazeList) {
         if (inputList.isEmpty() || inputList.get(0).isEmpty()) {
-            return "-ERR no command provided\r\n";
+            return "-ERR unknown command\r\n";
         }
 
         logger.debug("executeCommand: {} {} ", () -> hazeDatabase, () -> inputList);
@@ -107,7 +99,7 @@ public class Main {
             case RPUSH -> hazeList.rPush(inputList);
             case LPUSH -> hazeList.lPush(inputList);
             case LPOP -> hazeList.callLPop(inputList);
-            case RPOP -> hazeList.callRpop(inputList);
+            case RPOP -> hazeList.callRPop(inputList);
             case LLEN -> hazeList.lLen(inputList);
             case LMOVE -> hazeList.lMove(inputList);
             case LTRIM -> hazeList.callLtrim(inputList);
@@ -118,7 +110,7 @@ public class Main {
 
     private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
             IOException {
-        logger.debug("readInputStream: {} {} {}", () -> input, () -> inputList, () -> firstReading);
+        logger.debug("readInputStream: {} {}", () -> inputList, () -> firstReading);
         int size;
         if (firstReading.startsWith("*")) {
             size = Integer.parseInt(firstReading.substring(1)) * 2;
