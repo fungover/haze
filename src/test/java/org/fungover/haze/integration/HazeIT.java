@@ -77,17 +77,16 @@ public class HazeIT {
     @Test
     void listKeyWithMultipleValues() {
         assertThat(pool.lpush("test", "first")).isEqualTo(1);
-        assertThat(pool.lpush("test", "second")).isEqualTo(1);  //This is wrong
+        assertThat(pool.lpush("test", "second")).isEqualTo(2);
         assertThat(pool.llen("test")).isEqualTo(2);
-        assertThat(pool.lpush("test", "third", "fourth")).isEqualTo(2);
+        assertThat(pool.lpush("test", "third", "fourth")).isEqualTo(4);
         assertThat(pool.llen("test")).isEqualTo(4);
-        assertThat(pool.rpush("test", "fifth", "sixth")).isEqualTo(2);
+        assertThat(pool.rpush("test", "fifth", "sixth")).isEqualTo(6);
         assertThat(pool.llen("test")).isEqualTo(6);
 
         pool.del("test");
         assertThat(pool.exists("right")).isFalse();
     }
-
 
 //    @Test
 //    void unknownCommand() {
