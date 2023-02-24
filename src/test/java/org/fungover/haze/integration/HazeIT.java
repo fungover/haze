@@ -1,42 +1,18 @@
-package org.fungover.haze;
+package org.fungover.haze.integration;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.images.builder.ImageFromDockerfile;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.junit.jupiter.api.extension.ExtendWith;
 import redis.clients.jedis.JedisPooled;
 import redis.clients.jedis.Protocol;
 import redis.clients.jedis.util.SafeEncoder;
 
-import java.nio.file.Path;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ExtendWith(HazeExtension.class)
+public class HazeIT {
 
-@Testcontainers
-class HazeIT {
-
-    @Container
-    public GenericContainer haze = new GenericContainer(new ImageFromDockerfile()
-            .withDockerfile(Path.of("./Dockerfile")))
-            .withExposedPorts(6379);
-
+    @Pool
     JedisPooled pool;
-
-    @BeforeEach
-    void createPool() {
-        String address = haze.getHost();
-        Integer port = haze.getFirstMappedPort();
-        pool = new JedisPooled(address, port);
-    }
-
-    @AfterEach
-    void closePool() {
-        pool.close();
-    }
 
     @Test
     void pingPong() {
@@ -111,6 +87,7 @@ class HazeIT {
         pool.del("test");
         assertThat(pool.exists("right")).isFalse();
     }
+
 
 //    @Test
 //    void unknownCommand() {
