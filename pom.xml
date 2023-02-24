@@ -194,7 +194,8 @@
         <executions>
           <execution>
             <id>copy-dependencies</id>
-            <phase>test</phase>
+            <!--            <phase>test</phase>-->
+            <phase>pre-integration-test</phase>
             <goals>
               <goal>copy-dependencies</goal>
             </goals>
