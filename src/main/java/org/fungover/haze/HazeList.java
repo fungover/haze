@@ -31,7 +31,9 @@ public class HazeList {
 
         hazeDatabase.addValue(key, newListAsString + oldListAsString);
 
-        return ":" + newList.size() + "\r\n";
+        int currentSize = getValueAsList(hazeDatabase.getValue(key)).size();
+
+        return ":" + currentSize + "\r\n";
     }
 
     public String rPush(List<String> inputList) {
@@ -43,12 +45,13 @@ public class HazeList {
         List<String> newInputs = inputList.stream()
                 .skip(2)
                 .collect(Collectors.toCollection(ArrayList::new));
+
         currentValues.addAll(newInputs);
 
         String newListAsString = listValueAsString(currentValues);
         hazeDatabase.addValue(key, newListAsString);
 
-        return ":" + newInputs.size() + "\r\n";
+        return ":" + currentValues.size() + "\r\n";
     }
 
     //OVERLOAD

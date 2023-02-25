@@ -8,6 +8,21 @@ class HazeListTest {
     HazeDatabase hazeDatabase = new HazeDatabase();
     HazeList hazeList = new HazeList(hazeDatabase);
 
+
+    @Test
+    void rPushWithTwoValuesShouldReturnTwo() {
+        hazeList.rPush(List.of("", "key1", "value1"));
+        String actual = hazeList.rPush(List.of("", "key1", "value2"));
+        assertEquals(":2\r\n",actual);
+    }
+
+    @Test
+    void lPushWithTwoValuesShouldReturnTwo() {
+        hazeList.lPush(List.of("", "key1", "value1"));
+        String actual = hazeList.lPush(List.of("", "key1", "value2"));
+        assertEquals(":2\r\n",actual);
+    }
+
     @Test
     void assertThatLPushWithMultipleValuesAddsInReverseOrder() {
         hazeList.lPush(List.of("", "key1", "value1", "value2"));
