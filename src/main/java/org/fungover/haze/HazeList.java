@@ -147,7 +147,7 @@ public class HazeList {
     public String lMove(List<String> inputList) {
 
         String source = getKey(inputList);
-        if (inputList.size() == 2)
+        if (inputList.size() != 5)
             return "-ERR wrong number of arguments for command.\r\n";
 
         List<String> position = inputList.subList(2, inputList.size());
