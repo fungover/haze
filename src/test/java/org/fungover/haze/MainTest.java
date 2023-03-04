@@ -21,7 +21,7 @@ class MainTest {
 
     @Test
     void callingExecuteCommandWithInvalidInputStringReturnsErrorMessage() {
-        assertThat(Main.executeCommand(database, List.of(""), hazeList)).isEqualTo("-ERR no command provided\r\n");
+        assertThat(Main.executeCommand(database, List.of(""), hazeList)).isEqualTo("-ERR unknown command\r\n");
 
     }
 
