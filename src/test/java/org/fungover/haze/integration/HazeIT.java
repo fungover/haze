@@ -1,6 +1,5 @@
 package org.fungover.haze.integration;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import redis.clients.jedis.JedisPooled;
@@ -76,7 +75,6 @@ public class HazeIT {
     }
 
     @Test
-    @Disabled
     void listKeyWithMultipleValues() {
         assertThat(pool.lpush("test", "first")).isEqualTo(1);
         assertThat(pool.lpush("test", "second")).isEqualTo(2);
