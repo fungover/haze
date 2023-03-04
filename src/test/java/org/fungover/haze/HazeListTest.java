@@ -8,6 +8,21 @@ class HazeListTest {
     HazeDatabase hazeDatabase = new HazeDatabase();
     HazeList hazeList = new HazeList(hazeDatabase);
 
+
+    @Test
+    void rPushWithTwoValuesShouldReturnTwo() {
+        hazeList.rPush(List.of("", "key1", "value1"));
+        String actual = hazeList.rPush(List.of("", "key1", "value2"));
+        assertEquals(":2\r\n",actual);
+    }
+
+    @Test
+    void lPushWithTwoValuesShouldReturnTwo() {
+        hazeList.lPush(List.of("", "key1", "value1"));
+        String actual = hazeList.lPush(List.of("", "key1", "value2"));
+        assertEquals(":2\r\n",actual);
+    }
+
     @Test
     void assertThatLPushWithMultipleValuesAddsInReverseOrder() {
         hazeList.lPush(List.of("", "key1", "value1", "value2"));
@@ -118,11 +133,11 @@ class HazeListTest {
         hazeList.rPush(List.of("", "key2", "val3", "val4"));
         hazeList.lMove(List.of("", "key1", "key2", "LEFT", "LEFT"));
 
-        String databaseCsv1 = hazeList.hazeDatabase.getValue("key1");
-        String databaseCsv2 = hazeList.hazeDatabase.getValue("key2");
+        String sourceValues = hazeList.hazeDatabase.getValue("key1");
+        String destinationValues = hazeList.hazeDatabase.getValue("key2");
 
-        List<String> list1 = HazeList.getValueAsList(databaseCsv1);
-        List<String> list2 = HazeList.getValueAsList(databaseCsv2);
+        List<String> list1 = HazeList.getValueAsList(sourceValues);
+        List<String> list2 = HazeList.getValueAsList(destinationValues);
 
         assertEquals(List.of("val2"), list1);
         assertEquals(List.of("val1", "val3", "val4"), list2);
@@ -135,11 +150,11 @@ class HazeListTest {
         hazeList.rPush(List.of("", "key2", "val3", "val4"));
         hazeList.lMove(List.of("", "key1", "key2", "LEFT", "RIGHT"));
 
-        String databaseCsv1 = hazeList.hazeDatabase.getValue("key1");
-        String databaseCsv2 = hazeList.hazeDatabase.getValue("key2");
+        String sourceValues = hazeList.hazeDatabase.getValue("key1");
+        String destinationValues = hazeList.hazeDatabase.getValue("key2");
 
-        List<String> list1 = HazeList.getValueAsList(databaseCsv1);
-        List<String> list2 = HazeList.getValueAsList(databaseCsv2);
+        List<String> list1 = HazeList.getValueAsList(sourceValues);
+        List<String> list2 = HazeList.getValueAsList(destinationValues);
 
         assertEquals(List.of("val2"), list1);
         assertEquals(List.of("val3", "val4", "val1"), list2);
@@ -151,11 +166,11 @@ class HazeListTest {
         hazeList.rPush(List.of("", "key2", "val3", "val4"));
         hazeList.lMove(List.of("", "key1", "key2", "RIGHT", "LEFT"));
 
-        String databaseCsv1 = hazeList.hazeDatabase.getValue("key1");
-        String databaseCsv2 = hazeList.hazeDatabase.getValue("key2");
+        String sourceValues = hazeList.hazeDatabase.getValue("key1");
+        String destinationValues = hazeList.hazeDatabase.getValue("key2");
 
-        List<String> list1 = HazeList.getValueAsList(databaseCsv1);
-        List<String> list2 = HazeList.getValueAsList(databaseCsv2);
+        List<String> list1 = HazeList.getValueAsList(sourceValues);
+        List<String> list2 = HazeList.getValueAsList(destinationValues);
 
         assertEquals(List.of("val2", "val3", "val4"), list2);
         assertEquals(List.of("val1"), list1);

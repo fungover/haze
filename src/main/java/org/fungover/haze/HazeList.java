@@ -31,7 +31,9 @@ public class HazeList {
 
         hazeDatabase.addValue(key, newListAsString + oldListAsString);
 
-        return ":" + newList.size() + "\r\n";
+        int currentSize = getValueAsList(hazeDatabase.getValue(key)).size();
+
+        return ":" + currentSize + "\r\n";
     }
 
     public String rPush(List<String> inputList) {
@@ -43,12 +45,13 @@ public class HazeList {
         List<String> newInputs = inputList.stream()
                 .skip(2)
                 .collect(Collectors.toCollection(ArrayList::new));
+
         currentValues.addAll(newInputs);
 
         String newListAsString = listValueAsString(currentValues);
         hazeDatabase.addValue(key, newListAsString);
 
-        return ":" + newInputs.size() + "\r\n";
+        return ":" + currentValues.size() + "\r\n";
     }
 
     //OVERLOAD
@@ -67,7 +70,7 @@ public class HazeList {
     }
 
     //OVERLOAD
-    @java.lang.SuppressWarnings("squid:S5413")
+    @SuppressWarnings("squid:S5413")
     public String lPop(String key, int count) {
 
         if (!hazeDatabase.containsKey(key))
@@ -106,7 +109,7 @@ public class HazeList {
     }
 
     //OVERLOAD
-    @java.lang.SuppressWarnings("squid:S5413")
+    @SuppressWarnings("squid:S5413")
     public String rPop(String key, int count) {
 
         if (!hazeDatabase.containsKey(key))
@@ -144,7 +147,7 @@ public class HazeList {
     public String lMove(List<String> inputList) {
 
         String source = getKey(inputList);
-        if (inputList.size() == 2)
+        if (inputList.size() != 5)
             return "-ERR wrong number of arguments for command.\r\n";
 
         List<String> position = inputList.subList(2, inputList.size());
@@ -251,7 +254,7 @@ public class HazeList {
             return 0;
         }
     }
-    @java.lang.SuppressWarnings("squid:S6204")
+    @SuppressWarnings("squid:S6204")
     public static List<String> getValueAsList(String textToSplit) {
         return Stream.of(textToSplit.split("\r\n", -1))
                 .collect(Collectors.toList());
