@@ -1,43 +1,57 @@
 package org.fungover.haze;
 import org.junit.jupiter.api.Test;
-
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 
 class HazeListTest {
 
-    HazeList hazeList = new HazeList();
+    HazeDatabase hazeDatabase = new HazeDatabase();
+    HazeList hazeList = new HazeList(hazeDatabase);
 
 
     @Test
-    void assertThatLPUSHWithMultipleValuesAddsInReverseOrder() {
-        hazeList.lPush(List.of("", "key1", "value1", "value2"));
-        String indexZero = hazeList.database.get("key1").get(0);
-        assertEquals("value2", indexZero);
+    void rPushWithTwoValuesShouldReturnTwo() {
+        hazeList.rPush(List.of("", "key1", "value1"));
+        String actual = hazeList.rPush(List.of("", "key1", "value2"));
+        assertEquals(":2\r\n",actual);
     }
 
     @Test
-    void assertThatLpushWithOneValueGetIndexZero() {
-        hazeList.lPush(List.of("", "key1", "value1", "value2"));
-        hazeList.lPush(List.of("", "key1", "X"));
-        String indexZero = hazeList.database.get("key1").get(0);
-        assertEquals("X", indexZero);
+    void lPushWithTwoValuesShouldReturnTwo() {
+        hazeList.lPush(List.of("", "key1", "value1"));
+        String actual = hazeList.lPush(List.of("", "key1", "value2"));
+        assertEquals(":2\r\n",actual);
     }
 
     @Test
-    void assertThatLlenReturnsCorrectValueAddedByLpushAndRpush() {
+    void assertThatLPushWithMultipleValuesAddsInReverseOrder() {
         hazeList.lPush(List.of("", "key1", "value1", "value2"));
+        String actual = hazeDatabase.getValue("key1");
+        assertEquals("value2\r\nvalue1",actual);
+    }
+
+    @Test
+    void assertThatLPushMultipleTimesAddsInReverseOrder() {
+        hazeList.lPush(List.of("", "key1", "value1"));
+        hazeList.lPush(List.of("", "key1", "value2"));
+        String actual = hazeDatabase.getValue("key1");
+        assertEquals("value2\r\nvalue1",actual);
+    }
+
+    @Test
+    void assertThatRPushWithMultipleValuesAddsInCorrectOrder() {
         hazeList.rPush(List.of("", "key1", "value1", "value2"));
-        assertEquals(":4\r\n", hazeList.lLen(List.of("", "key1")));
+        String actual = hazeDatabase.getValue("key1");
+        assertEquals("value1\r\nvalue2",actual);
     }
 
     @Test
-    void alLenWithMissingKeyShouldReturRspZero() {
-        assertEquals(":0\r\n", hazeList.lLen(List.of("", "missingKey")));
+    void assertThatRPushMultipleTimesAddsInCorrectOrder() {
+        hazeList.rPush(List.of("", "key1", "value1"));
+        hazeList.rPush(List.of("", "key1", "value2"));
+        String actual = hazeDatabase.getValue("key1");
+        assertEquals("value1\r\nvalue2",actual);
     }
-
 
     @Test
     void lPopShouldReturnNilStringWhenNoKeyIsPresent() {
@@ -48,9 +62,7 @@ class HazeListTest {
     @Test
     void lPopShouldReturnCorrectValues() {
         hazeList.rPush(List.of("", "key1", "value1", "value2"));
-
         String expected = "*2\r\n$6\r\nvalue1\r\n$6\r\nvalue2\r\n";
-
         assertEquals(expected, hazeList.lPop("key1", 2));
     }
 
@@ -89,7 +101,6 @@ class HazeListTest {
         assertEquals(expected, hazeList.rPop("key1" ));
     }
 
-
     @Test
     void rPopShouldReturnValuesInReverseOrder() {
         hazeList.rPush(List.of("", "key1", "value1", "value2"));
@@ -105,12 +116,32 @@ class HazeListTest {
     }
 
     @Test
+    void assertThatLLenReturnsCorrectValueAddedByLPushAndRPush() {
+        hazeList.lPush(List.of("", "key1", "value1", "value2"));
+        hazeList.rPush(List.of("", "key1", "value1", "value2"));
+        assertEquals(":4\r\n", hazeList.lLen(List.of("", "key1")));
+    }
+
+    @Test
+    void alLenWithMissingKeyShouldReturRspZero() {
+        assertEquals(":0\r\n", hazeList.lLen(List.of("", "missingKey")));
+    }
+
+    @Test
     void lMoveShouldMoveVal1FromLeftToLeft(){
         hazeList.rPush(List.of("", "key1", "val1", "val2"));
         hazeList.rPush(List.of("", "key2", "val3", "val4"));
         hazeList.lMove(List.of("", "key1", "key2", "LEFT", "LEFT"));
-        String shouldBeVal1 = hazeList.database.get("key2").get(0);
-        assertEquals("val1", shouldBeVal1);
+
+        String sourceValues = hazeList.hazeDatabase.getValue("key1");
+        String destinationValues = hazeList.hazeDatabase.getValue("key2");
+
+        List<String> list1 = HazeList.getValueAsList(sourceValues);
+        List<String> list2 = HazeList.getValueAsList(destinationValues);
+
+        assertEquals(List.of("val2"), list1);
+        assertEquals(List.of("val1", "val3", "val4"), list2);
+
     }
 
     @Test
@@ -118,17 +149,31 @@ class HazeListTest {
         hazeList.rPush(List.of("", "key1", "val1", "val2"));
         hazeList.rPush(List.of("", "key2", "val3", "val4"));
         hazeList.lMove(List.of("", "key1", "key2", "LEFT", "RIGHT"));
-        String shouldBeVal1 = hazeList.database.get("key2").get(2);
-        assertEquals("val1", shouldBeVal1);
+
+        String sourceValues = hazeList.hazeDatabase.getValue("key1");
+        String destinationValues = hazeList.hazeDatabase.getValue("key2");
+
+        List<String> list1 = HazeList.getValueAsList(sourceValues);
+        List<String> list2 = HazeList.getValueAsList(destinationValues);
+
+        assertEquals(List.of("val2"), list1);
+        assertEquals(List.of("val3", "val4", "val1"), list2);
     }
 
     @Test
-    void lMoveShouldRemoveValueWhenMoved(){
+    void lMoveShouldMoveValuesFromRightToLeft(){
         hazeList.rPush(List.of("", "key1", "val1", "val2"));
         hazeList.rPush(List.of("", "key2", "val3", "val4"));
         hazeList.lMove(List.of("", "key1", "key2", "RIGHT", "LEFT"));
-        int shouldBeSizeOne = hazeList.database.get("key1").size();
-        assertEquals(1, shouldBeSizeOne);
+
+        String sourceValues = hazeList.hazeDatabase.getValue("key1");
+        String destinationValues = hazeList.hazeDatabase.getValue("key2");
+
+        List<String> list1 = HazeList.getValueAsList(sourceValues);
+        List<String> list2 = HazeList.getValueAsList(destinationValues);
+
+        assertEquals(List.of("val2", "val3", "val4"), list2);
+        assertEquals(List.of("val1"), list1);
     }
 
     @Test
@@ -147,12 +192,13 @@ class HazeListTest {
     }
 
     @Test
-    void destinationShouldHaveCorrectSizeAfterLmove(){
+    void destinationShouldHaveCorrectSizeAfterLMove() {
         hazeList.rPush(List.of("", "key1", "val1", "val2"));
         hazeList.rPush(List.of("", "key2", "val3", "val4"));
         hazeList.lMove(List.of("", "key1", "key2", "RIGHT", "RIGHT"));
-        int shouldBeSizeThree = hazeList.database.get("key2").size();
-        assertEquals(3, shouldBeSizeThree);
+        String destinationList = hazeDatabase.getValue("key2");
+        List<String> parsedList = HazeList.getValueAsList(destinationList);
+        assertEquals(3, parsedList.size());
     }
 
     @Test
@@ -167,9 +213,10 @@ class HazeListTest {
     void correctValuesShouldStayAfterTrim() {
         hazeList.rPush(List.of("", "key1", "val1", "val2", "val3", "val4", "val5"));
         hazeList.lTrim("key1", 1,2);
-        String valuesLeft = "[val2, val3]";
+        String databaseCsv = hazeList.hazeDatabase.getValue("key1");
+        List<String> list1 = HazeList.getValueAsList(databaseCsv);
 
-        assertEquals(valuesLeft, hazeList.database.get("key1").toString());
+        assertEquals(List.of("val2", "val3"), list1);
     }
 
     @Test
@@ -183,15 +230,6 @@ class HazeListTest {
     void lTrimShouldReturnCorrectErrorTextWhenKeyIsMissing(){
         String correctErrorText = "-The key is not present in the database.\r\n";
         assertEquals(correctErrorText, hazeList.lTrim("key1", 2, 7));
-    }
-
-    @Test
-    void toStringShouldContainDatabaseContents() {
-        HazeList hazeList = new HazeList();
-        hazeList.rPush(List.of("", "key1", "val1", "val2"));
-        hazeList.rPush(List.of("", "key2", "val3"));
-        String expected = "HazeList{database={key1=[val1, val2], key2=[val3]}}";
-        assertEquals(expected, hazeList.toString());
     }
 
     @Test
@@ -213,7 +251,7 @@ class HazeListTest {
     @Test
     void callRPopWithEmptyCountArrayShouldCallRopWithoutCount(){
         hazeList.rPush(List.of("", "key1", "val1", "val2", "val3"));
-        String result = hazeList.callRpop(List.of("", "key1"));
+        String result = hazeList.callRPop(List.of("", "key1"));
         String expected = "$4\r\nval3\r\n";
         assertEquals(expected, result);
     }
@@ -221,7 +259,7 @@ class HazeListTest {
     @Test
     void callLRopWithPopulatedArrayShouldCallRPopWithCount(){
         hazeList.rPush(List.of("", "key1", "val1", "val2", "val3"));
-        String result = hazeList.callRpop(List.of("", "key1", "2", "3"));
+        String result = hazeList.callRPop(List.of("", "key1", "2", "3"));
         String expected = "*2\r\n$4\r\nval3\r\n$4\r\nval2\r\n";
         assertEquals(expected, result);
     }

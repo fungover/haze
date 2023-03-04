@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class MainTest {
     HazeDatabase database = new HazeDatabase();
-    HazeList hazeList = new HazeList();
+    HazeList hazeList = new HazeList(database);
 
     @Test
     void callingExecuteCommandWithValidNonExistingInputReturnsColonOne() {
@@ -95,7 +95,7 @@ class MainTest {
 
     @Test
     void callExecuteCommandWithLMOVEShouldReturnErrorMessageWhenListIsEmpty() {
-        assertThat(Main.executeCommand(database, List.of("LMOVE", "key"), hazeList)).isEqualTo("-The source list is empty.\r\n");
+        assertThat(Main.executeCommand(database, List.of("LMOVE", "key"), hazeList)).isEqualTo("-ERR wrong number of arguments for command.\r\n");
     }
 
     @Test
