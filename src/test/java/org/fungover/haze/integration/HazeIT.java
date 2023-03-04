@@ -9,7 +9,7 @@ import redis.clients.jedis.util.SafeEncoder;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(HazeExtension.class)
-public class HazeIT {
+class HazeIT {
 
     @Pool
     JedisPooled pool;
@@ -87,17 +87,4 @@ public class HazeIT {
         pool.del("test");
         assertThat(pool.exists("right")).isFalse();
     }
-
-//    @Test
-//    void unknownCommand() {
-//        try (Socket socket = new Socket("localhost", port)) {
-//            // socket.setSoTimeout(3000);
-//            socket.getOutputStream().write("helloworld key value\r\n".getBytes(StandardCharsets.UTF_8));
-//            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-////            assertThat(bufferedReader.readLine()).isEqualTo("-ERR unknown command 'helloworld', with args beginning with: 'key' 'value' ");
-//            assertThat(bufferedReader.readLine()).isEqualTo("-ERR unknown command");
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
 }
