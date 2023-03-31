@@ -1,4 +1,4 @@
-FROM eclipse-temurin:19-jre-jammy
+FROM eclipse-temurin:20-jre-jammy
 COPY target/dependency /lib
 COPY target/classes /app
 WORKDIR /app
