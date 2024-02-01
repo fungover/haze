@@ -81,12 +81,12 @@ public class Main {
     }
 
     public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList, HazeList hazeList) {
-        if (inputList.isEmpty() || inputList.get(0).isEmpty()) {
+        if (inputList.isEmpty() || inputList.getFirst().isEmpty()) {
             return "-ERR no command provided\r\n";
         }
 
         logger.debug("executeCommand: {} {} ", () -> hazeDatabase, () -> inputList);
-        String command = inputList.get(0).toUpperCase();
+        String command = inputList.getFirst().toUpperCase();
 
         Command commandEnum;
 
@@ -154,6 +154,6 @@ public class Main {
     }
 
     private static boolean authCommandReceived(boolean isPasswordSet, List<String> inputList, boolean clientAuthenticated) {
-        return isPasswordSet && !clientAuthenticated && inputList.size() == 2 && inputList.get(0).equals("AUTH");
+        return isPasswordSet && !clientAuthenticated && inputList.size() == 2 && inputList.getFirst().equals("AUTH");
     }
 }
