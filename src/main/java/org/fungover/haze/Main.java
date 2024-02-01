@@ -18,7 +18,7 @@ public class Main {
     static Logger logger = LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
-        Initialize initialize = getInitialize(args);
+        Initialize initialize = Initialize.getInitialize(args);
         HazeList hazeList = new HazeList();
         HazeDatabase hazeDatabase = new HazeDatabase();
         Auth auth = new Auth();
@@ -95,11 +95,7 @@ public class Main {
         Runtime.getRuntime().addShutdownHook(printingHook);
     }
 
-    private static Initialize getInitialize(String[] args) {
-        Initialize initialize = new Initialize();
-        initialize.importCliOptions(args);
-        return initialize;
-    }
+
 
     private static void shutdown(HazeDatabase hazeDatabase) {
         SaveFile.writeOnFile(hazeDatabase.copy());
