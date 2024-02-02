@@ -62,7 +62,7 @@ public class HazeList {
 
         List<String> list = getValueAsList(hazeDatabase.getValue(key));
 
-        String firstElement = list.remove(0);
+        String firstElement = list.removeFirst();
         String newValue = listValueAsString(list);
         hazeDatabase.addValue(key, newValue);
 
@@ -84,7 +84,7 @@ public class HazeList {
         stringBuilder.append("*").append(actualCount).append("\r\n");
 
         for (int i = 0; i < actualCount; i++) {
-            String element = list.remove(0);
+            String element = list.removeFirst();
             stringBuilder.append("$").append(element.length()).append("\r\n").append(element).append("\r\n");
         }
 
@@ -125,7 +125,7 @@ public class HazeList {
         stringBuilder.append("*").append(actualCount).append("\r\n");
 
         for (int i = 0; i < actualCount; i++) {
-            String lastElement = list.remove(list.size()-1);
+            String lastElement = list.removeLast();
             stringBuilder.append("$").append(lastElement.length()).append("\r\n").append(lastElement).append("\r\n");
         }
 
@@ -136,7 +136,7 @@ public class HazeList {
     public String lLen(List<String> inputList) {
         String key = getKey(inputList);
         String value = hazeDatabase.getValue(key);
-        if (value == null || value.length()==0)
+        if (value == null || value.isEmpty())
             return ":0\r\n";
         else {
             List<String> list = getValueAsList(value);
@@ -167,19 +167,19 @@ public class HazeList {
         String value;
 
         if (whereFrom.equals(LEFT) && whereTo.equals(LEFT)) {
-            value = sourceList.remove(0);
-            destinationList.add(0, value);
+            value = sourceList.removeFirst();
+            destinationList.addFirst(value);
         }
         else if (whereFrom.equals(LEFT) && whereTo.equals(RIGHT)) {
-            value = sourceList.remove(0);
+            value = sourceList.removeFirst();
             destinationList.add(value);
         }
         else if (whereFrom.equals(RIGHT) && whereTo.equals(LEFT)) {
-            value = sourceList.remove(sourceList.size() - 1);
-            destinationList.add(0, value);
+            value = sourceList.removeLast();
+            destinationList.addFirst(value);
         }
         else if (whereFrom.equals(RIGHT) && whereTo.equals(RIGHT)) {
-            value = sourceList.remove(sourceList.size() - 1);
+            value = sourceList.removeLast();
             destinationList.add(value);
         }
         else
