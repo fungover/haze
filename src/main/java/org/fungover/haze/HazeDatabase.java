@@ -113,4 +113,34 @@ public class HazeDatabase {
             return "+PONG\r\n";
         else return "$" + (messageList.get(1)).length() + "\r\n" + messageList.get(1) + "\r\n";
     }
+
+    public String getValue(String key) {
+        lock.lock();
+        try {
+            return database.get(key);
+        }
+        finally {
+            lock.unlock();
+        }
+    }
+
+    public boolean containsKey(String key) {
+        lock.lock();
+        try {
+            return database.containsKey(key);
+        }
+        finally {
+            lock.unlock();
+        }
+    }
+
+    public void addValue(String key, String value) {
+        lock.lock();
+        try {
+            database.put(key, value);
+        }
+        finally {
+            lock.unlock();
+        }
+    }
 }

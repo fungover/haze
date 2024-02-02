@@ -18,9 +18,12 @@ public class Main {
     static Logger logger = LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
+
         Initialize initialize = Initialize.getInitialize(args);
         HazeList hazeList = new HazeList();
+
         HazeDatabase hazeDatabase = new HazeDatabase();
+        HazeList hazeList = new HazeList(hazeDatabase);
         Auth auth = new Auth();
         initializeServer(args, initialize, auth);
         final boolean isPasswordSet = auth.isPasswordSet();
@@ -108,10 +111,18 @@ public class Main {
     }
 
     public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList, HazeList hazeList) {
-        if (inputList.isEmpty() || inputList.get(0).isEmpty())
+
+      
+
+        if (inputList.isEmpty() || inputList.getFirst().isEmpty()) {
+
             return "-ERR no command provided\r\n";
 
         logger.debug("executeCommand: {} {} ", () -> hazeDatabase, () -> inputList);
+
+
+        String command = inputList.getFirst().toUpperCase();
+
 
         Command commandEnum = getCommand(inputList);
         if (commandEnum == null)
@@ -143,7 +154,7 @@ public class Main {
             case RPUSH -> hazeList.rPush(inputList);
             case LPUSH -> hazeList.lPush(inputList);
             case LPOP -> hazeList.callLPop(inputList);
-            case RPOP -> hazeList.callRpop(inputList);
+            case RPOP -> hazeList.callRPop(inputList);
             case LLEN -> hazeList.lLen(inputList);
             case LMOVE -> hazeList.lMove(inputList);
             case LTRIM -> hazeList.callLtrim(inputList);
@@ -189,6 +200,6 @@ public class Main {
     }
 
     private static boolean authCommandReceived(boolean isPasswordSet, List<String> inputList, boolean clientAuthenticated) {
-        return isPasswordSet && !clientAuthenticated && inputList.size() == 2 && inputList.get(0).equals("AUTH");
+        return isPasswordSet && !clientAuthenticated && inputList.size() == 2 && inputList.getFirst().equals("AUTH");
     }
 }
