@@ -6,12 +6,14 @@ import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OptionalDataException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class Main {
     static boolean serverOpen = true;
@@ -93,7 +95,8 @@ public class Main {
         try {
             commandEnum = Command.valueOf(command);
         } catch (IllegalArgumentException ex) {
-            return "-ERR unknown command\r\n";
+            return Optional.ofNullable(command).orElse("Default value");
+
         }
 
         return switch (commandEnum) {
