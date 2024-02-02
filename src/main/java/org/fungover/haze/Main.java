@@ -18,84 +18,57 @@ public class Main {
     static Logger logger = LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
-        Initialize initialize = Initialize.getInitialize(args);
-        HazeList hazeList = new HazeList();
+        Initialize initialize = new Initialize();
+        initialize.importCliOptions(args);
         HazeDatabase hazeDatabase = new HazeDatabase();
+        HazeList hazeList = new HazeList(hazeDatabase);
         Auth auth = new Auth();
         initializeServer(args, initialize, auth);
         final boolean isPasswordSet = auth.isPasswordSet();
 
-        addHook(hazeDatabase);
+
+        Thread printingHook = new Thread(() -> shutdown(hazeDatabase));
+        Runtime.getRuntime().addShutdownHook(printingHook);
+
         try (ServerSocket serverSocket = new ServerSocket()) {
-            initSocket(initialize, serverSocket);
-            whileServerOpen(hazeList, hazeDatabase, auth, isPasswordSet, serverSocket);
+            serverSocket.setReuseAddress(true);
+            serverSocket.bind(new InetSocketAddress(initialize.getPort()));
+            while (serverOpen) {
+                var client = serverSocket.accept();
+                logger.info("Application started: serverSocket.accept()");
+
+                Runnable newThread = () -> {
+                    try {
+                        BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                        boolean clientAuthenticated = false;
+                        while (true) {
+                            List<String> inputList = new ArrayList<>();
+
+                            String firstReading = input.readLine();
+                            readInputStream(input, inputList, firstReading);
+
+                            clientAuthenticated = authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
+
+                            client.getOutputStream().write(executeCommand(hazeDatabase, inputList, hazeList).getBytes());
+
+                            inputList.forEach(System.out::println); // For checking incoming message
+
+                            printThreadDebug();
+
+                            inputList.clear();
+                        }
+
+                    } catch (IOException e) {
+                        logger.error(e);
+                    }
+                };
+                Thread.startVirtualThread(newThread);
+            }
         } catch (IOException e) {
             logger.error(e);
         }
         logger.info("Shutting down....");
     }
-
-    private static void whileServerOpen(HazeList hazeList, HazeDatabase hazeDatabase, Auth auth, boolean isPasswordSet, ServerSocket serverSocket) throws IOException {
-        while (serverOpen) {
-            var client = serverSocket.accept();
-            logger.info("Application started: serverSocket.accept()");
-
-            runThread(hazeList, hazeDatabase, auth, isPasswordSet, client);
-        }
-    }
-
-    private static void runThread(HazeList hazeList, HazeDatabase hazeDatabase, Auth auth, boolean isPasswordSet, Socket client) {
-        Runnable newThread = () -> createThread(hazeList, hazeDatabase, auth, isPasswordSet, client);
-        Thread.startVirtualThread(newThread);
-    }
-
-    private static void createThread(HazeList hazeList, HazeDatabase hazeDatabase, Auth auth, boolean isPasswordSet, Socket client) {
-        try {
-            BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            boolean clientAuthenticated = false;
-            while (true) {
-                List<String> inputList = getInputList(input);
-                clientAuthenticated = authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
-                handleThread(hazeList, hazeDatabase, client, inputList);
-            }
-
-        } catch (IOException e) {
-            logger.error(e);
-        }
-    }
-
-    private static void handleThread(HazeList hazeList, HazeDatabase hazeDatabase, Socket client, List<String> inputList) throws IOException {
-        controlCommand(hazeList, hazeDatabase, client, inputList);
-        printThreadDebug();
-
-        inputList.clear();
-    }
-
-    private static void controlCommand(HazeList hazeList, HazeDatabase hazeDatabase, Socket client, List<String> inputList) throws IOException {
-        client.getOutputStream().write(executeCommand(hazeDatabase, inputList, hazeList).getBytes());
-
-        inputList.forEach(System.out::println); // For checking incoming message
-    }
-
-    private static List<String> getInputList(BufferedReader input) throws IOException {
-        List<String> inputList = new ArrayList<>();
-
-        String firstReading = input.readLine();
-        readInputStream(input, inputList, firstReading);
-        return inputList;
-    }
-
-    private static void initSocket(Initialize initialize, ServerSocket serverSocket) throws IOException {
-        serverSocket.setReuseAddress(true);
-        serverSocket.bind(new InetSocketAddress(initialize.getPort()));
-    }
-
-    private static void addHook(HazeDatabase hazeDatabase) {
-        Thread printingHook = new Thread(() -> shutdown(hazeDatabase));
-        Runtime.getRuntime().addShutdownHook(printingHook);
-    }
-
-
 
     private static void shutdown(HazeDatabase hazeDatabase) {
         SaveFile.writeOnFile(hazeDatabase.copy());
@@ -108,30 +81,21 @@ public class Main {
     }
 
     public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList, HazeList hazeList) {
-        if (inputList.isEmpty() || inputList.get(0).isEmpty())
+        if (inputList.isEmpty() || inputList.getFirst().isEmpty()) {
             return "-ERR no command provided\r\n";
+        }
 
         logger.debug("executeCommand: {} {} ", () -> hazeDatabase, () -> inputList);
+        String command = inputList.getFirst().toUpperCase();
 
-        Command commandEnum = getCommand(inputList);
-        if (commandEnum == null)
-            return "-ERR unknown command\r\n";
-
-        return commandSwitch(hazeDatabase, inputList, hazeList, commandEnum);
-    }
-
-    private static Command getCommand(List<String> inputList) {
-        String command = inputList.get(0).toUpperCase();
         Command commandEnum;
+
         try {
             commandEnum = Command.valueOf(command);
         } catch (IllegalArgumentException ex) {
-            return null;
+            return "-ERR unknown command\r\n";
         }
-        return commandEnum;
-    }
 
-    private static String commandSwitch(HazeDatabase hazeDatabase, List<String> inputList, HazeList hazeList, Command commandEnum) {
         return switch (commandEnum) {
             case SET -> hazeDatabase.set(inputList);
             case GET -> hazeDatabase.get(inputList);
@@ -143,11 +107,12 @@ public class Main {
             case RPUSH -> hazeList.rPush(inputList);
             case LPUSH -> hazeList.lPush(inputList);
             case LPOP -> hazeList.callLPop(inputList);
-            case RPOP -> hazeList.callRpop(inputList);
+            case RPOP -> hazeList.callRPop(inputList);
             case LLEN -> hazeList.lLen(inputList);
             case LMOVE -> hazeList.lMove(inputList);
             case LTRIM -> hazeList.callLtrim(inputList);
             case AUTH -> "+OK\r\n";
+
         };
     }
 
@@ -189,6 +154,6 @@ public class Main {
     }
 
     private static boolean authCommandReceived(boolean isPasswordSet, List<String> inputList, boolean clientAuthenticated) {
-        return isPasswordSet && !clientAuthenticated && inputList.size() == 2 && inputList.get(0).equals("AUTH");
+        return isPasswordSet && !clientAuthenticated && inputList.size() == 2 && inputList.getFirst().equals("AUTH");
     }
 }
