@@ -20,8 +20,8 @@ public class Main {
     static Logger logger = LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
-        Initialize initialize = new Initialize();
-        initialize.importCliOptions(args);
+        Initialize initialize =  Initialize.getInitialize(args);
+
         HazeDatabase hazeDatabase = new HazeDatabase();
         HazeList hazeList = new HazeList(hazeDatabase);
         Auth auth = new Auth();
