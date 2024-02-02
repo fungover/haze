@@ -26,7 +26,7 @@ jobs:
         run: |
           Java_Version=$(mvn help:evaluate "-Dexpression=maven.compiler.release" -q -DforceStdout | sed -e 's/^1\./1.0./')
           echo "Java_Version=$Java_Version" >> $GITHUB_ENV
-      - name: Set up JDK 21
+      - name: Set up JDK  ${{env.Java_Version}}
         uses: actions/setup-java@v4
         with:
           java-version: ${{ env.Java_Version }}
