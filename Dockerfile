@@ -1,4 +1,4 @@
-FROM eclipse-temurin:19-jre-jammy
+FROM eclipse-temurin:21-jre-jammy
 #COPY target/dependency /lib
 WORKDIR /app
 ARG USERNAME=hazeuser
@@ -13,4 +13,4 @@ COPY target/classes .
 RUN chown --recursive $USERNAME:$USERNAME .
 USER $USERNAME
 EXPOSE 6379
-ENTRYPOINT ["java","-cp","/app:/app/lib/*","--enable-preview","org.fungover.haze.Main"]
+ENTRYPOINT ["java","-cp","/app:/app/lib/*","org.fungover.haze.Main"]
