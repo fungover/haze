@@ -1,13 +1,20 @@
 package org.fungover.haze;
 
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 
 class MainTest {
@@ -101,5 +108,44 @@ class MainTest {
     @Test
     void callExecuteCommandWithLTRIMShouldReturnErrorMessageWhenKeyDoesNotExist() {
         assertThat(Main.executeCommand(database, List.of("LTRIM", "key", "2", "3"), hazeList)).isEqualTo("-The key is not present in the database.\r\n");
+    }
+
+
+
+
+
+
+    @Test
+    @DisplayName("getInputList Should Return List With Correct Data Based On Index")
+    void getInputListShouldReturn(){
+        String inputString = "First\nSecond\nThird";
+        BufferedReader input = new BufferedReader(new StringReader(inputString));
+        try {
+            List<String> result = Main.getInputList(input);
+            assertThat(result.get(1)).isEqualTo("Second");
+
+        } catch (Exception e) {
+            System.out.println("Exception");
+        }
+    }
+
+    @Test
+    @DisplayName("Call authCommandReceived with valid input should return true")
+    void callAuthCommandReceivedWithValidInputShouldReturnTrue() {
+        boolean isPasswordSet = true;
+        boolean clientAuthenticated = false;
+        List<String> inputList = List.of("AUTH", "password");
+        boolean result = Main.authCommandReceived(isPasswordSet, inputList, clientAuthenticated);
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("Call AuthCommandReceived With Invalid Input Should Return False")
+    void callAuthCommandReceivedWithInvalidInputShouldReturnFalse() {
+        boolean isPasswordSet = true;
+        boolean clientAuthenticated = false;
+        List<String> inputList = List.of("AUTHO", "password");
+        boolean result = Main.authCommandReceived(isPasswordSet, inputList, clientAuthenticated);
+        assertThat(result).isFalse();
     }
 }

@@ -99,7 +99,7 @@ public class Main {
     }
 
 
-    private static void shutdown(HazeDatabase hazeDatabase) {
+    public static void shutdown(HazeDatabase hazeDatabase) {
         SaveFile.writeOnFile(hazeDatabase.copy());
         logger.info("Shutting down....");
     }
@@ -126,16 +126,7 @@ public class Main {
         }
         return commandSwitch (hazeDatabase, inputList, hazeList, commandEnum);
     }
-//        private static Command getCommand (List < String > inputList) {
-//            String command = inputList.getFirst().toUpperCase();
-//            Command commandEnum;
-//            try {
-//                commandEnum = Command.valueOf(command);
-//            } catch (IllegalArgumentException ex) {
-//                return Command.GET;
-//            }
-//            return commandEnum;
-//        }
+
 
         private static String commandSwitch (HazeDatabase hazeDatabase, List < String > inputList, HazeList
         hazeList, Command commandEnum){
