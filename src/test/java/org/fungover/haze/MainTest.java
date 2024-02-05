@@ -7,11 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
+
+import java.io.BufferedReader;
+
+import java.io.StringReader;
 
 import java.util.List;
+
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -113,8 +116,6 @@ class MainTest {
 
 
 
-
-
     @Test
     @DisplayName("getInputList Should Return List With Correct Data Based On Index")
     void getInputListShouldReturn(){
@@ -128,6 +129,8 @@ class MainTest {
             System.out.println("Exception");
         }
     }
+
+
 
     @Test
     @DisplayName("Call authCommandReceived with valid input should return true")

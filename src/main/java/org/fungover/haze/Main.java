@@ -80,7 +80,7 @@ public class Main {
         inputList.forEach(System.out::println); // For checking incoming message
     }
 
-    private static List<String> getInputList(BufferedReader input) throws IOException {
+    public static List<String> getInputList(BufferedReader input) throws IOException {
         List<String> inputList = new ArrayList<>();
 
         String firstReading = input.readLine();
@@ -188,8 +188,7 @@ public class Main {
             }
         }
 
-        private static boolean authCommandReceived ( boolean isPasswordSet, List<String > inputList,
-        boolean clientAuthenticated){
+        public static boolean authCommandReceived ( boolean isPasswordSet, List<String > inputList, boolean clientAuthenticated){
             return isPasswordSet && !clientAuthenticated && inputList.size() == 2 && inputList.getFirst().equals("AUTH");
         }
     }
