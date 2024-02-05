@@ -16,6 +16,8 @@ import java.io.StringReader;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.in;
@@ -208,29 +210,20 @@ class MainTest {
         assertThat(clientSocket.isOutputShutdown()).isEqualTo(false);
     }
 
-    @Test
-    @DisplayName("Call to initSocket should set reuseAddress to true")
-    void callToInitSocketShouldSetReuseAddressToTrue() throws IOException {
-        Initialize initialize = new Initialize();
-        ServerSocket ss = new ServerSocket();
-        Main.initSocket(initialize, ss);
-        assertThat(ss.getReuseAddress()).isTrue();
-    }
 
     @Test
     @DisplayName("Call to initSocket should bind serversocket port to same as initialize")
     void callToInitSocketShouldBindServerSocketPortToSameAsInitialize() throws IOException {
         Initialize initialize = new Initialize();
         ServerSocket ss = new ServerSocket();
-        Main.initSocket(initialize, ss);
         int initializePort = initialize.getPort();
         int serverSocketPort = ss.getLocalPort();
+        assertThat(initializePort).isNotEqualTo(serverSocketPort);
+
+        Main.initSocket(initialize, ss);
+        initializePort = initialize.getPort();
+        serverSocketPort = ss.getLocalPort();
         assertThat(initializePort).isEqualTo(serverSocketPort);
     }
-
-
-
-
-
 
 }

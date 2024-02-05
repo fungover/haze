@@ -1,6 +1,8 @@
 package org.fungover.haze;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,6 +12,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 public class Main {
     static boolean serverOpen = true;
     static Logger logger = LogManager.getLogger(Main.class);
@@ -67,7 +70,6 @@ public class Main {
 
     private static void controlCommand(HazeList hazeList, HazeDatabase hazeDatabase, Socket client, List<String> inputList) throws IOException {
         client.getOutputStream().write(executeCommand(hazeDatabase, inputList, hazeList).getBytes());
-
         inputList.forEach(System.out::println); // For checking incoming message
     }
 
@@ -140,7 +142,7 @@ public class Main {
         };
     }
 
-    private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
+    public static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
             IOException {
         logger.debug("readInputStream: {} {} {}", () -> input, () -> inputList, () -> firstReading);
         int size;
