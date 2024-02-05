@@ -1,28 +1,27 @@
 package org.fungover.haze;
-
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.io.BufferedReader;
-
 import java.io.StringReader;
-
 import java.util.List;
-
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-
 class MainTest {
+
+
+
     HazeDatabase database = new HazeDatabase();
     HazeList hazeList = new HazeList(database);
+
+
 
     @Test
     void callingExecuteCommandWithValidNonExistingInputReturnsColonOne() {
@@ -151,4 +150,18 @@ class MainTest {
         boolean result = Main.authCommandReceived(isPasswordSet, inputList, clientAuthenticated);
         assertThat(result).isFalse();
     }
+
+    @Test
+    void callToInitializeServerShouldSetPasswordToAuth(){
+        String[] testArgs = {"arg1", "arg2"};
+        Initialize initialize = new Initialize();
+        Auth auth = new Auth();
+        Main.initializeServer(testArgs, initialize, auth);
+        assertThat(auth.isPasswordSet()).isTrue();
+    }
+
+
+
+
+
 }
