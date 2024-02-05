@@ -1,4 +1,5 @@
 package org.fungover.haze;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,14 +10,30 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.StringReader;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 class MainTest {
 
+    private ServerSocket serverSocket;
+    private Socket clientSocket;
 
+    @BeforeEach
+    void setUp() throws IOException {
+        serverSocket = new ServerSocket(0);
+        clientSocket = new Socket("localhost", serverSocket.getLocalPort());
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        serverSocket.close();
+        clientSocket.close();
+    }
 
     HazeDatabase database = new HazeDatabase();
     HazeList hazeList = new HazeList(database);
@@ -152,6 +169,16 @@ class MainTest {
     }
 
     @Test
+    @DisplayName("Call AuthCommandReceived With Invalid Password Should Return False")
+    void callAuthCommandReceivedWithInvalidPasswordShouldReturnFalse() {
+        boolean isPasswordSet = false;
+        boolean clientAuthenticated = false;
+        List<String> inputList = List.of("AUTH", "password");
+        boolean result = Main.authCommandReceived(isPasswordSet, inputList, clientAuthenticated);
+        assertThat(result).isFalse();
+    }
+
+    @Test
     void callToInitializeServerShouldSetPasswordToAuth(){
         String[] testArgs = {"arg1", "arg2"};
         Initialize initialize = new Initialize();
@@ -159,6 +186,26 @@ class MainTest {
         Main.initializeServer(testArgs, initialize, auth);
         assertThat(auth.isPasswordSet()).isTrue();
     }
+
+    @Test
+    @DisplayName("Call to shutdownClientIfNotAuthenticated should shut down output for non authenticated user")
+    void callToShutDownClientIfNotAuthenticatedShouldShutDownOutputForNonAuthenticatedUser() throws IOException {
+        boolean clientAuthenticated = false;
+        boolean isPasswordSet = true;
+        Main.shutdownClientIfNotAuthenticated(clientSocket, clientAuthenticated, isPasswordSet);
+        assertThat(clientSocket.isOutputShutdown()).isEqualTo(true);
+    }
+
+    @Test
+    @DisplayName("Call to shutdownClientIfNotAuthenticated should not shut down output for authenticated user")
+    void callToShutDownClientIfNotAuthenticatedShouldNotShutDownOutputForAuthenticatedUser() throws IOException {
+        boolean clientAuthenticated = true;
+        boolean isPasswordSet = true;
+        Main.shutdownClientIfNotAuthenticated(clientSocket, clientAuthenticated, isPasswordSet);
+        assertThat(clientSocket.isOutputShutdown()).isEqualTo(false);
+    }
+
+
 
 
 
