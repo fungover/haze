@@ -12,7 +12,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
+
 
 public class Main {
     static boolean serverOpen = true;
@@ -99,7 +99,7 @@ public class Main {
     }
 
 
-    public static void shutdown(HazeDatabase hazeDatabase) {
+  private static void shutdown(HazeDatabase hazeDatabase) {
         SaveFile.writeOnFile(hazeDatabase.copy());
         logger.info("Shutting down....");
     }
