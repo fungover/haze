@@ -1,4 +1,5 @@
 package org.fungover.haze;
+import org.apache.logging.log4j.core.jmx.Server;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,10 +13,12 @@ import org.mockito.MockitoAnnotations;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.in;
 import static org.mockito.Mockito.*;
 
 class MainTest {
@@ -205,6 +208,25 @@ class MainTest {
         assertThat(clientSocket.isOutputShutdown()).isEqualTo(false);
     }
 
+    @Test
+    @DisplayName("Call to initSocket should set reuseAddress to true")
+    void callToInitSocketShouldSetReuseAddressToTrue() throws IOException {
+        Initialize initialize = new Initialize();
+        ServerSocket ss = new ServerSocket();
+        Main.initSocket(initialize, ss);
+        assertThat(ss.getReuseAddress()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Call to initSocket should bind serversocket port to same as initialize")
+    void callToInitSocketShouldBindServerSocketPortToSameAsInitialize() throws IOException {
+        Initialize initialize = new Initialize();
+        ServerSocket ss = new ServerSocket();
+        Main.initSocket(initialize, ss);
+        int initializePort = initialize.getPort();
+        int serverSocketPort = ss.getLocalPort();
+        assertThat(initializePort).isEqualTo(serverSocketPort);
+    }
 
 
 

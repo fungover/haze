@@ -35,7 +35,6 @@ public class Main {
         while (serverOpen) {
             var client = serverSocket.accept();
             logger.info("Application started: serverSocket.accept()");
-
             runThread(hazeList, hazeDatabase, auth, isPasswordSet, client);
         }
     }
@@ -63,7 +62,6 @@ public class Main {
     private static void handleThread(HazeList hazeList, HazeDatabase hazeDatabase, Socket client, List<String> inputList) throws IOException {
         controlCommand(hazeList, hazeDatabase, client, inputList);
         printThreadDebug();
-
         inputList.clear();
     }
 
@@ -81,7 +79,7 @@ public class Main {
         return inputList;
     }
 
-    private static void initSocket(Initialize initialize, ServerSocket serverSocket) throws IOException {
+    public static void initSocket(Initialize initialize, ServerSocket serverSocket) throws IOException {
         serverSocket.setReuseAddress(true);
         serverSocket.bind(new InetSocketAddress(initialize.getPort()));
     }
@@ -164,7 +162,7 @@ public class Main {
         auth.setPassword(initialize.getPassword());
     }
 
-    private static boolean authenticateClient(Auth auth, boolean isPasswordSet, Socket client, List<String> inputList, boolean clientAuthenticated) throws IOException {
+    public static boolean authenticateClient(Auth auth, boolean isPasswordSet, Socket client, List<String> inputList, boolean clientAuthenticated) throws IOException {
         if (authCommandReceived(isPasswordSet, inputList, clientAuthenticated))
             return auth.authenticate(inputList.get(1), client);
 
