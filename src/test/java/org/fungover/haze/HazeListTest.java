@@ -1,6 +1,8 @@
 package org.fungover.haze;
 import org.junit.jupiter.api.Test;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HazeListTest {
@@ -286,5 +288,30 @@ class HazeListTest {
     @Test
     void parserWithBadInputShouldReturnZero(){
         assertEquals(0, HazeList.parser("This is not a number"));
+    }
+
+
+    @Test
+    void callingLindexWithValidPositiveIndexReturnValue(){
+        hazeList.rPush(List.of("", "key2", "val1", "val2", "val3"));
+        assertThat(hazeList.lIndex(List.of("", "key2", "2"))).isEqualTo("$4\r\nval3\r\n");
+    }
+
+    @Test
+    void callingLindexWithIndexOutOfBoundsReturnNil(){
+        hazeList.rPush(List.of("", "key2", "val1", "val2", "val3"));
+        assertThat(hazeList.lIndex(List.of("", "key2", "3"))).isEqualTo("$5\r\n(nil)\r\n");
+    }
+
+    @Test
+    void callingLindexWithValidNegativeIndexReturnValue(){
+        hazeList.rPush(List.of("", "key2", "val1", "val2", "val3"));
+        assertThat(hazeList.lIndex(List.of("", "key2", "-2"))).isEqualTo("$4\r\nval2\r\n");
+    }
+
+    @Test
+    void callingLindexWithValidIndexZeroReturnFirstValue(){
+        hazeList.rPush(List.of("", "key2", "val1", "val2", "val3"));
+        assertThat(hazeList.lIndex(List.of("", "key2", "0"))).isEqualTo("$4\r\nval1\r\n");
     }
 }
