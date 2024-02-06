@@ -10,14 +10,20 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.List;
+
+
 
 public class Main {
     static boolean serverOpen = true;
     static Logger logger = LogManager.getLogger(Main.class);
 
+
     public static void main(String[] args) {
+
+
         Initialize initialize = new Initialize();
         initialize.importCliOptions(args);
         HazeDatabase hazeDatabase = new HazeDatabase();
@@ -45,7 +51,8 @@ public class Main {
                             List<String> inputList = new ArrayList<>();
 
                             String firstReading = input.readLine();
-                            readInputStream(input, inputList, firstReading);
+
+                            readInputStream(input,inputList,firstReading);
 
                             clientAuthenticated = authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
 
@@ -75,9 +82,11 @@ public class Main {
         logger.info("Shutting down....");
     }
 
-    private static void printThreadDebug() {
-        logger.debug("ThreadID {}", () -> Thread.currentThread().threadId());  // Only for Debug
-        logger.debug("Is virtual Thread {}", () -> Thread.currentThread().isVirtual()); // Only for Debug
+
+    public static void printThreadDebug() {
+        logger.debug("ThreadID " + Thread.currentThread().threadId());  // Only for Debug
+        logger.debug("Is virtual Thread " + Thread.currentThread().isVirtual()); // Only for Debug
+
     }
 
     public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList, HazeList hazeList) {
@@ -115,6 +124,7 @@ public class Main {
 
         };
     }
+
 
     private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
             IOException {
