@@ -67,7 +67,7 @@ public class Main {
         }
     }
 
-    private static void handleThread(HazeList hazeList, HazeDatabase hazeDatabase, Socket client, List<String> inputList) throws IOException {
+    public static void handleThread(HazeList hazeList, HazeDatabase hazeDatabase, Socket client, List<String> inputList) throws IOException {
         controlCommand(hazeList, hazeDatabase, client, inputList);
         printThreadDebug();
 
@@ -104,7 +104,7 @@ public class Main {
         logger.info("Shutting down....");
     }
 
-    private static void printThreadDebug() {
+   public static void printThreadDebug() {
         logger.debug("ThreadID {}", () -> Thread.currentThread().threadId());  // Only for Debug
         logger.debug("Is virtual Thread {}", () -> Thread.currentThread().isVirtual()); // Only for Debug
     }
@@ -149,7 +149,7 @@ public class Main {
             };
         }
 
-        private static void readInputStream (BufferedReader input, List < String > inputList, String firstReading) throws
+       private static void readInputStream (BufferedReader input, List < String > inputList, String firstReading) throws
         IOException {
             logger.debug("readInputStream: {} {} {}", () -> input, () -> inputList, () -> firstReading);
             int size;
