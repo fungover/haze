@@ -306,7 +306,7 @@ class HazeListTest {
     @Test
     void callingLindexWithValidNegativeIndexReturnValue(){
         hazeList.rPush(List.of("", "key2", "val1", "val2", "val3"));
-        assertThat(hazeList.lIndex(List.of("", "key2", "-2"))).isEqualTo("$4\r\nval2\r\n");
+        assertThat(hazeList.lIndex(List.of("", "key2", "-1"))).isEqualTo("$4\r\nval3\r\n");
     }
 
     @Test
