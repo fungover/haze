@@ -1,6 +1,4 @@
 FROM eclipse-temurin:21-jre-jammy
-COPY target/dependency /lib
-COPY target/classes /app
 WORKDIR /app
 ARG USERNAME=hazeuser
 ARG USER_UID=1000
@@ -9,7 +7,6 @@ RUN groupadd --gid $USER_GID $USERNAME && \
     useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
 ADD https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-core/2.20.0/log4j-core-2.20.0.jar ./lib/
 ADD https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-api/2.20.0/log4j-api-2.20.0.jar ./lib/
-#RUN chmod --recursive 440 ./lib/
 COPY target/classes .
 RUN chown --recursive $USERNAME:$USERNAME .
 USER $USERNAME
