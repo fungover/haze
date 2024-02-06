@@ -1,5 +1,6 @@
 FROM eclipse-temurin:21-jre-jammy
-#COPY target/dependency /lib
+COPY target/dependency /lib
+COPY target/classes /app
 WORKDIR /app
 ARG USERNAME=hazeuser
 ARG USER_UID=1000

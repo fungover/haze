@@ -5,14 +5,20 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.fungover.haze.Main.printThreadDebug;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class MainTest {
     HazeDatabase database = new HazeDatabase();
     HazeList hazeList = new HazeList(database);
+
 
     @Test
     void callingExecuteCommandWithValidNonExistingInputReturnsColonOne() {
@@ -101,5 +107,16 @@ class MainTest {
     @Test
     void callExecuteCommandWithLTRIMShouldReturnErrorMessageWhenKeyDoesNotExist() {
         assertThat(Main.executeCommand(database, List.of("LTRIM", "key", "2", "3"), hazeList)).isEqualTo("-The key is not present in the database.\r\n");
+    }
+
+    @Test
+    void testPrintThreadDebug() {
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
+
+        printThreadDebug();
+
+        assertFalse(outContent.toString().contains("ThreadID"));
+        assertFalse(outContent.toString().contains("Is virtual Thread"));
     }
 }
