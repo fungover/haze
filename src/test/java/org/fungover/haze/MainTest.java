@@ -7,12 +7,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.fungover.haze.Main.printThreadDebug;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 
 class MainTest {
@@ -27,7 +26,7 @@ class MainTest {
 
     @Test
     void callingExecuteCommandWithInvalidInputStringReturnsErrorMessage() {
-        assertThat(Main.executeCommand(database, List.of(""), hazeList)).isEqualTo("-ERR unknown command\r\n");
+        assertThat(Main.executeCommand(database, List.of(""), hazeList)).isEqualTo("-ERR no command provided\r\n");
 
     }
 
