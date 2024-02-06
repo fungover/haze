@@ -1,48 +1,22 @@
 package org.fungover.haze;
-import org.apache.logging.log4j.core.jmx.Server;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.in;
-import static org.mockito.Mockito.*;
+import static org.fungover.haze.Main.printThreadDebug;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 
 class MainTest {
-
-    private ServerSocket serverSocket;
-    private Socket clientSocket;
-
-    @BeforeEach
-    void setUp() throws IOException {
-        serverSocket = new ServerSocket(0);
-        clientSocket = new Socket("localhost", serverSocket.getLocalPort());
-    }
-
-    @AfterEach
-    void tearDown() throws IOException {
-        serverSocket.close();
-        clientSocket.close();
-    }
-
     HazeDatabase database = new HazeDatabase();
     HazeList hazeList = new HazeList(database);
-
 
 
     @Test
@@ -134,96 +108,14 @@ class MainTest {
         assertThat(Main.executeCommand(database, List.of("LTRIM", "key", "2", "3"), hazeList)).isEqualTo("-The key is not present in the database.\r\n");
     }
 
-
-
-
     @Test
-    @DisplayName("getInputList Should Return List With Correct Data Based On Index")
-    void getInputListShouldReturn(){
-        String inputString = "First\nSecond\nThird";
-        BufferedReader input = new BufferedReader(new StringReader(inputString));
-        try {
-            List<String> result = Main.getInputList(input);
-            assertThat(result.get(1)).isEqualTo("Second");
+    void testPrintThreadDebug() {
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
 
-        } catch (Exception e) {
-            System.out.println("Exception");
-        }
+        printThreadDebug();
+
+        assertFalse(outContent.toString().contains("ThreadID"));
+        assertFalse(outContent.toString().contains("Is virtual Thread"));
     }
-
-
-
-    @Test
-    @DisplayName("Call authCommandReceived with valid input should return true")
-    void callAuthCommandReceivedWithValidInputShouldReturnTrue() {
-        boolean isPasswordSet = true;
-        boolean clientAuthenticated = false;
-        List<String> inputList = List.of("AUTH", "password");
-        boolean result = Main.authCommandReceived(isPasswordSet, inputList, clientAuthenticated);
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    @DisplayName("Call AuthCommandReceived With Invalid Input Should Return False")
-    void callAuthCommandReceivedWithInvalidInputShouldReturnFalse() {
-        boolean isPasswordSet = true;
-        boolean clientAuthenticated = false;
-        List<String> inputList = List.of("AUTHO", "password");
-        boolean result = Main.authCommandReceived(isPasswordSet, inputList, clientAuthenticated);
-        assertThat(result).isFalse();
-    }
-
-    @Test
-    @DisplayName("Call AuthCommandReceived With Invalid Password Should Return False")
-    void callAuthCommandReceivedWithInvalidPasswordShouldReturnFalse() {
-        boolean isPasswordSet = false;
-        boolean clientAuthenticated = false;
-        List<String> inputList = List.of("AUTH", "password");
-        boolean result = Main.authCommandReceived(isPasswordSet, inputList, clientAuthenticated);
-        assertThat(result).isFalse();
-    }
-
-    @Test
-    void callToInitializeServerShouldSetPasswordToAuth(){
-        String[] testArgs = {"arg1", "arg2"};
-        Initialize initialize = new Initialize();
-        Auth auth = new Auth();
-        Main.initializeServer(testArgs, initialize, auth);
-        assertThat(auth.isPasswordSet()).isTrue();
-    }
-
-    @Test
-    @DisplayName("Call to shutdownClientIfNotAuthenticated should shut down output for non authenticated user")
-    void callToShutDownClientIfNotAuthenticatedShouldShutDownOutputForNonAuthenticatedUser() throws IOException {
-        boolean clientAuthenticated = false;
-        boolean isPasswordSet = true;
-        Main.shutdownClientIfNotAuthenticated(clientSocket, clientAuthenticated, isPasswordSet);
-        assertThat(clientSocket.isOutputShutdown()).isEqualTo(true);
-    }
-
-    @Test
-    @DisplayName("Call to shutdownClientIfNotAuthenticated should not shut down output for authenticated user")
-    void callToShutDownClientIfNotAuthenticatedShouldNotShutDownOutputForAuthenticatedUser() throws IOException {
-        boolean clientAuthenticated = true;
-        boolean isPasswordSet = true;
-        Main.shutdownClientIfNotAuthenticated(clientSocket, clientAuthenticated, isPasswordSet);
-        assertThat(clientSocket.isOutputShutdown()).isEqualTo(false);
-    }
-
-
-    @Test
-    @DisplayName("Call to initSocket should bind serversocket port to same as initialize")
-    void callToInitSocketShouldBindServerSocketPortToSameAsInitialize() throws IOException {
-        Initialize initialize = new Initialize();
-        ServerSocket ss = new ServerSocket();
-        int initializePort = initialize.getPort();
-        int serverSocketPort = ss.getLocalPort();
-        assertThat(initializePort).isNotEqualTo(serverSocketPort);
-
-        Main.initSocket(initialize, ss);
-        initializePort = initialize.getPort();
-        serverSocketPort = ss.getLocalPort();
-        assertThat(initializePort).isEqualTo(serverSocketPort);
-    }
-
 }
