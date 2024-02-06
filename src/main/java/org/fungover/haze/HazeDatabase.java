@@ -1,5 +1,6 @@
 package org.fungover.haze;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,6 +141,22 @@ public class HazeDatabase {
             database.put(key, value);
         }
         finally {
+            lock.unlock();
+        }
+    }
+
+
+    public String getIndex(List<String> inputList){
+        if (inputList.size() != 2)
+            return ARGUMENT_ERROR;
+        String key = inputList.get(1);
+        lock.lock();
+        List<String> keys = new ArrayList<>(database.values());
+        try{
+            if(keys.contains(key)){
+                return "$" + keys.indexOf(key) + "\r\n";
+        } else return "$-1\r\n";
+        }          finally {
             lock.unlock();
         }
     }

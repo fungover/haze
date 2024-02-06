@@ -159,5 +159,28 @@ class HazeDatabaseTest {
         assertThat(testDatabase.containsKey("key1")).isTrue();
     }
 
+    @Test
+    void callingGetIndexOfWithInvalidKeyReturnMinusOne(){
+        testDatabase.addValue("key1", "hej");
+        testDatabase.addValue("key2", "bonjour");
+
+        assertThat(testDatabase.getIndex(List.of("INDEX", "hello"))).isEqualTo("$-1\r\n");
+    }
+
+    @Test
+    void callingGetIndexOfWithValidKeyReturnIndex() {
+        testDatabase.addValue("key1", "hej");
+        testDatabase.addValue("key2", "bonjour");
+        testDatabase.addValue("key3", "hello");
+        assertThat(testDatabase.getIndex(List.of("INDEX", "hello"))).isEqualTo("$2\r\n");
+    }
+
+    @Test
+    void callingIndexOfWithInvalidArgumentsReturnErrorMessage() {
+        testDatabase.addValue("key1", "hej");
+        testDatabase.addValue("key2", "bonjour");
+        testDatabase.addValue("key3", "hello");
+        assertThat(testDatabase.getIndex(List.of( "hello"))).isEqualTo("-ERR wrong number of arguments for command\r\n");
+    }
 
 }
