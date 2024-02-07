@@ -5,6 +5,7 @@ import java.util.stream.Stream;
 
 public class HazeList {
 
+    private final List<String> elements;
     static final String NIL_RESPONSE = "$5\r\n(nil)\r\n";
     static final String EMPTY_ARRAY_RESPONSE = "*0\r\n";
     static final String LEFT = "LEFT";
@@ -13,6 +14,31 @@ public class HazeList {
 
     public HazeList(HazeDatabase hazeDatabase) {
         this.hazeDatabase = hazeDatabase;
+        this.elements = new ArrayList<>();
+    }
+
+    public String linsert(List<String> inputList) {
+        if (inputList.size() < 4) {
+            return "-wrong number of arguments for LINSERT command\r\n";
+        }
+
+        String pivot = inputList.get(1);
+        String elementToInsert = inputList.get(2);
+        boolean before = inputList.get(3).equalsIgnoreCase("BEFORE");
+
+        try {
+            int pivotIndex = elements.indexOf(pivot);
+            if (pivotIndex == -1) {
+                return "Pivot element not found in the list\r\n";
+            }
+
+            int insertIndex = before ? pivotIndex : pivotIndex + 1;
+            elements.add(insertIndex, elementToInsert);
+
+            return "+OK\r\n";
+        } catch (IllegalArgumentException e) {
+            return e.getMessage() + "\r\n";
+        }
     }
 
     public String lPush(List<String> inputList) {
