@@ -322,9 +322,15 @@ class HazeListTest {
     }
 
     @Test
-    void lSetWithIndexOutOfBoundsShouldReturnErrorMessage()
-    {
+    void lSetWithIndexOutOfBoundsShouldReturnErrorMessage() {
         hazeList.rPush(List.of("", "key1", "val1", "val2", "val3", "val4", "val5"));
         assertThat(hazeList.lSet(List.of("", "key1", "6", "hej"))).isEqualTo("-Err index out of bounds\r\n");
+    }
+    @Test
+    void lSetIndexWithValidNegativeIndexReturnValue(){
+        hazeList.rPush(List.of("", "key1", "val1", "val2", "val3", "val4", "val5"));
+        hazeList.lSet(List.of("", "key1", "-1", "howdy"));
+        String asString = hazeDatabase.getValue("key1");
+        assertThat(asString).isEqualTo("val1\r\nval2\r\nval3\r\nval4\r\nhowdy");
     }
 }

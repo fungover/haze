@@ -308,12 +308,18 @@ public class HazeList {
         if (!hazeDatabase.containsKey(key)){
             return "-Err Key does not exist\r\n";
         }
-       int index;
-        try {
-            index = Integer.parseInt(inputlist.get(2));
-        }catch (NumberFormatException e){
-            return "-Err invalid index\r\n";
-        }
+            int index;
+            if (inputlist.get(2).equals("-1")) {
+
+                List<String> list = getValueAsList(hazeDatabase.getValue(key));
+                index = list.size() - 1;
+            } else {
+                try {
+                    index = Integer.parseInt(inputlist.get(2));
+                } catch (NumberFormatException e) {
+                    return "-Err invalid index\r\n";
+                }
+            }
         String element = inputlist.get(3);
         List<String> list = getValueAsList(hazeDatabase.getValue(key));
 
