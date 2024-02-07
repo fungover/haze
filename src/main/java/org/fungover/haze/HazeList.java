@@ -300,8 +300,7 @@ public class HazeList {
             return "-Err index out of bounds\r\n";
         }
         List <String> updatedList = IntStream.range(0, list.size()).
-                mapToObj(i -> i == index ? element : list.get(i)).
-                collect(Collectors.toList());
+                mapToObj(i -> i == index ? element : list.get(i)).toList();
 
         hazeDatabase.addValue(key,listValueAsString(updatedList));
         return "+OK\r\n";
