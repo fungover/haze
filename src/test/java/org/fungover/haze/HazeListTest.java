@@ -2,7 +2,9 @@ package org.fungover.haze;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.assertj.core.api.Assertions.assertThat;
+
 
 class HazeListTest {
 
@@ -312,7 +314,9 @@ class HazeListTest {
     void callingLindexWithValidIndexZeroReturnFirstValue(){
         hazeList.rPush(List.of("", "key2", "val1", "val2", "val3"));
         assertThat(hazeList.lIndex(List.of("", "key2", "0"))).isEqualTo("$4\r\nval1\r\n");
-    void lSetShouldUpdateValue()
+    }
+        @Test
+        void lSetShouldUpdateValue()
     {
        hazeList.rPush(List.of("", "key1", "val1", "val2", "val3", "val4", "val5"));
        hazeList.lSet(List.of("", "key1", "0", "hej"));
