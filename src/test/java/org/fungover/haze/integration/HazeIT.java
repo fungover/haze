@@ -92,15 +92,12 @@ class HazeIT {
 
     @Test
     void lindexReturnCorrectIndex() {
-        assertThat(pool.rpush("test", "hello")).isEqualTo(1);
+        assertThat(pool.rpush("test", "hello")).isEqualTo(1) ;
         assertThat(pool.rpush("test", "hey")).isEqualTo(2);
         assertThat(pool.rpush("test", "bonjour")).isEqualTo(3);
         assertThat(pool.rpush("test", "hej")).isEqualTo(4);
         assertThat(pool.lindex("test", 0)).isEqualTo("hello");
         assertThat(pool.lindex("test", -1)).isEqualTo("hej");
-
-
         pool.del("test");
-        assertThat(pool.exists("right")).isFalse();
-    }
+    assertThat(pool.exists("right")).isFalse();}
 }
