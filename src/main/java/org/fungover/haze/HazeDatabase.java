@@ -165,4 +165,25 @@ public class HazeDatabase {
         }
     }
 
+    public String decreaseValue(List<String> inputList) {
+        lock.lock();
+        String key = inputList.get(1);
+        try {
+            if (!database.containsKey(key)) {
+                return "-ERR no such key\r\n";
+            }
+            String value = database.get(key);
+            try {
+                long longValue = Long.parseLong(value);
+                longValue--;
+                database.put(key, String.valueOf(longValue));
+                return ":" + longValue + "\r\n";
+            } catch (NumberFormatException e) {
+                return "-WRONGTYPE value is not an integer or out of range\r\n";
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
 }

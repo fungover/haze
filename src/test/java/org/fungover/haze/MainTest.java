@@ -1,6 +1,5 @@
 package org.fungover.haze;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -113,6 +112,12 @@ class MainTest {
     void callExecuteCommandWithIncrShouldIncreaseTheValueOfTheKeyBy1() {
         Main.executeCommand(database, List.of("SET", "key1", "1"), hazeList);
         assertThat(Main.executeCommand(database, List.of("INCR", "key1"), hazeList)).isEqualTo(":2\r\n");
+    }
+
+    @Test
+    void callExecuteCommandWithDecrShouldDecreaseTheValueOfTheKeyBy1(){
+        Main.executeCommand(database, List.of("SET", "key1", "1"), hazeList);
+        assertThat(Main.executeCommand(database, List.of("DECR", "key1"), hazeList)).isEqualTo(":0\r\n");
     }
 
     @Test
