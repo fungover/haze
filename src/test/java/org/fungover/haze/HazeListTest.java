@@ -325,6 +325,7 @@ class HazeListTest {
     }
 
     @Test
+<<<<<<< HEAD
     void lSetWithIndexOutOfBoundsShouldReturnErrorMessage() {
         hazeList.rPush(List.of("", "key1", "val1", "val2", "val3", "val4", "val5"));
         assertThat(hazeList.lSet(List.of("", "key1", "6", "hej"))).isEqualTo("-Err index out of bounds\r\n");
@@ -358,5 +359,11 @@ class HazeListTest {
     void lSetWithWrongIndex() {
         hazeList.rPush(List.of("", "key1", "val1", "val2", "val3", "val4", "val5"));
         assertThat(hazeList.lSet(List.of("", "key1", "-", "hej"))).isEqualTo("-Err invalid index\r\n");
+=======
+    void lSetWithIndexOutOfBoundsShouldReturnErrorMessage()
+    {
+        hazeList.rPush(List.of("", "key1", "val1", "val2", "val3", "val4", "val5"));
+        assertThat(hazeList.lSet(List.of("", "key1", "6", "hej"))).isEqualTo("-Err index out of bounds\r\n");
+>>>>>>> 4a4470a (Add another test method on LSET)
     }
 }
