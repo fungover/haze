@@ -29,7 +29,7 @@ public class Main {
         HazeDatabase hazeDatabase = new HazeDatabase();
         HazeList hazeList = new HazeList(hazeDatabase);
         Auth auth = new Auth();
-        initializeServer(args, initialize, auth);
+        Initialize.initializeServer(args, initialize, auth);
         final boolean isPasswordSet = auth.isPasswordSet();
 
 
@@ -143,10 +143,6 @@ public class Main {
         }
     }
 
-    private static void initializeServer(String[] args, Initialize initialize, Auth auth) {
-        initialize.importCliOptions(args);
-        auth.setPassword(initialize.getPassword());
-    }
 
     private static boolean authenticateClient(Auth auth, boolean isPasswordSet, Socket client, List<String> inputList, boolean clientAuthenticated) throws IOException {
         if (authCommandReceived(isPasswordSet, inputList, clientAuthenticated))
