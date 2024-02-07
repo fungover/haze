@@ -52,7 +52,7 @@ class HazeListTest {
     }
 
     @Test
-    public void testLinsertIllegalArgumentException() {
+    void testLinsertIllegalArgumentException() {
         HazeList hazeList = new HazeList(new HazeDatabase());
         hazeList.elements.add("pivot1");
         hazeList.elements.add("pivot2");
