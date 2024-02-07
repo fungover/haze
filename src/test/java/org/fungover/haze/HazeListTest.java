@@ -2,6 +2,8 @@ package org.fungover.haze;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class HazeListTest {
 
@@ -286,5 +288,14 @@ class HazeListTest {
     @Test
     void parserWithBadInputShouldReturnZero(){
         assertEquals(0, HazeList.parser("This is not a number"));
+    }
+
+    @Test
+    void lSetShouldUpdateValue()
+    {
+       hazeList.rPush(List.of("", "key1", "val1", "val2", "val3", "val4", "val5"));
+       hazeList.lSet(List.of("", "key1", "0", "hej"));
+       String asString = hazeDatabase.getValue("key1");
+        assertThat(asString).isEqualTo("hej\r\nval2\r\nval3\r\nval4\r\nval5");
     }
 }
