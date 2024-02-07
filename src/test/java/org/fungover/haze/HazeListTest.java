@@ -313,5 +313,18 @@ class HazeListTest {
     void callingLindexWithValidIndexZeroReturnFirstValue(){
         hazeList.rPush(List.of("", "key2", "val1", "val2", "val3"));
         assertThat(hazeList.lIndex(List.of("", "key2", "0"))).isEqualTo("$4\r\nval1\r\n");
+    void lSetShouldUpdateValue()
+    {
+       hazeList.rPush(List.of("", "key1", "val1", "val2", "val3", "val4", "val5"));
+       hazeList.lSet(List.of("", "key1", "0", "hej"));
+       String asString = hazeDatabase.getValue("key1");
+       assertThat(asString).isEqualTo("hej\r\nval2\r\nval3\r\nval4\r\nval5");
+    }
+
+    @Test
+    void lSetWithIndexOutOfBoundsShouldReturnErrorMessage()
+    {
+        hazeList.rPush(List.of("", "key1", "val1", "val2", "val3", "val4", "val5"));
+        assertThat(hazeList.lSet(List.of("", "key1", "6", "hej"))).isEqualTo("-Err index out of bounds\r\n");
     }
 }
