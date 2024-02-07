@@ -144,22 +144,4 @@ public class Main {
     }
 
 
-//    private static boolean authenticateClient(Auth auth, boolean isPasswordSet, Socket client, List<String> inputList, boolean clientAuthenticated) throws IOException {
-//        if (authCommandReceived(isPasswordSet, inputList, clientAuthenticated))
-//            return auth.authenticate(inputList.get(1), client);
-//
-//        shutdownClientIfNotAuthenticated(client, clientAuthenticated, isPasswordSet);
-//        return clientAuthenticated;
-//    }
-
-//    private static void shutdownClientIfNotAuthenticated(Socket client, boolean clientAuthenticated, boolean isPasswordSet) throws IOException {
-//        if (!clientAuthenticated && isPasswordSet) {
-//            client.getOutputStream().write(Auth.printAuthError());
-//            client.shutdownOutput();
-//        }
-//    }
-
-//    private static boolean authCommandReceived(boolean isPasswordSet, List<String> inputList, boolean clientAuthenticated) {
-//        return isPasswordSet && !clientAuthenticated && inputList.size() == 2 && inputList.getFirst().equals("AUTH");
-//    }
 }
