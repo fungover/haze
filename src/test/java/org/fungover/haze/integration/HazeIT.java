@@ -110,3 +110,6 @@ class HazeIT {
         pool.del("test");
     assertThat(pool.exists("right")).isFalse();}
 }
+
+
+

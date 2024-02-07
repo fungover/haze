@@ -376,4 +376,13 @@ class HazeListTest {
         String asString = hazeDatabase.getValue("key1");
         assertThat(asString).isEqualTo("val1\r\nval2\r\nval3\r\nval4\r\nhowdy");
     }
+
+ @Test
+ void lSetNoKey() {
+        hazeList.rPush(List.of("","","val1","val2","val3"));
+        hazeList.lSet(List.of("","","0","val1"));
+        String asString = hazeDatabase.getValue("");
+
+     assertThat(asString).isEqualTo("val1\r\nval2\r\nval3");
+ }
 }
