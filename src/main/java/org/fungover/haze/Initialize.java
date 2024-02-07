@@ -38,6 +38,7 @@ public class Initialize {
             return System.getenv("HAZE_PASSWORD");
         } else return null;
     }
+
     public void clearCliOptions() {
         cliOptions.clear();
     }
