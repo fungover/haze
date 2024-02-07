@@ -1,6 +1,7 @@
 package org.fungover.haze;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class HazeList {
@@ -297,4 +298,34 @@ public class HazeList {
             key = inputList.get(1);
         return key;
     }
+
+        public String lSet(List<String> inputlist){
+        if (inputlist.size() < 4){
+            return "-Err Wrong number of arguments for LSET\r\n";
+        }
+        String key = getKey(inputlist);
+
+        if (!hazeDatabase.containsKey(key)){
+            return "-Err Key does not exist\r\n";
+        }
+       int index;
+        try {
+            index = Integer.parseInt(inputlist.get(2));
+        }catch (NumberFormatException e){
+            return "-Err invalid index\r\n";
+        }
+        String element = inputlist.get(3);
+        List<String> list = getValueAsList(hazeDatabase.getValue(key));
+
+        if (index < 0 || index >= list.size()){
+            return "-Err index out of bounds\r\n";
+        }
+        List <String> updatedList = IntStream.range(0, list.size()).
+                mapToObj(i -> i == index ? element : list.get(i)).
+                collect(Collectors.toList());
+
+        hazeDatabase.addValue(key,listValueAsString(updatedList));
+        return "+OK\r\n";
+
+        }
 }
