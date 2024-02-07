@@ -66,7 +66,7 @@ public class HazeDatabase {
 
     public String exists(List<String> keys) {
         if (keys.isEmpty())
-            throw new IllegalArgumentException("No keys provided");
+            return ":0\r\n";
 
         lock.lock();
         int numberOfKeys = 0;
