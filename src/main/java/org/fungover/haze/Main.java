@@ -121,7 +121,7 @@ public class Main {
             case LMOVE -> hazeList.lMove(inputList);
             case LTRIM -> hazeList.callLtrim(inputList);
             case AUTH -> "+OK\r\n";
-
+            case INCR -> hazeDatabase.increaseValue(inputList);
         };
     }
 

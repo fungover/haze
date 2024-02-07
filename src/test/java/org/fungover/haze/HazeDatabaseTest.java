@@ -1,5 +1,6 @@
 package org.fungover.haze;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -159,5 +160,21 @@ class HazeDatabaseTest {
         assertThat(testDatabase.containsKey("key1")).isTrue();
     }
 
+    @Test
+    void callingIncreaseWithKeyWithIntegerShouldIncreaseValueBy1(){
+        testDatabase.addValue("key1", "1");
+
+        String increaseResult = testDatabase.increaseValue(List.of("INCR","key1"));
+        assertThat(increaseResult).isEqualTo(":2\r\n");
+        assertThat(testDatabase.getValue("key1")).isEqualTo("2");
+
+    }
+
+    @Test
+    void callingIncreaseWithKeyThatDoesNotContainIntegerShouldReturnErrorMessage() {
+        testDatabase.addValue("key1", "Gunnar");
+        String increaseResult = testDatabase.increaseValue(List.of("INCR","key1"));
+        assertThat(increaseResult).isEqualTo("-WRONGTYPE value is not an integer or out of range\r\n");
+    }
 
 }

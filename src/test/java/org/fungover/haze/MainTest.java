@@ -1,5 +1,6 @@
 package org.fungover.haze;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -106,6 +107,12 @@ class MainTest {
     @Test
     void callExecuteCommandWithLTRIMShouldReturnErrorMessageWhenKeyDoesNotExist() {
         assertThat(Main.executeCommand(database, List.of("LTRIM", "key", "2", "3"), hazeList)).isEqualTo("-The key is not present in the database.\r\n");
+    }
+
+    @Test
+    void callExecuteCommandWithIncrShouldIncreaseTheValueOfTheKeyBy1() {
+        Main.executeCommand(database, List.of("SET", "key1", "1"), hazeList);
+        assertThat(Main.executeCommand(database, List.of("INCR", "key1"), hazeList)).isEqualTo(":2\r\n");
     }
 
     @Test
