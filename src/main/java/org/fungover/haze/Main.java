@@ -19,16 +19,14 @@ public class Main {
     static Logger logger = LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
-
         Initialize initialize = Initialize.getInitialize(args);
-
         HazeDatabase hazeDatabase = new HazeDatabase();
         HazeList hazeList = new HazeList(hazeDatabase);
         Auth auth = new Auth();
         initializeServer(args, initialize, auth);
         final boolean isPasswordSet = auth.isPasswordSet();
-
         addHook(hazeDatabase);
+
         try (ServerSocket serverSocket = new ServerSocket()) {
             initSocket(initialize, serverSocket);
             whileServerOpen(hazeList, hazeDatabase, auth, isPasswordSet, serverSocket);
@@ -99,7 +97,7 @@ public class Main {
     }
 
 
-    public static void shutdown(HazeDatabase hazeDatabase) {
+    private static void shutdown(HazeDatabase hazeDatabase) {
         SaveFile.writeOnFile(hazeDatabase.copy());
         logger.info("Shutting down....");
     }
@@ -188,7 +186,7 @@ public class Main {
             }
         }
 
-        public static boolean authCommandReceived ( boolean isPasswordSet, List<String > inputList, boolean clientAuthenticated){
+        private static boolean authCommandReceived ( boolean isPasswordSet, List<String > inputList, boolean clientAuthenticated){
             return isPasswordSet && !clientAuthenticated && inputList.size() == 2 && inputList.getFirst().equals("AUTH");
         }
     }

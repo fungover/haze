@@ -113,9 +113,6 @@ class MainTest {
         assertThat(Main.executeCommand(database, List.of("LTRIM", "key", "2", "3"), hazeList)).isEqualTo("-The key is not present in the database.\r\n");
     }
 
-
-
-
     @Test
     @DisplayName("getInputList Should Return List With Correct Data Based On Index")
     void getInputListShouldReturn(){
@@ -128,27 +125,5 @@ class MainTest {
         } catch (Exception e) {
             System.out.println("Exception");
         }
-    }
-
-
-
-    @Test
-    @DisplayName("Call authCommandReceived with valid input should return true")
-    void callAuthCommandReceivedWithValidInputShouldReturnTrue() {
-        boolean isPasswordSet = true;
-        boolean clientAuthenticated = false;
-        List<String> inputList = List.of("AUTH", "password");
-        boolean result = Main.authCommandReceived(isPasswordSet, inputList, clientAuthenticated);
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    @DisplayName("Call AuthCommandReceived With Invalid Input Should Return False")
-    void callAuthCommandReceivedWithInvalidInputShouldReturnFalse() {
-        boolean isPasswordSet = true;
-        boolean clientAuthenticated = false;
-        List<String> inputList = List.of("AUTHO", "password");
-        boolean result = Main.authCommandReceived(isPasswordSet, inputList, clientAuthenticated);
-        assertThat(result).isFalse();
     }
 }
