@@ -89,6 +89,15 @@ class HazeIT {
         pool.del("test");
         assertThat(pool.exists("right")).isFalse();
     }
+        @Test
+    void listLset(){
+            pool.set("test","OK");
+            assertThat(pool.lset("test", 0, "hej")).isEqualTo("OK");
+            assertThat(pool.exists("test")).isTrue();
+            pool.del("test");
+    }
+
+
 
     @Test
     void lindexReturnCorrectIndex() {
