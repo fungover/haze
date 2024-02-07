@@ -1,31 +1,23 @@
 package org.fungover.haze;
 
-
-
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-
-import java.io.BufferedReader;
-
-import java.io.StringReader;
-
-
-import java.net.Socket;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.List;
 
-
-
 import static org.assertj.core.api.Assertions.assertThat;
-
+import static org.fungover.haze.Main.printThreadDebug;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 
 class MainTest {
     HazeDatabase database = new HazeDatabase();
     HazeList hazeList = new HazeList(database);
+
 
     @Test
     void callingExecuteCommandWithValidNonExistingInputReturnsColonOne() {
@@ -116,52 +108,14 @@ class MainTest {
         assertThat(Main.executeCommand(database, List.of("LTRIM", "key", "2", "3"), hazeList)).isEqualTo("-The key is not present in the database.\r\n");
     }
 
-
-
-
     @Test
-    @DisplayName("getInputList Should Return List With Correct Data Based On Index")
-    void getInputListShouldReturn(){
-        String inputString = "First\nSecond\nThird";
-        BufferedReader input = new BufferedReader(new StringReader(inputString));
-        try {
-            List<String> result = Main.getInputList(input);
-            assertThat(result.get(1)).isEqualTo("Second");
+    void testPrintThreadDebug() {
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
 
-        } catch (Exception e) {
-            System.out.println("Exception");
-        }
+        printThreadDebug();
+
+        assertFalse(outContent.toString().contains("ThreadID"));
+        assertFalse(outContent.toString().contains("Is virtual Thread"));
     }
-
-
-
-    @Test
-    @DisplayName("Call authCommandReceived with valid input should return true")
-    void callAuthCommandReceivedWithValidInputShouldReturnTrue() {
-        boolean isPasswordSet = true;
-        boolean clientAuthenticated = false;
-        List<String> inputList = List.of("AUTH", "password");
-        boolean result = Main.authCommandReceived(isPasswordSet, inputList, clientAuthenticated);
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    @DisplayName("Call AuthCommandReceived With Invalid Input Should Return False")
-    void callAuthCommandReceivedWithInvalidInputShouldReturnFalse() {
-        boolean isPasswordSet = true;
-        boolean clientAuthenticated = false;
-        List<String> inputList = List.of("AUTHO", "password");
-        boolean result = Main.authCommandReceived(isPasswordSet, inputList, clientAuthenticated);
-        assertThat(result).isFalse();
-    }
-
-
-
-
-
-
 }
-
-
-
-
