@@ -26,7 +26,7 @@ class HazeListTest {
     }
 
     @Test
-    public void testLinsertInsertsBeforePivot() {
+    void testLinsertInsertsBeforePivot() {
         HazeList hazeList = new HazeList(new HazeDatabase());
         hazeList.elements.add("pivot1");
         hazeList.elements.add("pivot2");
@@ -39,7 +39,7 @@ class HazeListTest {
     }
 
     @Test
-    public void testLinsertInsertsAfterPivot() {
+    void testLinsertInsertsAfterPivot() {
         HazeList hazeList = new HazeList(new HazeDatabase());
         hazeList.elements.add("pivot1");
         hazeList.elements.add("pivot2");
