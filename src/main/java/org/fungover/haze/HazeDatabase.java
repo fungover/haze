@@ -46,6 +46,9 @@ public class HazeDatabase {
     }
 
     public String delete(List<String> keys) {
+        if (keys.isEmpty())
+            throw new IllegalArgumentException("No keys provided");
+
         var counter = new AtomicInteger(0);
         lock.lock();
         try {
@@ -62,6 +65,9 @@ public class HazeDatabase {
     }
 
     public String exists(List<String> keys) {
+        if (keys.isEmpty())
+            return ":0\r\n";
+
         lock.lock();
         int numberOfKeys = 0;
         try {
@@ -109,6 +115,12 @@ public class HazeDatabase {
     }
 
     public String ping(List<String> messageList) {
+        if (messageList == null || messageList.isEmpty()) {
+            throw new IllegalArgumentException("No message provided");
+        } else if (messageList.size() > 2) {
+            throw new IllegalArgumentException("Too many arguments for PING command");
+        }
+
         if (messageList.size() == 1)
             return "+PONG\r\n";
         else return "$" + (messageList.get(1)).length() + "\r\n" + messageList.get(1) + "\r\n";
