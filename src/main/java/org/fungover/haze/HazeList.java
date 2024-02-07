@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 public class HazeList {
 
-    private final List<String> elements;
+    final List<String> elements;
     static final String NIL_RESPONSE = "$5\r\n(nil)\r\n";
     static final String EMPTY_ARRAY_RESPONSE = "*0\r\n";
     static final String LEFT = "LEFT";

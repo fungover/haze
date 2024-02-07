@@ -1,5 +1,7 @@
 package org.fungover.haze;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -8,6 +10,59 @@ class HazeListTest {
     HazeDatabase hazeDatabase = new HazeDatabase();
     HazeList hazeList = new HazeList(hazeDatabase);
 
+    @Test
+    void testLinsertWrongNumberOfArguments() {
+        List<String> inputList = new ArrayList<>();
+        inputList.add("LINSERT");
+        String result = hazeList.linsert(inputList);
+        assertEquals("-wrong number of arguments for LINSERT command\r\n", result);
+    }
+
+    @Test
+    void testLinsertPivotNotFound() {
+        List<String> inputList = List.of("LINSERT", "pivot3", "element", "BEFORE");
+        String result = hazeList.linsert(inputList);
+        assertEquals("Pivot element not found in the list\r\n", result);
+    }
+
+    @Test
+    public void testLinsertInsertsBeforePivot() {
+        HazeList hazeList = new HazeList(new HazeDatabase());
+        hazeList.elements.add("pivot1");
+        hazeList.elements.add("pivot2");
+
+        List<String> inputList = List.of("LINSERT", "pivot1", "element", "BEFORE");
+
+        hazeList.linsert(inputList);
+
+        assertEquals("element", hazeList.elements.get(0));
+    }
+
+    @Test
+    public void testLinsertInsertsAfterPivot() {
+        HazeList hazeList = new HazeList(new HazeDatabase());
+        hazeList.elements.add("pivot1");
+        hazeList.elements.add("pivot2");
+
+        List<String> inputList = List.of("LINSERT", "pivot1", "element", "AFTER");
+
+        hazeList.linsert(inputList);
+
+        assertEquals("element", hazeList.elements.get(1));
+    }
+
+    @Test
+    public void testLinsertIllegalArgumentException() {
+        HazeList hazeList = new HazeList(new HazeDatabase());
+        hazeList.elements.add("pivot1");
+        hazeList.elements.add("pivot2");
+
+        List<String> inputList = List.of("LINSERT", "nonexistent_pivot", "element", "BEFORE");
+
+        String result = hazeList.linsert(inputList);
+
+        assertEquals("Pivot element not found in the list\r\n", result);
+    }
 
     @Test
     void rPushWithTwoValuesShouldReturnTwo() {
