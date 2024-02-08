@@ -333,6 +333,7 @@ class HazeListTest {
     void lSetWithNonExistingKey() {
         hazeList.rPush(List.of("", "key1", "val1", "val2", "val3", "val4", "val5"));
         assertThat(hazeList.lSet(List.of("", "key2", "3", "hej"))).isEqualTo("-Err Key does not exist\r\n");
+<<<<<<< HEAD
     }
     @Test
     void lSetIndexWithValidNegativeIndexReturnValue(){
@@ -368,6 +369,8 @@ class HazeListTest {
         hazeList.rPush(List.of("", "key1", "val1", "val2", "val3", "val4", "val5"));
         assertThat(hazeList.lSet(List.of("", "key1", "6", "hej"))).isEqualTo("-Err index out of bounds\r\n");
 >>>>>>> 4a4470a (Add another test method on LSET)
+=======
+>>>>>>> 8d68f34 (Add more unit test on hazelist for non existing key)
     }
     @Test
     void lSetIndexWithValidNegativeIndexReturnValue(){
