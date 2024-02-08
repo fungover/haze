@@ -341,4 +341,10 @@ class HazeListTest {
 
      assertThat(asString).isEqualTo("val1\r\nval2\r\nval3");
  }
+    @Test
+    void lSetWithWrongNumberOFArguments() {
+        hazeList.rPush(List.of("", "key1", "val1"));
+        assertThat(hazeList.lSet(List.of("", "key1", "hej"))).isEqualTo("-Err Wrong number of arguments for LSET\r\n");
+    }
+
 }
