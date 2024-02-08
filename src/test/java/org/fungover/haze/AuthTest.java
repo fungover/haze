@@ -3,7 +3,7 @@ package org.fungover.haze;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.testcontainers.shaded.com.google.common.base.Verify;
+
 
 import java.io.IOException;
 import java.net.Socket;
@@ -76,7 +76,7 @@ class AuthTest {
         inputList.add("AUTH");
         inputList.add("password");
 
-        boolean result = Auth.authCommandReceived(false,inputList,false);
+        boolean result = Auth.authCommandReceived(false, inputList, false);
 
         assertThat(result).isFalse();
 
