@@ -57,17 +57,28 @@ class AuthTest {
     }
 
     @Test
-    void authCommandReceivedTest() {
-        List<String>inputList = new ArrayList<>();
+    void authCommandReceivedPasswordNotAuth() {
+        List<String> inputList = new ArrayList<>();
 
         inputList.add("AUTH");
         inputList.add("password");
 
-        boolean result = Auth.authCommandReceived(true,inputList,false);
+        boolean result = Auth.authCommandReceived(true, inputList, false);
 
         assertThat(result).isTrue();
 
 
     }
 
+    @Test
+    void authCommandReceivedNoPassNoAuth() {
+        List<String> inputList = new ArrayList<>();
+        inputList.add("AUTH");
+        inputList.add("password");
+
+        boolean result = Auth.authCommandReceived(false,inputList,false);
+
+        assertThat(result).isFalse();
+
+    }
 }
