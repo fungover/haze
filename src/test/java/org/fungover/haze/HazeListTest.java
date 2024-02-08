@@ -302,6 +302,10 @@ class HazeListTest {
     void lSetWithIndexOutOfBoundsShouldReturnErrorMessage() {
         hazeList.rPush(List.of("", "key1", "val1", "val2", "val3", "val4", "val5"));
         assertThat(hazeList.lSet(List.of("", "key1", "6", "hej"))).isEqualTo("-Err index out of bounds\r\n");
+    } @Test
+    void lSetWithNonExistingKey() {
+        hazeList.rPush(List.of("", "key1", "val1", "val2", "val3", "val4", "val5"));
+        assertThat(hazeList.lSet(List.of("", "key2", "3", "hej"))).isEqualTo("-Err Key does not exist\r\n");
     }
     @Test
     void lSetIndexWithValidNegativeIndexReturnValue(){
