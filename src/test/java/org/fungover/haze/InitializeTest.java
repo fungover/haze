@@ -7,33 +7,34 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class InitializeTest {
 
-	Initialize initialize = new Initialize();
+    Initialize initialize = new Initialize();
 
-	@BeforeEach
-	void setup() {
-		initialize.clearCliOptions();
-	}
+    @BeforeEach
+    void setup() {
+        initialize.clearCliOptions();
+    }
 
-	@Test
-	void portSetByCLIWithDashPShouldReturn1234() {
-		String[] args = {"-p", "1234"};
-		initialize.importCliOptions(args);
+    @Test
+    void portSetByCLIWithDashPShouldReturn1234() {
+        String[] args = {"-p", "1234"};
+        initialize.importCliOptions(args);
 
-		assertThat(initialize.getPort()).isEqualTo(1234);
-	}
+        assertThat(initialize.getPort()).isEqualTo(1234);
+    }
 
-	@Test
-	void portSetByEnvironmentVariableShouldReturn6380() {
-		assertThat(initialize.getPort()).isEqualTo(6380);
-	}
+    @Test
+    void portSetByEnvironmentVariableShouldReturn6380() {
+        assertThat(initialize.getPort()).isEqualTo(6380);
+    }
 
-	@Test
-	void portSetByCLIWithDashPortShouldReturn1233() {
-		String[] args = {"--port", "1233"};
-		initialize.importCliOptions(args);
+    @Test
+    void portSetByCLIWithDashPortShouldReturn1233() {
+        String[] args = {"--port", "1233"};
+        initialize.importCliOptions(args);
 
-		assertThat(initialize.getPort()).isEqualTo(1233);
-	}
+        assertThat(initialize.getPort()).isEqualTo(1233);
+    }
+
     @Test
     void passwordSetByCLIWithDashPShouldReturn1234() {
         String[] args = {"-pw", "1234"};
@@ -54,4 +55,7 @@ class InitializeTest {
 
         assertThat(initialize.getPassword()).isEqualTo("1233");
     }
+
+
+
 }
