@@ -3,6 +3,7 @@ package org.fungover.haze;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.testcontainers.shaded.com.google.common.base.Verify;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -51,7 +52,21 @@ class AuthTest {
 
         List<String> inputList = new ArrayList<>();
 
-        assertThat(Auth.authenticateClient(auth, true, client, inputList, true));
+        assertThat(Auth.authenticateClient(auth, true, client, inputList, true)).isTrue();
+
+    }
+
+    @Test
+    void authCommandReceivedTest() {
+        List<String>inputList = new ArrayList<>();
+
+        inputList.add("AUTH");
+        inputList.add("password");
+
+        boolean result = Auth.authCommandReceived(true,inputList,false);
+
+        assertThat(result).isTrue();
+
 
     }
 
