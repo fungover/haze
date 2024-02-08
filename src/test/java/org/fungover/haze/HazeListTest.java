@@ -393,5 +393,9 @@ class HazeListTest {
         hazeList.rPush(List.of("", "key1", "val1"));
         assertThat(hazeList.lSet(List.of("", "key1", "hej"))).isEqualTo("-Err Wrong number of arguments for LSET\r\n");
     }
-
+    @Test
+    void lSetWithWrongIndex() {
+        hazeList.rPush(List.of("", "key1", "val1", "val2", "val3", "val4", "val5"));
+        assertThat(hazeList.lSet(List.of("", "key1", "-", "hej"))).isEqualTo("-Err invalid index\r\n");
+    }
 }
