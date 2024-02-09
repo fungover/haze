@@ -88,7 +88,7 @@ class AuthTest {
     }
 
     @Test
-    void shutdownClientIfNotAuthenticated() throws Exception {
+    void shutdownClientIfNotAuthenticatedWhenClientNotAuthenticatedAndPasswordIsSet() throws Exception {
 
         Socket client = Mockito.mock(Socket.class);
         OutputStream outputStream = Mockito.mock(OutputStream.class);
@@ -102,5 +102,24 @@ class AuthTest {
         verify(outputStream).write(Auth.printAuthError());
         verify(client).shutdownOutput();
 
+    }
+
+    @Test
+    void clientShouldNotBeShutdownWhenAuthenticatedOrPasswordIsNotSet() throws Exception {
+
+        Socket client = Mockito.mock(Socket.class);
+        OutputStream outputStream = Mockito.mock(OutputStream.class);
+        when(client.getOutputStream()).thenReturn(outputStream);
+
+        Method method = Auth.class.getDeclaredMethod("shutdownClientIfNotAuthenticated", Socket.class, boolean.class, boolean.class);
+        method.setAccessible(true);
+
+        method.invoke(null, client, true, true);
+        verify(outputStream, Mockito.never()).write(Auth.printAuthError());
+        verify(client, Mockito.never()).shutdownOutput();
+
+        method.invoke(null, client, false, false);
+        verify(outputStream, Mockito.never()).write(Auth.printAuthError());
+        verify(client, Mockito.never()).shutdownOutput();
     }
 }
