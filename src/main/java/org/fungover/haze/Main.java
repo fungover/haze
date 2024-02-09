@@ -102,7 +102,7 @@ public class Main {
         logger.info("Shutting down....");
     }
 
-    private static void printThreadDebug() {
+    static void printThreadDebug() {
         logger.debug("ThreadID {}", () -> Thread.currentThread().threadId());  // Only for Debug
         logger.debug("Is virtual Thread {}", () -> Thread.currentThread().isVirtual()); // Only for Debug
     }

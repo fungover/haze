@@ -1,23 +1,27 @@
 package org.fungover.haze;
 
 
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.testcontainers.shaded.org.apache.commons.io.output.ByteArrayOutputStream;
 
 
 import java.io.BufferedReader;
 
+import java.io.PrintStream;
 import java.io.StringReader;
 
 import java.util.List;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.fungover.haze.Main.printThreadDebug;
+import static org.junit.Assert.assertFalse;
+
 
 
 class MainTest {
@@ -116,7 +120,7 @@ class MainTest {
     @Test
 
     @DisplayName("getInputList Should Return List With Correct Data Based On Index")
-    void getInputListShouldReturn(){
+    void getInputListShouldReturn() {
         String inputString = "First\nSecond\nThird";
         BufferedReader input = new BufferedReader(new StringReader(inputString));
         try {
@@ -127,13 +131,17 @@ class MainTest {
             System.out.println("Exception");
         }
 
+
+    }
+
+    @Test
     void callExecuteCommandWithIncrShouldIncreaseTheValueOfTheKeyBy1() {
         Main.executeCommand(database, List.of("SET", "key1", "1"), hazeList);
         assertThat(Main.executeCommand(database, List.of("INCR", "key1"), hazeList)).isEqualTo(":2\r\n");
     }
 
     @Test
-    void callExecuteCommandWithDecrShouldDecreaseTheValueOfTheKeyBy1(){
+    void callExecuteCommandWithDecrShouldDecreaseTheValueOfTheKeyBy1() {
         Main.executeCommand(database, List.of("SET", "key1", "1"), hazeList);
         assertThat(Main.executeCommand(database, List.of("DECR", "key1"), hazeList)).isEqualTo(":0\r\n");
     }
@@ -147,6 +155,6 @@ class MainTest {
 
         assertFalse(outContent.toString().contains("ThreadID"));
         assertFalse(outContent.toString().contains("Is virtual Thread"));
-
     }
+
 }
