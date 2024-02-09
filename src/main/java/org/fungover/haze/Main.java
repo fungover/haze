@@ -12,23 +12,21 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class Main {
     static boolean serverOpen = true;
     static Logger logger = LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
-
         Initialize initialize = Initialize.getInitialize(args);
-        HazeList hazeList = new HazeList();
-
         HazeDatabase hazeDatabase = new HazeDatabase();
         HazeList hazeList = new HazeList(hazeDatabase);
         Auth auth = new Auth();
         initializeServer(args, initialize, auth);
         final boolean isPasswordSet = auth.isPasswordSet();
-
         addHook(hazeDatabase);
+
         try (ServerSocket serverSocket = new ServerSocket()) {
             initSocket(initialize, serverSocket);
             whileServerOpen(hazeList, hazeDatabase, auth, isPasswordSet, serverSocket);
@@ -80,7 +78,7 @@ public class Main {
         inputList.forEach(System.out::println); // For checking incoming message
     }
 
-    private static List<String> getInputList(BufferedReader input) throws IOException {
+    public static List<String> getInputList(BufferedReader input) throws IOException {
         List<String> inputList = new ArrayList<>();
 
         String firstReading = input.readLine();
@@ -99,7 +97,6 @@ public class Main {
     }
 
 
-
     private static void shutdown(HazeDatabase hazeDatabase) {
         SaveFile.writeOnFile(hazeDatabase.copy());
         logger.info("Shutting down....");
@@ -111,95 +108,87 @@ public class Main {
     }
 
     public static String executeCommand(HazeDatabase hazeDatabase, List<String> inputList, HazeList hazeList) {
-
-      
-
         if (inputList.isEmpty() || inputList.getFirst().isEmpty()) {
-
             return "-ERR no command provided\r\n";
+        }
 
         logger.debug("executeCommand: {} {} ", () -> hazeDatabase, () -> inputList);
-
-
         String command = inputList.getFirst().toUpperCase();
 
-
-        Command commandEnum = getCommand(inputList);
-        if (commandEnum == null)
-            return "-ERR unknown command\r\n";
-
-        return commandSwitch(hazeDatabase, inputList, hazeList, commandEnum);
-    }
-
-    private static Command getCommand(List<String> inputList) {
-        String command = inputList.get(0).toUpperCase();
         Command commandEnum;
+
         try {
             commandEnum = Command.valueOf(command);
         } catch (IllegalArgumentException ex) {
-            return null;
+            return "-ERR unknown command\r\n";
         }
-        return commandEnum;
+        return commandSwitch (hazeDatabase, inputList, hazeList, commandEnum);
     }
 
-    private static String commandSwitch(HazeDatabase hazeDatabase, List<String> inputList, HazeList hazeList, Command commandEnum) {
-        return switch (commandEnum) {
-            case SET -> hazeDatabase.set(inputList);
-            case GET -> hazeDatabase.get(inputList);
-            case DEL -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
-            case PING -> hazeDatabase.ping(inputList);
-            case SETNX -> hazeDatabase.setNX(inputList);
-            case EXISTS -> hazeDatabase.exists(inputList.subList(1, inputList.size()));
-            case SAVE -> SaveFile.writeOnFile(hazeDatabase.copy());
-            case RPUSH -> hazeList.rPush(inputList);
-            case LPUSH -> hazeList.lPush(inputList);
-            case LPOP -> hazeList.callLPop(inputList);
-            case RPOP -> hazeList.callRPop(inputList);
-            case LLEN -> hazeList.lLen(inputList);
-            case LMOVE -> hazeList.lMove(inputList);
-            case LTRIM -> hazeList.callLtrim(inputList);
-            case AUTH -> "+OK\r\n";
-        };
-    }
 
-    private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
-            IOException {
-        logger.debug("readInputStream: {} {} {}", () -> input, () -> inputList, () -> firstReading);
-        int size;
-        if (firstReading.startsWith("*")) {
-            size = Integer.parseInt(firstReading.substring(1)) * 2;
-            for (int i = 0; i < size; i++) {
-                String temp = input.readLine();
-                if (!temp.contains("$"))
-                    inputList.add(temp);
+        private static String commandSwitch (HazeDatabase hazeDatabase, List < String > inputList, HazeList
+        hazeList, Command commandEnum){
+            return switch (commandEnum) {
+                case SET -> hazeDatabase.set(inputList);
+                case GET -> hazeDatabase.get(inputList);
+                case DEL -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
+                case PING -> hazeDatabase.ping(inputList);
+                case SETNX -> hazeDatabase.setNX(inputList);
+                case EXISTS -> hazeDatabase.exists(inputList.subList(1, inputList.size()));
+                case SAVE -> SaveFile.writeOnFile(hazeDatabase.copy());
+                case RPUSH -> hazeList.rPush(inputList);
+                case LPUSH -> hazeList.lPush(inputList);
+                case LPOP -> hazeList.callLPop(inputList);
+                case RPOP -> hazeList.callRPop(inputList);
+                case LLEN -> hazeList.lLen(inputList);
+                case LMOVE -> hazeList.lMove(inputList);
+                case LTRIM -> hazeList.callLtrim(inputList);
+                case AUTH -> "+OK\r\n";
+            };
+        }
+
+        private static void readInputStream (BufferedReader input, List < String > inputList, String firstReading) throws
+        IOException {
+            logger.debug("readInputStream: {} {} {}", () -> input, () -> inputList, () -> firstReading);
+            int size;
+            if (firstReading.startsWith("*")) {
+                size = Integer.parseInt(firstReading.substring(1)) * 2;
+                for (int i = 0; i < size; i++) {
+                    String temp = input.readLine();
+                    if (!temp.contains("$"))
+                        inputList.add(temp);
+                }
+            } else {
+                String[] seperated = firstReading.split("\\s");
+                inputList.addAll(Arrays.asList(seperated));
             }
-        } else {
-            String[] seperated = firstReading.split("\\s");
-            inputList.addAll(Arrays.asList(seperated));
+        }
+
+        private static void initializeServer (String[]args, Initialize initialize, Auth auth){
+            initialize.importCliOptions(args);
+            auth.setPassword(initialize.getPassword());
+        }
+
+        private static boolean authenticateClient (Auth auth,boolean isPasswordSet, Socket
+        client, List < String > inputList,boolean clientAuthenticated) throws IOException {
+            if (authCommandReceived(isPasswordSet, inputList, clientAuthenticated))
+                return auth.authenticate(inputList.get(1), client);
+
+            shutdownClientIfNotAuthenticated(client, clientAuthenticated, isPasswordSet);
+            return clientAuthenticated;
+        }
+
+        private static void shutdownClientIfNotAuthenticated (Socket client,boolean clientAuthenticated,
+        boolean isPasswordSet) throws IOException {
+            if (!clientAuthenticated && isPasswordSet) {
+                client.getOutputStream().write(Auth.printAuthError());
+                client.shutdownOutput();
+            }
+        }
+
+        private static boolean authCommandReceived ( boolean isPasswordSet, List<String > inputList, boolean clientAuthenticated){
+            return isPasswordSet && !clientAuthenticated && inputList.size() == 2 && inputList.getFirst().equals("AUTH");
         }
     }
 
-    private static void initializeServer(String[] args, Initialize initialize, Auth auth) {
-        initialize.importCliOptions(args);
-        auth.setPassword(initialize.getPassword());
-    }
 
-    private static boolean authenticateClient(Auth auth, boolean isPasswordSet, Socket client, List<String> inputList, boolean clientAuthenticated) throws IOException {
-        if (authCommandReceived(isPasswordSet, inputList, clientAuthenticated))
-            return auth.authenticate(inputList.get(1), client);
-
-        shutdownClientIfNotAuthenticated(client, clientAuthenticated, isPasswordSet);
-        return clientAuthenticated;
-    }
-
-    private static void shutdownClientIfNotAuthenticated(Socket client, boolean clientAuthenticated, boolean isPasswordSet) throws IOException {
-        if (!clientAuthenticated && isPasswordSet) {
-            client.getOutputStream().write(Auth.printAuthError());
-            client.shutdownOutput();
-        }
-    }
-
-    private static boolean authCommandReceived(boolean isPasswordSet, List<String> inputList, boolean clientAuthenticated) {
-        return isPasswordSet && !clientAuthenticated && inputList.size() == 2 && inputList.getFirst().equals("AUTH");
-    }
-}
