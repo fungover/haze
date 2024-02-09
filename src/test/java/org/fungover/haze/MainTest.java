@@ -1,5 +1,6 @@
 package org.fungover.haze;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -11,6 +12,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.fungover.haze.Main.printThreadDebug;
+import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 
@@ -106,6 +108,20 @@ class MainTest {
     @Test
     void callExecuteCommandWithLTRIMShouldReturnErrorMessageWhenKeyDoesNotExist() {
         assertThat(Main.executeCommand(database, List.of("LTRIM", "key", "2", "3"), hazeList)).isEqualTo("-The key is not present in the database.\r\n");
+    }
+
+
+    @Test
+    void testExecuteCommandEmptyFirstCommand() {
+
+
+        List<String> inputList = List.of("", "command2", "command3");
+
+
+        String result = Main.executeCommand(database, inputList, hazeList);
+
+
+        Assertions.assertEquals("-ERR no command provided\r\n", result);
     }
 
     @Test
