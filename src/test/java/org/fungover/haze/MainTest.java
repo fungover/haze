@@ -109,6 +109,18 @@ class MainTest {
     }
 
     @Test
+    void callExecuteCommandWithIncrShouldIncreaseTheValueOfTheKeyBy1() {
+        Main.executeCommand(database, List.of("SET", "key1", "1"), hazeList);
+        assertThat(Main.executeCommand(database, List.of("INCR", "key1"), hazeList)).isEqualTo(":2\r\n");
+    }
+
+    @Test
+    void callExecuteCommandWithDecrShouldDecreaseTheValueOfTheKeyBy1(){
+        Main.executeCommand(database, List.of("SET", "key1", "1"), hazeList);
+        assertThat(Main.executeCommand(database, List.of("DECR", "key1"), hazeList)).isEqualTo(":0\r\n");
+    }
+
+    @Test
     void testPrintThreadDebug() {
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));

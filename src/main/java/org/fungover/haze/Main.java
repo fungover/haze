@@ -122,7 +122,8 @@ public class Main {
             case LTRIM -> hazeList.callLtrim(inputList);
             case LINDEX -> hazeList.lIndex(inputList);
             case AUTH -> "+OK\r\n";
-
+            case INCR -> hazeDatabase.increaseValue(inputList);
+            case DECR -> hazeDatabase.decreaseValue(inputList);
         };
     }
 
