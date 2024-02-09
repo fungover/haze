@@ -120,7 +120,7 @@ public class Main {
             case LLEN -> hazeList.lLen(inputList);
             case LMOVE -> hazeList.lMove(inputList);
             case LTRIM -> hazeList.callLtrim(inputList);
-            case LINSERT -> hazeList.linsert(inputList);
+            case LINSERT -> hazeList.lInsert(inputList);
             case AUTH -> "+OK\r\n";
         };
     }

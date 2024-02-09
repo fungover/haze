@@ -1,5 +1,6 @@
 package org.fungover.haze;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,29 @@ public class HazeDatabase {
                 var value = database.get(inputList.get(1));
                 return "$" + value.length() + "\r\n" + value + "\r\n";
             } else return "$-1\r\n";
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public List<String> getValueAsList(String key) {
+        lock.lock();
+        try {
+            String value = database.get(key);
+            if (value != null) {
+                return Arrays.asList(value.split(",")); // Assuming elements are comma-separated
+            }
+            return null;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void setValueFromList(String key, List<String> elements) {
+        lock.lock();
+        try {
+            String value = String.join(",", elements); // Join elements with a comma
+            database.put(key, value);
         } finally {
             lock.unlock();
         }

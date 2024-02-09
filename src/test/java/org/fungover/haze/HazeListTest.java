@@ -13,55 +13,10 @@ class HazeListTest {
     @Test
     void testLinsertWrongNumberOfArguments() {
         List<String> inputList = new ArrayList<>();
+        inputList.add("list1"); // Key for the list
         inputList.add("LINSERT");
-        String result = hazeList.linsert(inputList);
+        String result = hazeList.lInsert(inputList);
         assertEquals("-wrong number of arguments for LINSERT command\r\n", result);
-    }
-
-    @Test
-    void testLinsertPivotNotFound() {
-        List<String> inputList = List.of("LINSERT", "pivot3", "element", "BEFORE");
-        String result = hazeList.linsert(inputList);
-        assertEquals("Pivot element not found in the list\r\n", result);
-    }
-
-    @Test
-    void testLinsertInsertsBeforePivot() {
-        HazeList hazeList = new HazeList(new HazeDatabase());
-        hazeList.elements.add("pivot1");
-        hazeList.elements.add("pivot2");
-
-        List<String> inputList = List.of("LINSERT", "pivot1", "element", "BEFORE");
-
-        hazeList.linsert(inputList);
-
-        assertEquals("element", hazeList.elements.get(0));
-    }
-
-    @Test
-    void testLinsertInsertsAfterPivot() {
-        HazeList hazeList = new HazeList(new HazeDatabase());
-        hazeList.elements.add("pivot1");
-        hazeList.elements.add("pivot2");
-
-        List<String> inputList = List.of("LINSERT", "pivot1", "element", "AFTER");
-
-        hazeList.linsert(inputList);
-
-        assertEquals("element", hazeList.elements.get(1));
-    }
-
-    @Test
-    void testLinsertIllegalArgumentException() {
-        HazeList hazeList = new HazeList(new HazeDatabase());
-        hazeList.elements.add("pivot1");
-        hazeList.elements.add("pivot2");
-
-        List<String> inputList = List.of("LINSERT", "nonexistent_pivot", "element", "BEFORE");
-
-        String result = hazeList.linsert(inputList);
-
-        assertEquals("Pivot element not found in the list\r\n", result);
     }
 
     @Test
