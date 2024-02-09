@@ -265,6 +265,33 @@ public class HazeList {
         return String.join("\r\n", list);
     }
 
+    public String lIndex(List<String> inputList){
+        String key = getKey(inputList);
+        int index;
+        if (!hazeDatabase.containsKey(key))
+            return "Could not find list";
+        String indexStr = inputList.get(2);
+
+        try {
+            index = Integer.parseInt(indexStr);
+        } catch (NumberFormatException e) {
+            return "-ERR invalid index\r\n";
+        }
+
+        List<String> data = getValueAsList(hazeDatabase.getValue(key));
+        if(data.size()-1<index)
+            return NIL_RESPONSE;
+        String result;
+        if(index<0){
+            int newIndex = (data.size()) + index;
+            result = data.get(newIndex);
+            return "$" + result.length() + "\r\n" + result + "\r\n";
+        }
+
+        result = data.get(index);
+        return "$" + result.length() + "\r\n" + result + "\r\n";
+    }
+
     private static String getKey(List<String> inputList) {
         String key = null;
         if (inputList.size() > 1)
