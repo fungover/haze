@@ -18,6 +18,7 @@ jobs:
           Java_Version=$(mvn help:evaluate "-Dexpression=maven.compiler.release" -q -DforceStdout | sed -e 's/^1\./1.0./')
           echo "Java_Version=$Java_Version" >> $GITHUB_ENV
 
+
       - name: Set up  ${{env.Java_Version}}
 
      

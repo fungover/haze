@@ -159,5 +159,31 @@ class HazeDatabaseTest {
         assertThat(testDatabase.containsKey("key1")).isTrue();
     }
 
+    @Test
+    void callingIncreaseWithKeyWithIntegerShouldIncreaseValueBy1(){
+        testDatabase.addValue("key1", "1");
+
+        String increaseResult = testDatabase.increaseValue(List.of("INCR","key1"));
+        assertThat(increaseResult).isEqualTo(":2\r\n");
+        assertThat(testDatabase.getValue("key1")).isEqualTo("2");
+
+    }
+
+    @Test
+    void callingIncreaseWithKeyThatDoesNotContainIntegerShouldReturnErrorMessage() {
+        testDatabase.addValue("key1", "Gunnar");
+        String increaseResult = testDatabase.increaseValue(List.of("INCR","key1"));
+        assertThat(increaseResult).isEqualTo("-WRONGTYPE value is not an integer or out of range\r\n");
+    }
+    @Test
+    void callingDecreaseWithKeyWithIntegerShouldDecreaseValueBy1(){
+        testDatabase.addValue("key1", "1");
+
+        String increaseResult = testDatabase.decreaseValue(List.of("DECR","key1"));
+        assertThat(increaseResult).isEqualTo(":0\r\n");
+        assertThat(testDatabase.getValue("key1")).isEqualTo("0");
+
+    }
+
 
 }

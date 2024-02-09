@@ -122,7 +122,9 @@ public class Main {
         } catch (IllegalArgumentException ex) {
             return "-ERR unknown command\r\n";
         }
+
         return commandSwitch (hazeDatabase, inputList, hazeList, commandEnum);
+
     }
 
 

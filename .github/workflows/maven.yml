@@ -27,17 +27,9 @@ jobs:
           Java_Version=$(mvn help:evaluate "-Dexpression=maven.compiler.release" -q -DforceStdout | sed -e 's/^1\./1.0./')
           echo "Java_Version=$Java_Version" >> $GITHUB_ENV
 
+
       - name: Set up JDK  ${{env.Java_Version}}
 
 
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.Java_Version }}
-          distribution: 'temurin'
-          cache: maven
-      - name: Compile with Maven
-        run: mvn -B compile --file pom.xml
 
-      - name: Test with Maven
-        run: mvn -B test --file pom.xml
 
