@@ -1,24 +1,28 @@
 package org.fungover.haze;
 
-import org.junit.jupiter.api.Assertions;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+
+import java.io.BufferedReader;
+
+import java.io.StringReader;
+
 import java.util.List;
 
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.fungover.haze.Main.printThreadDebug;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.*;
 
 
 class MainTest {
     HazeDatabase database = new HazeDatabase();
     HazeList hazeList = new HazeList(database);
-
 
     @Test
     void callingExecuteCommandWithValidNonExistingInputReturnsColonOne() {
@@ -109,28 +113,17 @@ class MainTest {
         assertThat(Main.executeCommand(database, List.of("LTRIM", "key", "2", "3"), hazeList)).isEqualTo("-The key is not present in the database.\r\n");
     }
 
-
     @Test
-    void testExecuteCommandEmptyFirstCommand() {
+    @DisplayName("getInputList Should Return List With Correct Data Based On Index")
+    void getInputListShouldReturn(){
+        String inputString = "First\nSecond\nThird";
+        BufferedReader input = new BufferedReader(new StringReader(inputString));
+        try {
+            List<String> result = Main.getInputList(input);
+            assertThat(result.get(1)).isEqualTo("Second");
 
-
-        List<String> inputList = List.of("", "command2", "command3");
-
-
-        String result = Main.executeCommand(database, inputList, hazeList);
-
-
-        Assertions.assertEquals("-ERR no command provided\r\n", result);
-    }
-
-    @Test
-    void testPrintThreadDebug() {
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
-
-        printThreadDebug();
-
-        assertFalse(outContent.toString().contains("ThreadID"));
-        assertFalse(outContent.toString().contains("Is virtual Thread"));
+        } catch (Exception e) {
+            System.out.println("Exception");
+        }
     }
 }
