@@ -1,6 +1,7 @@
 package org.fungover.haze;
 
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -87,6 +88,21 @@ class AuthTest {
 
         assertThat(result).isFalse();
 
+    }
+
+    @Test
+    void authenticateShouldShutdownOutputForInvalidPassword() throws IOException {
+
+        Auth auth = new Auth();
+        auth.setPassword("12345");
+
+        Socket client = Mockito.mock(Socket.class);
+        OutputStream outputStream = Mockito.mock(OutputStream.class);
+        when(client.getOutputStream()).thenReturn(outputStream);
+
+        auth.authenticate("wrongPassword", client);
+
+        verify(client).shutdownOutput();
     }
 
     @Test
