@@ -9,7 +9,6 @@ import static org.fungover.haze.Main.logger;
 public class Auth {
     private String password;
 
-
     public void setPassword(String password) {
         this.password = password;
     }
@@ -36,7 +35,7 @@ public class Auth {
         return clientAuthenticated;
     }
 
-    private static void shutdownClientIfNotAuthenticated(Socket client, boolean clientAuthenticated, boolean isPasswordSet) throws IOException {
+   private static void shutdownClientIfNotAuthenticated(Socket client, boolean clientAuthenticated, boolean isPasswordSet) throws IOException {
         if (!clientAuthenticated && isPasswordSet) {
             client.getOutputStream().write(Auth.printAuthError());
             client.shutdownOutput();

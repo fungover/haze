@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -117,5 +118,16 @@ class MainTest {
 
         assertFalse(outContent.toString().contains("ThreadID"));
         assertFalse(outContent.toString().contains("Is virtual Thread"));
+    }
+
+    @Test
+    void testExecuteCommandNoCommandProvided() {
+
+
+        List<String> inputList = new ArrayList<>();
+
+        String result = Main.executeCommand(database, inputList, hazeList);
+
+        assertThat(result).isEqualTo("-ERR no command provided\r\n");
     }
 }

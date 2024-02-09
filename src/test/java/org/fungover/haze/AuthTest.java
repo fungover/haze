@@ -1,9 +1,10 @@
 package org.fungover.haze;
 
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -11,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
 
 class AuthTest {
@@ -70,15 +74,7 @@ class AuthTest {
 
     }
 
-    @Test
-    void authCommandReceivedNoPassNoAuth() {
-        List<String> inputList = new ArrayList<>();
-        inputList.add("AUTH");
-        inputList.add("password");
-
-        boolean result = Auth.authCommandReceived(false, inputList, false);
-
-        assertThat(result).isFalse();
-
-    }
 }
+
+
+

@@ -2,11 +2,14 @@ package org.fungover.haze;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.shaded.com.google.common.base.Verify;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
 class InitializeTest {
-
+    Auth auth = new Auth();
     Initialize initialize = new Initialize();
 
     @BeforeEach
@@ -55,6 +58,9 @@ class InitializeTest {
 
         assertThat(initialize.getPassword()).isEqualTo("1233");
     }
+
+
+
 
 
 
