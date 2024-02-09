@@ -11,9 +11,11 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -85,6 +87,22 @@ class AuthTest {
 
         assertThat(result).isFalse();
 
+    }
+
+    @Test
+    void  authenticateClientShouldReturnTrueForValidPassword() throws IOException {
+
+        Auth auth = Mockito.mock(Auth.class);
+        Socket client = Mockito.mock(Socket.class);
+        List<String> inputList = new ArrayList<>();
+        inputList.add("AUTH");
+        inputList.add("password");
+
+        when(auth.authenticate(inputList.get(1), client)).thenReturn(true);
+
+        boolean result = Auth.authenticateClient(auth, true, client, inputList, false);
+
+        assertTrue(result);
     }
 
     @Test
