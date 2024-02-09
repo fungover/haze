@@ -3,14 +3,19 @@ package org.fungover.haze;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 class AuthTest {
@@ -79,6 +84,23 @@ class AuthTest {
         boolean result = Auth.authCommandReceived(false, inputList, false);
 
         assertThat(result).isFalse();
+
+    }
+
+    @Test
+    void shutdownClientIfNotAuthenticated() throws Exception {
+
+        Socket client = Mockito.mock(Socket.class);
+        OutputStream outputStream = Mockito.mock(OutputStream.class);
+        when(client.getOutputStream()).thenReturn(outputStream);
+
+        Method method = Auth.class.getDeclaredMethod("shutdownClientIfNotAuthenticated", Socket.class, boolean.class, boolean.class);
+        method.setAccessible(true);
+
+        method.invoke(null, client, false, true);
+
+        verify(outputStream).write(Auth.printAuthError());
+        verify(client).shutdownOutput();
 
     }
 }
