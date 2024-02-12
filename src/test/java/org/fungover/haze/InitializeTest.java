@@ -2,9 +2,11 @@ package org.fungover.haze;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.verify;
 
 
 class InitializeTest {
@@ -58,7 +60,16 @@ class InitializeTest {
         assertThat(initialize.getPassword()).isEqualTo("1233");
     }
 
+    @Test
+    void shouldImportCliOptionsWhenInitializingServer() {
+        String[] args = {"--password", "1234"};
+        Initialize initialize = Mockito.mock(Initialize.class);
+        Auth auth = Mockito.mock(Auth.class);
 
+        Initialize.initializeServer(args, initialize, auth);
+
+        verify(initialize).importCliOptions(args);
+    }
 
 
 
