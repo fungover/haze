@@ -145,4 +145,16 @@ public class Main {
     }
 
 
+
+    private static void shutdownClientIfNotAuthenticated(Socket client, boolean clientAuthenticated, boolean isPasswordSet) throws IOException {
+        if (!clientAuthenticated && isPasswordSet) {
+            client.getOutputStream().write(Auth.printAuthError());
+            client.shutdownOutput();
+        }
+    }
+
+    static boolean authCommandReceived(boolean isPasswordSet, List<String> inputList, boolean clientAuthenticated) {
+        return isPasswordSet && !clientAuthenticated && inputList.size() == 2 && inputList.getFirst().equals("AUTH");
+    }
+
 }
