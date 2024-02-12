@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 
 import java.util.Arrays;
@@ -142,19 +143,6 @@ public class Main {
             String[] seperated = firstReading.split("\\s");
             inputList.addAll(Arrays.asList(seperated));
         }
-    }
-
-
-
-    private static void shutdownClientIfNotAuthenticated(Socket client, boolean clientAuthenticated, boolean isPasswordSet) throws IOException {
-        if (!clientAuthenticated && isPasswordSet) {
-            client.getOutputStream().write(Auth.printAuthError());
-            client.shutdownOutput();
-        }
-    }
-
-    static boolean authCommandReceived(boolean isPasswordSet, List<String> inputList, boolean clientAuthenticated) {
-        return isPasswordSet && !clientAuthenticated && inputList.size() == 2 && inputList.getFirst().equals("AUTH");
     }
 
 }
