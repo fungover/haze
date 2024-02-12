@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 
 
+
+
 public class Main {
     static boolean serverOpen = true;
     static Logger logger = LogManager.getLogger(Main.class);
@@ -96,8 +98,8 @@ public class Main {
     private static void addHook(HazeDatabase hazeDatabase) {
         Thread printingHook = new Thread(() -> shutdown(hazeDatabase));
         Runtime.getRuntime().addShutdownHook(printingHook);
-    }
 
+    }
 
     private static void shutdown(HazeDatabase hazeDatabase) {
         SaveFile.writeOnFile(hazeDatabase.copy());
