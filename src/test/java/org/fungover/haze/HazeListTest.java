@@ -350,6 +350,6 @@ class HazeListTest {
     void callingLindexWithValidIndexZeroReturnFirstValue(){
         hazeList.rPush(List.of("", "key2", "val1", "val2", "val3"));
         assertThat(hazeList.lIndex(List.of("", "key2", "0"))).isEqualTo("$4\r\nval1\r\n");
+
     }
 }
-

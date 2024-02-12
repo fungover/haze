@@ -6,7 +6,7 @@ import redis.clients.jedis.JedisPooled;
 import redis.clients.jedis.Protocol;
 import redis.clients.jedis.util.SafeEncoder;
 
-
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -107,9 +107,8 @@ class HazeIT {
         assertThat(pool.rpush("test", "hej")).isEqualTo(4);
         assertThat(pool.lindex("test", 0)).isEqualTo("hello");
         assertThat(pool.lindex("test", -1)).isEqualTo("hej");
+
         pool.del("test");
-    assertThat(pool.exists("right")).isFalse();}
+        assertThat(pool.exists("right")).isFalse();
+    }
 }
-
-
-
