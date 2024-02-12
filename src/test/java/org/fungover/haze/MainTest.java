@@ -13,14 +13,22 @@ import org.testcontainers.shaded.org.apache.commons.io.output.ByteArrayOutputStr
 import java.io.BufferedReader;
 
 import java.io.PrintStream;
+
 import java.io.StringReader;
+
+
+import java.util.LinkedList;
 
 import java.util.List;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.fungover.haze.Main.printThreadDebug;
-import static org.junit.Assert.assertFalse;
+
+
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 
 
@@ -155,6 +163,22 @@ class MainTest {
 
         assertFalse(outContent.toString().contains("ThreadID"));
         assertFalse(outContent.toString().contains("Is virtual Thread"));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "true, AUTH, password, false, true",
+            "false, AUTH, password, false, false",
+            "true, SET, password, false, false",
+            "true, AUTH, password, true, false",
+            "false, AUTH, password, true, false"
+    })
+    void authCommandReceivedTest(boolean isPasswordSet, String command, String password, boolean clientAuthenticated, boolean expected) {
+        List<String> inputList = new LinkedList<>(List.of(command, password));
+
+        boolean result = Main.authCommandReceived(isPasswordSet, inputList, clientAuthenticated);
+
+        assertEquals(expected, result);
     }
 
 }
