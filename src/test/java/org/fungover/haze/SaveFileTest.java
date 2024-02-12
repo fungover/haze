@@ -71,4 +71,16 @@ class SaveFileTest {
             throw new RuntimeException(e);
         }
     }
+
+    @Test
+    @DisplayName("File already exists returns +OK\\r\\n")
+    void fileAlreadyExistsReturnsOK(@TempDir Path tempDir) {
+        System.setProperty("user.home", tempDir.toString());
+        var map = Map.of("key", "value");
+
+        SaveFile.createFile();
+
+        assertThat(SaveFile.writeOnFile(map)).isEqualTo("+OK\r\n");
+    }
 }
+
