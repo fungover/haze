@@ -86,7 +86,7 @@ public class Main {
         return inputList;
     }
 
-    private static void initSocket(Initialize initialize, ServerSocket serverSocket) throws IOException {
+   public static void initSocket(Initialize initialize, ServerSocket serverSocket) throws IOException {
         serverSocket.setReuseAddress(true);
         serverSocket.bind(new InetSocketAddress(initialize.getPort()));
     }
@@ -102,7 +102,7 @@ public class Main {
         logger.info("Shutting down....");
     }
 
-    static void printThreadDebug() {
+   public static void printThreadDebug() {
         logger.debug("ThreadID {}", () -> Thread.currentThread().threadId());  // Only for Debug
         logger.debug("Is virtual Thread {}", () -> Thread.currentThread().isVirtual()); // Only for Debug
     }
