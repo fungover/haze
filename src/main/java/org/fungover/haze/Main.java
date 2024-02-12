@@ -46,7 +46,7 @@ public class Main {
                     try {
                         BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
                         boolean clientAuthenticated = false;
-                        while (true) {
+                        while (!client.isClosed()) {
                             List<String> inputList = new ArrayList<>();
 
                             String firstReading = input.readLine();
