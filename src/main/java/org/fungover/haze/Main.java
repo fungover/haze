@@ -54,7 +54,7 @@ public class Main {
         try {
             BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
             boolean clientAuthenticated = false;
-            while (true) {
+            while (!client.isClosed()) {
                 List<String> inputList = getInputList(input);
                 clientAuthenticated = authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
                 handleThread(hazeList, hazeDatabase, client, inputList);
