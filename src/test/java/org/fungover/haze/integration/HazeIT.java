@@ -6,7 +6,7 @@ import redis.clients.jedis.JedisPooled;
 import redis.clients.jedis.Protocol;
 import redis.clients.jedis.util.SafeEncoder;
 
-import java.util.List;
+
 
 import static org.assertj.core.api.Assertions.assertThat;
 
