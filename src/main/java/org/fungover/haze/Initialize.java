@@ -41,6 +41,8 @@ public class Initialize {
     public void clearCliOptions() {
         cliOptions.clear();
     }
+
+
     public static Initialize getInitialize(String[] args) {
         Initialize initialize = new Initialize();
         initialize.importCliOptions(args);

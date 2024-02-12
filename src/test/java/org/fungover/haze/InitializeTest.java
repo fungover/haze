@@ -1,9 +1,18 @@
 package org.fungover.haze;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Map;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 
 class InitializeTest {
 
@@ -54,4 +63,28 @@ class InitializeTest {
 
         assertThat(initialize.getPassword()).isEqualTo("1233");
     }
-}
+
+    @Test
+    public void testGetInitialize() throws NoSuchFieldException, IllegalAccessException {
+        // Ange testargument
+        String[] args = {"-p", "1234", "--password", "test"};
+
+        // Anropa getInitialize-metoden för att skapa en Initialize-instans
+        Initialize initialize = Initialize.getInitialize(args);
+
+        // Hämta cliOptions från den skapade Initialize-instansen med reflektion
+        Field field = Initialize.class.getDeclaredField("cliOptions");
+        field.setAccessible(true);
+        Object obj = field.get(initialize);
+
+        // Kontrollera att cliOptions-mapen har rätt värden
+        Assertions.assertNotNull(obj);
+        Assertions.assertEquals("1234", ((Map<String, String>) obj).get("-p"));
+        Assertions.assertEquals("test", ((Map<String, String>) obj).get("--password"));
+    }
+
+
+
+    }
+
+
