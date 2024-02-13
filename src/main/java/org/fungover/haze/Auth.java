@@ -35,7 +35,7 @@ public class Auth {
         return clientAuthenticated;
     }
 
-   private static void shutdownClientIfNotAuthenticated(Socket client, boolean clientAuthenticated, boolean isPasswordSet) throws IOException {
+  public static void shutdownClientIfNotAuthenticated(Socket client, boolean clientAuthenticated, boolean isPasswordSet) throws IOException {
         if (!clientAuthenticated && isPasswordSet) {
             client.getOutputStream().write(Auth.printAuthError());
             client.shutdownOutput();

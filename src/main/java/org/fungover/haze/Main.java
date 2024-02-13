@@ -59,7 +59,7 @@ public class Main {
             boolean clientAuthenticated = false;
             while (!client.isClosed()) {
                 List<String> inputList = getInputList(input);
-                clientAuthenticated = authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
+                clientAuthenticated = Auth.authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
                 handleThread(hazeList, hazeDatabase, client, inputList);
             }
 
@@ -90,7 +90,7 @@ public class Main {
         return inputList;
     }
 
-    public static void initSocket(Initialize initialize, ServerSocket serverSocket) throws IOException {
+    private static void initSocket(Initialize initialize, ServerSocket serverSocket) throws IOException {
         serverSocket.setReuseAddress(true);
         serverSocket.bind(new InetSocketAddress(initialize.getPort()));
     }
@@ -106,7 +106,7 @@ public class Main {
         logger.info("Shutting down....");
     }
 
-    public static void printThreadDebug() {
+    static void printThreadDebug() {
         logger.debug("ThreadID {}", () -> Thread.currentThread().threadId());  // Only for Debug
         logger.debug("Is virtual Thread {}", () -> Thread.currentThread().isVirtual()); // Only for Debug
     }
@@ -170,26 +170,10 @@ public class Main {
 
 
 
-        private static boolean authenticateClient (Auth auth,boolean isPasswordSet, Socket
-        client, List < String > inputList,boolean clientAuthenticated) throws IOException {
-            if (authCommandReceived(isPasswordSet, inputList, clientAuthenticated))
-                return auth.authenticate(inputList.get(1), client);
 
-            shutdownClientIfNotAuthenticated(client, clientAuthenticated, isPasswordSet);
-            return clientAuthenticated;
-        }
 
-        private static void shutdownClientIfNotAuthenticated (Socket client,boolean clientAuthenticated,
-        boolean isPasswordSet) throws IOException {
-            if (!clientAuthenticated && isPasswordSet) {
-                client.getOutputStream().write(Auth.printAuthError());
-                client.shutdownOutput();
-            }
-        }
 
-        static boolean authCommandReceived ( boolean isPasswordSet, List<String > inputList, boolean clientAuthenticated){
-            return isPasswordSet && !clientAuthenticated && inputList.size() == 2 && inputList.getFirst().equals("AUTH");
-        }
+
     }
 
 
