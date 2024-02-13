@@ -10,6 +10,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -147,12 +148,23 @@ class MainTest {
     void authCommandReceivedTest(boolean isPasswordSet, String command, String password, boolean clientAuthenticated, boolean expected) {
         List<String> inputList = new LinkedList<>(List.of(command, password));
 
-        boolean result = Main.authCommandReceived(isPasswordSet, inputList, clientAuthenticated);
+        boolean result = Auth.authCommandReceived(isPasswordSet, inputList, clientAuthenticated);
 
         assertEquals(expected, result);
     }
 
     @Test
+
+    void testExecuteCommandNoCommandProvided() {
+
+
+        List<String> inputList = new ArrayList<>();
+
+        String result = Main.executeCommand(database, inputList, hazeList);
+
+        assertThat(result).isEqualTo("-ERR no command provided\r\n");
+    }
+ @Test
     void callingExecuteCommandWithUnknownCommandReturnsErrorMessage() {
         assertThat(Main.executeCommand(database, List.of("NOSUCHCOMMAND"), hazeList))
                 .isEqualTo("-ERR unknown command\r\n");
@@ -178,6 +190,7 @@ class MainTest {
         verify(mockDatabase).set(inputList);
         assertEquals("+OK\r\n", result);
     }
+
 
 
 
