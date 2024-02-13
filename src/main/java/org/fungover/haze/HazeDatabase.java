@@ -178,7 +178,7 @@ public class HazeDatabase {
         String key = inputList.get(1);
         try {
             if (!database.containsKey(key)) {
-                return "-ERR no such key\r\n";
+                return NO_SUCH_KEY_ERROR;
             }
             String value = database.get(key);
             try {
@@ -199,7 +199,7 @@ public class HazeDatabase {
         String key = inputList.get(1);
         try {
             if (!database.containsKey(key)) {
-                return "-ERR no such key\r\n";
+                return NO_SUCH_KEY_ERROR;
             }
             String value = database.get(key);
             try {
