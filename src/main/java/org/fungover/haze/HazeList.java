@@ -17,11 +17,11 @@ public class HazeList {
 
     public String lInsert(List<String> inputList) {
         if (inputList.size() < 5) {
-            return "-ERR wrong number of arguments for LINSERT\r\n";
+            return "-Wrong number of arguments for LINSERT\r\n";
         }
 
         String key = inputList.get(1);
-        String pivot = inputList.get(2);
+        String pivot = inputList.get(2).trim();
         String elementToInsert = inputList.get(3);
         boolean before = inputList.get(4).equalsIgnoreCase("BEFORE");
 
@@ -33,16 +33,14 @@ public class HazeList {
 
         List<String> elements = convertToList(listAsString);
 
-        pivot = pivot.trim();
+        if (elements.isEmpty()) {
+            return "-List is empty\r\n";
+        }
 
         int pivotIndex = elements.indexOf(pivot);
 
         if (pivotIndex == -1) {
-            if (elements.isEmpty()) {
-                return "-List is empty\r\n";
-            } else {
-                return "-Pivot element not found in the list\r\n";
-            }
+            return "-Pivot element not found in the list\r\n";
         }
 
         int insertIndex = before ? pivotIndex : pivotIndex + 1;

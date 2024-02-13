@@ -11,6 +11,32 @@ class HazeListTest {
     HazeList hazeList = new HazeList(hazeDatabase);
 
     @Test
+    void testLInsertWithNonexistentKey() {
+        List<String> inputList = Arrays.asList("", "nonexistentKey", "value2", "newValue", "BEFORE");
+        String result = hazeList.lInsert(inputList);
+
+        assertEquals("-List not found\r\n", result);
+    }
+
+    @Test
+    void testLInsertWithNonexistentPivot() {
+        hazeDatabase.setValue("key1", "value1,value3");
+
+        List<String> inputList = Arrays.asList("", "key1", "value2", "newValue", "BEFORE");
+        String result = hazeList.lInsert(inputList);
+
+        assertEquals("-Pivot element not found in the list\r\n", result);
+    }
+
+    @Test
+    void testLInsertWithInvalidArguments() {
+        List<String> inputList = Arrays.asList("", "key1", "value2", "newValue");
+        String result = hazeList.lInsert(inputList);
+
+        assertEquals("-Wrong number of arguments for LINSERT\r\n", result);
+    }
+
+    @Test
     void rPushWithTwoValuesShouldReturnTwo() {
         hazeList.rPush(List.of("", "key1", "value1"));
         String actual = hazeList.rPush(List.of("", "key1", "value2"));
