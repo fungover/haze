@@ -4,14 +4,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.io.*;
+import java.net.Socket;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.fungover.haze.Main.printThreadDebug;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 
 class MainTest {
@@ -23,6 +27,7 @@ class MainTest {
     void callingExecuteCommandWithValidNonExistingInputReturnsColonOne() {
         assertThat(Main.executeCommand(database, List.of("SETNX", "1", "This is a value"), hazeList)).isEqualTo(":1\r\n");
     }
+
 
     @Test
     void callingExecuteCommandWithInvalidInputStringReturnsErrorMessage() {
@@ -109,6 +114,18 @@ class MainTest {
     }
 
     @Test
+    void callExecuteCommandWithIncrShouldIncreaseTheValueOfTheKeyBy1() {
+        Main.executeCommand(database, List.of("SET", "key1", "1"), hazeList);
+        assertThat(Main.executeCommand(database, List.of("INCR", "key1"), hazeList)).isEqualTo(":2\r\n");
+    }
+
+    @Test
+    void callExecuteCommandWithDecrShouldDecreaseTheValueOfTheKeyBy1(){
+        Main.executeCommand(database, List.of("SET", "key1", "1"), hazeList);
+        assertThat(Main.executeCommand(database, List.of("DECR", "key1"), hazeList)).isEqualTo(":0\r\n");
+    }
+
+    @Test
     void testPrintThreadDebug() {
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
@@ -118,4 +135,54 @@ class MainTest {
         assertFalse(outContent.toString().contains("ThreadID"));
         assertFalse(outContent.toString().contains("Is virtual Thread"));
     }
+
+    @ParameterizedTest
+    @CsvSource({
+            "true, AUTH, password, false, true",
+            "false, AUTH, password, false, false",
+            "true, SET, password, false, false",
+            "true, AUTH, password, true, false",
+            "false, AUTH, password, true, false"
+    })
+    void authCommandReceivedTest(boolean isPasswordSet, String command, String password, boolean clientAuthenticated, boolean expected) {
+        List<String> inputList = new LinkedList<>(List.of(command, password));
+
+        boolean result = Main.authCommandReceived(isPasswordSet, inputList, clientAuthenticated);
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void callingExecuteCommandWithUnknownCommandReturnsErrorMessage() {
+        assertThat(Main.executeCommand(database, List.of("NOSUCHCOMMAND"), hazeList))
+                .isEqualTo("-ERR unknown command\r\n");
+    }
+
+    @Test
+    void callingSetWithIncorrectNumberOfArgumentsReturnsErrorMessage() {
+        String errorMessage = Main.executeCommand(database, List.of("SET", "onlyOneArgument"), hazeList);
+        String expectedErrorMessage = "-ERR wrong number of arguments for command\r\n";
+        assertEquals(expectedErrorMessage, errorMessage);
+    }
+
+    @Test
+    public void whenExecuteSetCommand_thenCorrectMethodIsCalled() {
+        HazeDatabase mockDatabase = mock(HazeDatabase.class);
+        HazeList mockHazeList = mock(HazeList.class);
+        List<String> inputList = Arrays.asList("SET", "key", "value");
+
+        when(mockDatabase.set(inputList)).thenReturn("+OK\r\n");
+
+        String result = Main.executeCommand(mockDatabase, inputList, mockHazeList);
+
+        verify(mockDatabase).set(inputList);
+        assertEquals("+OK\r\n", result);
+    }
+
+
+
+
+
+
+
 }

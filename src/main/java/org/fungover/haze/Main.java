@@ -121,7 +121,11 @@ public class Main {
             case LMOVE -> hazeList.lMove(inputList);
             case LTRIM -> hazeList.callLtrim(inputList);
             case LINSERT -> hazeList.lInsert(inputList);
+            case LINDEX -> hazeList.lIndex(inputList);
+            case LSET -> hazeList.lSet(inputList);
             case AUTH -> "+OK\r\n";
+            case INCR -> hazeDatabase.increaseValue(inputList);
+            case DECR -> hazeDatabase.decreaseValue(inputList);
         };
     }
 
@@ -162,7 +166,7 @@ public class Main {
         }
     }
 
-    private static boolean authCommandReceived(boolean isPasswordSet, List<String> inputList, boolean clientAuthenticated) {
+    static boolean authCommandReceived(boolean isPasswordSet, List<String> inputList, boolean clientAuthenticated) {
         return isPasswordSet && !clientAuthenticated && inputList.size() == 2 && inputList.getFirst().equals("AUTH");
     }
 }

@@ -2,6 +2,7 @@ package org.fungover.haze;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class HazeList {
@@ -300,10 +301,75 @@ public class HazeList {
         return String.join("\r\n", list);
     }
 
+    public String lIndex(List<String> inputList){
+        String key = getKey(inputList);
+        int index;
+        if (!hazeDatabase.containsKey(key))
+            return "Could not find list";
+        String indexStr = inputList.get(2);
+
+        try {
+            index = Integer.parseInt(indexStr);
+        } catch (NumberFormatException e) {
+            return "-ERR invalid index\r\n";
+        }
+
+        List<String> data = getValueAsList(hazeDatabase.getValue(key));
+        if(data.size()-1<index)
+            return NIL_RESPONSE;
+        String result;
+        if(index<0){
+            int newIndex = (data.size()) + index;
+            result = data.get(newIndex);
+            return "$" + result.length() + "\r\n" + result + "\r\n";
+        }
+
+        result = data.get(index);
+        return "$" + result.length() + "\r\n" + result + "\r\n";
+    }
+
     private static String getKey(List<String> inputList) {
         String key = null;
         if (inputList.size() > 1)
             key = inputList.get(1);
         return key;
+    }
+
+    private List<String> getValueAsList(String value) {
+        return Arrays.asList(value.split("\r\n"));
+    }
+
+    public String lSet(List<String> inputlist){
+        if (inputlist.size() < 4){
+            return "-Err Wrong number of arguments for LSET\r\n";
+        }
+        String key = getKey(inputlist);
+
+        if (!hazeDatabase.containsKey(key)){
+            return "-Err Key does not exist\r\n";
+        }
+            int index;
+            if (inputlist.get(2).equals("-1")) {
+
+                List<String> list = getValueAsList(hazeDatabase.getValue(key));
+                index = list.size() - 1;
+            } else {
+                try {
+                    index = Integer.parseInt(inputlist.get(2));
+                } catch (NumberFormatException e) {
+                    return "-Err invalid index\r\n";
+                }
+            }
+        String element = inputlist.get(3);
+        List<String> list = getValueAsList(hazeDatabase.getValue(key));
+
+        if (index < 0 || index >= list.size()){
+            return "-Err index out of bounds\r\n";
+        }
+        List <String> updatedList = IntStream.range(0, list.size()).
+                mapToObj(i -> i == index ? element : list.get(i)).toList();
+
+        hazeDatabase.addValue(key,listValueAsString(updatedList));
+        return "+OK\r\n";
     }
 }

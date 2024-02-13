@@ -1,6 +1,8 @@
 package org.fungover.haze;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -62,6 +64,9 @@ public class HazeDatabase {
     }
 
     public String delete(List<String> keys) {
+        if (keys.isEmpty())
+            throw new IllegalArgumentException("No keys provided");
+
         var counter = new AtomicInteger(0);
         lock.lock();
         try {
@@ -78,6 +83,9 @@ public class HazeDatabase {
     }
 
     public String exists(List<String> keys) {
+        if (keys.isEmpty())
+            return ":0\r\n";
+
         lock.lock();
         int numberOfKeys = 0;
         try {
@@ -125,6 +133,12 @@ public class HazeDatabase {
     }
 
     public String ping(List<String> messageList) {
+        if (messageList == null || messageList.isEmpty()) {
+            throw new IllegalArgumentException("No message provided");
+        } else if (messageList.size() > 2) {
+            throw new IllegalArgumentException("Too many arguments for PING command");
+        }
+
         if (messageList.size() == 1)
             return "+PONG\r\n";
         else return "$" + (messageList.get(1)).length() + "\r\n" + messageList.get(1) + "\r\n";
@@ -149,4 +163,47 @@ public class HazeDatabase {
             lock.unlock();
         }
     }
+
+    public String increaseValue(List<String> inputList) {
+        lock.lock();
+        String key = inputList.get(1);
+        try {
+            if (!database.containsKey(key)) {
+                return "-ERR no such key\r\n";
+            }
+            String value = database.get(key);
+            try {
+                long longValue = Long.parseLong(value);
+                longValue++;
+                database.put(key, String.valueOf(longValue));
+                return ":" + longValue + "\r\n";
+            } catch (NumberFormatException e) {
+                return "-WRONGTYPE value is not an integer or out of range\r\n";
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public String decreaseValue(List<String> inputList) {
+        lock.lock();
+        String key = inputList.get(1);
+        try {
+            if (!database.containsKey(key)) {
+                return "-ERR no such key\r\n";
+            }
+            String value = database.get(key);
+            try {
+                long longValue = Long.parseLong(value);
+                longValue--;
+                database.put(key, String.valueOf(longValue));
+                return ":" + longValue + "\r\n";
+            } catch (NumberFormatException e) {
+                return "-WRONGTYPE value is not an integer or out of range\r\n";
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
 }
