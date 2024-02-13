@@ -1,10 +1,10 @@
 package org.fungover.haze;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class HazeList {
-
     static final String NIL_RESPONSE = "$5\r\n(nil)\r\n";
     static final String EMPTY_ARRAY_RESPONSE = "*0\r\n";
     static final String LEFT = "LEFT";
@@ -16,35 +16,41 @@ public class HazeList {
     }
 
     public String lInsert(List<String> inputList) {
-        if (inputList.size() < 4) {
-            return "-wrong number of arguments for LINSERT command\r\n";
+        if (inputList.size() < 5) {
+            return "-ERR wrong number of arguments for LINSERT\r\n";
         }
 
-        String key = inputList.get(0);
-        String pivot = inputList.get(1);
-        String elementToInsert = inputList.get(2);
-        boolean before = inputList.get(3).equalsIgnoreCase("BEFORE");
+        String key = inputList.get(1);
+        String pivot = inputList.get(2);
+        String elementToInsert = inputList.get(3);
+        boolean before = inputList.get(4).equalsIgnoreCase("BEFORE");
 
-        try {
-            List<String> elements = hazeDatabase.getValueAsList(key);
-            if (elements == null) {
-                return "List not found\r\n";
-            }
+        String listAsString = hazeDatabase.getValue(key);
 
-            int pivotIndex = elements.indexOf(pivot);
-            if (pivotIndex == -1) {
-                return "Pivot element not found in the list\r\n";
-            }
-
-            int insertIndex = before ? pivotIndex : pivotIndex + 1;
-            elements.add(insertIndex, elementToInsert);
-
-            hazeDatabase.setValueFromList(key, elements);
-
-            return "+OK\r\n";
-        } catch (IllegalArgumentException e) {
-            return e.getMessage() + "\r\n";
+        if (listAsString == null) {
+            return "-List not found\r\n";
         }
+
+        List<String> elements = convertToList(listAsString);
+
+        pivot = pivot.trim();
+
+        int pivotIndex = elements.indexOf(pivot);
+
+        if (pivotIndex == -1) {
+            if (elements.isEmpty()) {
+                return "-List is empty\r\n";
+            } else {
+                return "-Pivot element not found in the list\r\n";
+            }
+        }
+
+        int insertIndex = before ? pivotIndex : pivotIndex + 1;
+        elements.add(insertIndex, elementToInsert);
+
+        hazeDatabase.setValue(key, listValueAsString(elements));
+
+        return "+OK\r\n";
     }
 
     public String lPush(List<String> inputList) {
@@ -63,7 +69,7 @@ public class HazeList {
 
         hazeDatabase.addValue(key, newListAsString + oldListAsString);
 
-        int currentSize = getValueAsList(hazeDatabase.getValue(key)).size();
+        int currentSize = convertToList(hazeDatabase.getValue(key)).size();
 
         return ":" + currentSize + "\r\n";
     }
@@ -72,7 +78,7 @@ public class HazeList {
         String key = getKey(inputList);
 
         String currentValuesAsString = hazeDatabase.getValue(key);
-        List<String> currentValues = currentValuesAsString != null ? getValueAsList(currentValuesAsString) : new ArrayList<>();
+        List<String> currentValues = currentValuesAsString != null ? convertToList(currentValuesAsString) : new ArrayList<>();
 
         List<String> newInputs = inputList.stream()
                 .skip(2)
@@ -92,7 +98,7 @@ public class HazeList {
         if (!hazeDatabase.containsKey(key))
             return NIL_RESPONSE;
 
-        List<String> list = getValueAsList(hazeDatabase.getValue(key));
+        List<String> list = convertToList(hazeDatabase.getValue(key));
 
         String firstElement = list.removeFirst();
         String newValue = listValueAsString(list);
@@ -108,7 +114,7 @@ public class HazeList {
         if (!hazeDatabase.containsKey(key))
             return NIL_RESPONSE;
 
-        List<String> list = getValueAsList(hazeDatabase.getValue(key));
+        List<String> list = convertToList(hazeDatabase.getValue(key));
 
         int actualCount = Math.min(count, list.size());
 
@@ -130,7 +136,7 @@ public class HazeList {
         if (!hazeDatabase.containsKey(key))
             return NIL_RESPONSE;
 
-        List<String> list = getValueAsList(hazeDatabase.getValue(key));
+        List<String> list = convertToList(hazeDatabase.getValue(key));
 
         int lastIndex = list.size() - 1;
         String lastElement = list.remove(lastIndex);
@@ -147,7 +153,7 @@ public class HazeList {
         if (!hazeDatabase.containsKey(key))
             return NIL_RESPONSE;
 
-        List<String> list = getValueAsList(hazeDatabase.getValue(key));
+        List<String> list = convertToList(hazeDatabase.getValue(key));
 
         int actualCount = Math.min(count, list.size());
         if (actualCount == 0)
@@ -171,7 +177,7 @@ public class HazeList {
         if (value == null || value.isEmpty())
             return ":0\r\n";
         else {
-            List<String> list = getValueAsList(value);
+            List<String> list = convertToList(value);
             return ":" + list.size() + "\r\n";
         }
     }
@@ -194,8 +200,8 @@ public class HazeList {
         else if (sourceValue.isEmpty())
             return "-The source list is empty.\r\n";
 
-        List<String> sourceList = getValueAsList(sourceValue);
-        List<String> destinationList = getValueAsList(destinationValue);
+        List<String> sourceList = convertToList(sourceValue);
+        List<String> destinationList = convertToList(destinationValue);
         String value;
 
         if (whereFrom.equals(LEFT) && whereTo.equals(LEFT)) {
@@ -228,7 +234,7 @@ public class HazeList {
             return "-The key is not present in the database.\r\n";
         }
         try {
-            List<String> list = getValueAsList(hazeDatabase.getValue(key));
+            List<String> list = convertToList(hazeDatabase.getValue(key));
             List<String> subList = new ArrayList<>(list.subList(start, stop + 1));
             String newCsv = listValueAsString(subList);
             hazeDatabase.addValue(key, newCsv);
@@ -287,7 +293,7 @@ public class HazeList {
         }
     }
     @SuppressWarnings("squid:S6204")
-    public static List<String> getValueAsList(String textToSplit) {
+    public static List<String> convertToList(String textToSplit) {
         return Stream.of(textToSplit.split("\r\n", -1))
                 .collect(Collectors.toList());
     }

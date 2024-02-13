@@ -8,11 +8,30 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class HazeDatabaseTest {
 
     HazeDatabase testDatabase = new HazeDatabase();
 
+    @Test
+    void testSetValueAndGetValidValue() {
+        testDatabase.setValue("key1", "value1");
+        assertEquals("value1", testDatabase.getValue("key1"));
+    }
+
+    @Test
+    void testGetValueWithNonExistentKey() {
+        assertNull(testDatabase.getValue("nonexistentKey"));
+    }
+
+    @Test
+    void testGetValueAfterSettingMultipleValues() {
+        testDatabase.setValue("key1", "value1");
+        testDatabase.setValue("key2", "value2");
+        assertEquals("value2", testDatabase.getValue("key2"));
+    }
+    
     @Test
     void callingDeleteReturnsZeroWhenKeyDoesNotExist() {
         assertThat(testDatabase.delete(Collections.singletonList("2"))).isEqualTo(":0\r\n");

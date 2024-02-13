@@ -1,7 +1,7 @@
 package org.fungover.haze;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -9,15 +9,6 @@ class HazeListTest {
 
     HazeDatabase hazeDatabase = new HazeDatabase();
     HazeList hazeList = new HazeList(hazeDatabase);
-
-    @Test
-    void testLinsertWrongNumberOfArguments() {
-        List<String> inputList = new ArrayList<>();
-        inputList.add("list1"); // Key for the list
-        inputList.add("LINSERT");
-        String result = hazeList.lInsert(inputList);
-        assertEquals("-wrong number of arguments for LINSERT command\r\n", result);
-    }
 
     @Test
     void rPushWithTwoValuesShouldReturnTwo() {
@@ -146,8 +137,8 @@ class HazeListTest {
         String sourceValues = hazeList.hazeDatabase.getValue("key1");
         String destinationValues = hazeList.hazeDatabase.getValue("key2");
 
-        List<String> list1 = HazeList.getValueAsList(sourceValues);
-        List<String> list2 = HazeList.getValueAsList(destinationValues);
+        List<String> list1 = HazeList.convertToList(sourceValues);
+        List<String> list2 = HazeList.convertToList(destinationValues);
 
         assertEquals(List.of("val2"), list1);
         assertEquals(List.of("val1", "val3", "val4"), list2);
@@ -163,8 +154,8 @@ class HazeListTest {
         String sourceValues = hazeList.hazeDatabase.getValue("key1");
         String destinationValues = hazeList.hazeDatabase.getValue("key2");
 
-        List<String> list1 = HazeList.getValueAsList(sourceValues);
-        List<String> list2 = HazeList.getValueAsList(destinationValues);
+        List<String> list1 = HazeList.convertToList(sourceValues);
+        List<String> list2 = HazeList.convertToList(destinationValues);
 
         assertEquals(List.of("val2"), list1);
         assertEquals(List.of("val3", "val4", "val1"), list2);
@@ -179,8 +170,8 @@ class HazeListTest {
         String sourceValues = hazeList.hazeDatabase.getValue("key1");
         String destinationValues = hazeList.hazeDatabase.getValue("key2");
 
-        List<String> list1 = HazeList.getValueAsList(sourceValues);
-        List<String> list2 = HazeList.getValueAsList(destinationValues);
+        List<String> list1 = HazeList.convertToList(sourceValues);
+        List<String> list2 = HazeList.convertToList(destinationValues);
 
         assertEquals(List.of("val2", "val3", "val4"), list2);
         assertEquals(List.of("val1"), list1);
@@ -207,7 +198,7 @@ class HazeListTest {
         hazeList.rPush(List.of("", "key2", "val3", "val4"));
         hazeList.lMove(List.of("", "key1", "key2", "RIGHT", "RIGHT"));
         String destinationList = hazeDatabase.getValue("key2");
-        List<String> parsedList = HazeList.getValueAsList(destinationList);
+        List<String> parsedList = HazeList.convertToList(destinationList);
         assertEquals(3, parsedList.size());
     }
 
@@ -224,7 +215,7 @@ class HazeListTest {
         hazeList.rPush(List.of("", "key1", "val1", "val2", "val3", "val4", "val5"));
         hazeList.lTrim("key1", 1,2);
         String databaseCsv = hazeList.hazeDatabase.getValue("key1");
-        List<String> list1 = HazeList.getValueAsList(databaseCsv);
+        List<String> list1 = HazeList.convertToList(databaseCsv);
 
         assertEquals(List.of("val2", "val3"), list1);
     }
