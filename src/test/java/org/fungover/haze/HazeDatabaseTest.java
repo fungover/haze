@@ -252,4 +252,27 @@ class HazeDatabaseTest {
 
     }
 
+    @Test
+    @DisplayName("GETDEL should return value of key deleted")
+    void getDelShouldReturnValueOfKeyDeleted() {
+        testDatabase.setNX(List.of("SET", "key1", "hejsan"));
+        assertThat("hejsan").isEqualTo(testDatabase.getAndDelete(List.of("GETDEL", "key1")));
+    }
+
+    @Test
+    @DisplayName("GETDEL should delete key if located")
+    void getDelShouldDeleteKeyIfLocated() {
+        testDatabase.setNX(List.of("SET", "key1", "hejsan"));
+        assertThat(":1\r\n").isEqualTo(testDatabase.exists(List.of("key1")));
+        testDatabase.getAndDelete(List.of("GETDEL", "key1"));
+        assertThat(":0\r\n").isEqualTo(testDatabase.exists(List.of("key1")));
+    }
+
+    @Test
+    @DisplayName("GETDEL where key does not exist should return error message")
+    void getDelWhereKeyDoesNotExistShouldReturnNilResponse() {
+        testDatabase.setNX(List.of("SET", "key1", "hejsan"));
+        assertThat("-ERR no such key\r\n").isEqualTo(testDatabase.getAndDelete(List.of("GETDEL", "key2")));
+    }
+
 }

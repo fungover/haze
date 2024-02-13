@@ -10,7 +10,6 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -125,6 +124,7 @@ public class Main {
             case AUTH -> "+OK\r\n";
             case INCR -> hazeDatabase.increaseValue(inputList);
             case DECR -> hazeDatabase.decreaseValue(inputList);
+            case GETDEL -> hazeDatabase.getAndDelete(inputList);
         };
     }
 

@@ -63,6 +63,23 @@ public class HazeDatabase {
         }
     }
 
+    public String getAndDelete(List<String> inputList) {
+        if (inputList.size() != 2)
+            return ARGUMENT_ERROR;
+        lock.lock();
+        String key = inputList.get(1);
+        var value = "";
+        try {
+            if (database.containsKey(key)) {
+                value = database.get(inputList.get(1));
+                database.remove(key);
+                return value;
+            } else return "-ERR no such key\r\n";
+        } finally {
+            lock.unlock();
+        }
+    }
+
     public String exists(List<String> keys) {
         if (keys.isEmpty())
             return ":0\r\n";
