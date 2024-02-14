@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 
 
-
 public class Main {
     static boolean serverOpen = true;
     static Logger logger = LogManager.getLogger(Main.class);
@@ -50,7 +49,13 @@ public class Main {
 
                             String firstReading = input.readLine();
 
-                            readInputStream(input,inputList,firstReading);
+                            if (firstReading == null) {
+                                logger.info("client has closed the connection");
+                                client.close();
+                                return;
+                            }
+
+                            readInputStream(input, inputList, firstReading);
 
                             clientAuthenticated = Auth.authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
 
