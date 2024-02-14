@@ -13,29 +13,38 @@ class HazeListTest {
     HazeList hazeList = new HazeList(hazeDatabase);
 
     @Test
-    void testLInsertWithNonexistentKey() {
-        List<String> inputList = Arrays.asList("", "nonexistentKey", "value2", "newValue", "BEFORE");
-        String result = hazeList.lInsert(inputList);
-
-        assertEquals("-List not found\r\n", result);
+    void lInsertShouldInsertElementAfterPivot() {
+        hazeDatabase.addValue("key1", "pivot\r\nelement");
+        String actual = hazeList.lInsert(Arrays.asList("LINSERT", "key1", "AFTER", "pivot", "newElement"));
+        assertEquals("+OK\r\n", actual);
+        assertEquals("pivot\r\nnewElement\r\nelement", hazeDatabase.getValue("key1"));
     }
 
     @Test
-    void testLInsertWithNonexistentPivot() {
-        hazeDatabase.setValue("key1", "value1,value3");
-
-        List<String> inputList = Arrays.asList("", "key1", "value2", "newValue", "BEFORE");
-        String result = hazeList.lInsert(inputList);
-
-        assertEquals("-Pivot element not found in the list\r\n", result);
+    void lInsertShouldInsertElementBeforePivot() {
+        hazeDatabase.addValue("key1", "pivot\r\nelement");
+        String actual = hazeList.lInsert(Arrays.asList("LINSERT", "key1", "BEFORE", "pivot", "newElement"));
+        assertEquals("+OK\r\n", actual);
+        assertEquals("newElement\r\npivot\r\nelement", hazeDatabase.getValue("key1"));
     }
 
     @Test
-    void testLInsertWithInvalidArguments() {
-        List<String> inputList = Arrays.asList("", "key1", "value2", "newValue");
-        String result = hazeList.lInsert(inputList);
+    void lInsertWrongNumberOfArguments() {
+        String actual = hazeList.lInsert(Arrays.asList("LINSERT", "key1"));
+        assertEquals("-Wrong number of arguments for LINSERT\r\n", actual);
+    }
 
-        assertEquals("-Wrong number of arguments for LINSERT\r\n", result);
+    @Test
+    void lInsertListNotFound() {
+        String actual = hazeList.lInsert(Arrays.asList("LINSERT", "key1", "BEFORE", "pivot", "element"));
+        assertEquals("-List not found\r\n", actual);
+    }
+
+    @Test
+    void lInsertPivotNotFound() {
+        hazeDatabase.addValue("key1", "another\r\nvalue");
+        String actual = hazeList.lInsert(Arrays.asList("LINSERT", "key1", "AFTER", "pivot", "element"));
+        assertEquals("-Pivot element not found in the list\r\n", actual);
     }
 
     @Test

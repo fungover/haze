@@ -17,8 +17,8 @@ class HazeDatabaseTest {
     HazeDatabase testDatabase = new HazeDatabase();
 
     @Test
-    void testSetValueAndGetValidValue() {
-        testDatabase.setValue("key1", "value1");
+    void testAddValueAndGetValidValue() {
+        testDatabase.addValue("key1", "value1");
         assertEquals("value1", testDatabase.getValue("key1"));
     }
 
@@ -29,8 +29,8 @@ class HazeDatabaseTest {
 
     @Test
     void testGetValueAfterSettingMultipleValues() {
-        testDatabase.setValue("key1", "value1");
-        testDatabase.setValue("key2", "value2");
+        testDatabase.addValue("key1", "value1");
+        testDatabase.addValue("key2", "value2");
         assertEquals("value2", testDatabase.getValue("key2"));
     }
     
@@ -103,8 +103,9 @@ class HazeDatabaseTest {
         testDatabase.setNX(List.of("", "name", "saher"));
         testDatabase.setNX(List.of("", "1", "Hej"));
 
-        assertThat(testDatabase.exists(Collections.EMPTY_LIST)).isEqualTo(":0\r\n");
+        assertThat(testDatabase.exists(Collections.<String>emptyList())).isEqualTo(":0\r\n");
     }
+
 
     @Test
     void testSetNxReturnOneWhenKeyDontExist() {
@@ -270,5 +271,4 @@ class HazeDatabaseTest {
                 .isEqualTo("-WRONGTYPE value is not an integer or out of range\r\n");
 
     }
-
 }

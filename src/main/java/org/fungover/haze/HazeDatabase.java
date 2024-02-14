@@ -17,15 +17,6 @@ public class HazeDatabase {
         this.lock = new ReentrantLock();
     }
 
-    public void setValue(String key, String value) {
-        lock.lock();
-        try {
-            database.put(key, value);
-        } finally {
-            lock.unlock();
-        }
-    }
-
     public String getValue(String key) {
         lock.lock();
         try {
@@ -205,5 +196,4 @@ public class HazeDatabase {
             lock.unlock();
         }
     }
-
 }

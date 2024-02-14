@@ -10,6 +10,7 @@ public class HazeList {
     static final String EMPTY_ARRAY_RESPONSE = "*0\r\n";
     static final String LEFT = "LEFT";
     static final String RIGHT = "RIGHT";
+    public static final String OK = "+OK\r\n";
     HazeDatabase hazeDatabase;
 
     public HazeList(HazeDatabase hazeDatabase) {
@@ -22,9 +23,9 @@ public class HazeList {
         }
 
         String key = inputList.get(1);
-        String pivot = inputList.get(2).trim();
-        String elementToInsert = inputList.get(3);
-        boolean before = inputList.get(4).equalsIgnoreCase("BEFORE");
+        String pivot = inputList.get(3).trim();
+        String elementToInsert = inputList.get(4);
+        boolean before = inputList.get(2).equalsIgnoreCase("BEFORE");
 
         String listAsString = hazeDatabase.getValue(key);
 
@@ -33,10 +34,6 @@ public class HazeList {
         }
 
         List<String> elements = convertToList(listAsString);
-
-        if (elements.isEmpty()) {
-            return "-List is empty\r\n";
-        }
 
         int pivotIndex = elements.indexOf(pivot);
 
@@ -47,9 +44,9 @@ public class HazeList {
         int insertIndex = before ? pivotIndex : pivotIndex + 1;
         elements.add(insertIndex, elementToInsert);
 
-        hazeDatabase.setValue(key, listValueAsString(elements));
+        hazeDatabase.addValue(key, listValueAsString(elements));
 
-        return "+OK\r\n";
+        return OK;
     }
 
     public String lPush(List<String> inputList) {
@@ -237,7 +234,7 @@ public class HazeList {
             List<String> subList = new ArrayList<>(list.subList(start, stop + 1));
             String newCsv = listValueAsString(subList);
             hazeDatabase.addValue(key, newCsv);
-            return "+OK\r\n";
+            return OK;
         }
         catch (IndexOutOfBoundsException e) {
             return "-The inputs are outside the range of the list.\r\n";
@@ -370,6 +367,6 @@ public class HazeList {
                 mapToObj(i -> i == index ? element : list.get(i)).toList();
 
         hazeDatabase.addValue(key,listValueAsString(updatedList));
-        return "+OK\r\n";
+        return OK;
     }
 }
