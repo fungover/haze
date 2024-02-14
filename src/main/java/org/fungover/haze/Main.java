@@ -151,7 +151,7 @@ public class Main {
         };
     }
 
-    private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
+    static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
             IOException {
         logger.debug("readInputStream: {} {} {}", () -> input, () -> inputList, () -> firstReading);
         int size;

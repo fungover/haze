@@ -209,10 +209,22 @@ class MainTest {
     }
 
 
+    @Test
+    public void testReadInputStream_DoesNotStartWithAsterisk() throws IOException {
+
+        BufferedReader inputMock = mock(BufferedReader.class);
+        List<String> inputList = new ArrayList<>();
+        String firstReading = "word1 word2 word3";
 
 
+        Main.readInputStream(inputMock, inputList, firstReading);
 
 
+        assertEquals(3, inputList.size());
+        assertEquals("word1", inputList.get(0));
+        assertEquals("word2", inputList.get(1));
+        assertEquals("word3", inputList.get(2));
+    }
 
 
 
