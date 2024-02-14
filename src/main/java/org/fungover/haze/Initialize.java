@@ -16,7 +16,10 @@ public class Initialize {
             cliOptions.put(args[i], args[i + 1]);
         }
     }
-
+    public static void initializeServer(String[] args, Initialize initialize, Auth auth) {
+        initialize.importCliOptions(args);
+        auth.setPassword(initialize.getPassword());
+    }
     public int getPort() {
 
         if (cliOptions.containsKey("-p")) {

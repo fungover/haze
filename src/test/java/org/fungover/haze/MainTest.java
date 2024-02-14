@@ -20,6 +20,14 @@ import java.io.StringReader;
 
 import java.util.LinkedList;
 
+import org.mockito.Mockito;
+
+import java.io.*;
+import java.net.Socket;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.ArrayList;
+
 import java.util.List;
 
 
@@ -30,6 +38,9 @@ import static org.fungover.haze.Main.printThreadDebug;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 
 
 
@@ -41,6 +52,7 @@ class MainTest {
     void callingExecuteCommandWithValidNonExistingInputReturnsColonOne() {
         assertThat(Main.executeCommand(database, List.of("SETNX", "1", "This is a value"), hazeList)).isEqualTo(":1\r\n");
     }
+
 
     @Test
     void callingExecuteCommandWithInvalidInputStringReturnsErrorMessage() {
@@ -168,9 +180,57 @@ class MainTest {
     void authCommandReceivedTest(boolean isPasswordSet, String command, String password, boolean clientAuthenticated, boolean expected) {
         List<String> inputList = new LinkedList<>(List.of(command, password));
 
-        boolean result = Main.authCommandReceived(isPasswordSet, inputList, clientAuthenticated);
+        boolean result = Auth.authCommandReceived(isPasswordSet, inputList, clientAuthenticated);
 
         assertEquals(expected, result);
     }
+
+
+
+    @Test
+
+    void testExecuteCommandNoCommandProvided() {
+
+
+        List<String> inputList = new ArrayList<>();
+
+        String result = Main.executeCommand(database, inputList, hazeList);
+
+        assertThat(result).isEqualTo("-ERR no command provided\r\n");
+    }
+ @Test
+    void callingExecuteCommandWithUnknownCommandReturnsErrorMessage() {
+        assertThat(Main.executeCommand(database, List.of("NOSUCHCOMMAND"), hazeList))
+                .isEqualTo("-ERR unknown command\r\n");
+    }
+
+    @Test
+    void callingSetWithIncorrectNumberOfArgumentsReturnsErrorMessage() {
+        String errorMessage = Main.executeCommand(database, List.of("SET", "onlyOneArgument"), hazeList);
+        String expectedErrorMessage = "-ERR wrong number of arguments for command\r\n";
+        assertEquals(expectedErrorMessage, errorMessage);
+    }
+
+    @Test
+    public void whenExecuteSetCommand_thenCorrectMethodIsCalled() {
+        HazeDatabase mockDatabase = mock(HazeDatabase.class);
+        HazeList mockHazeList = mock(HazeList.class);
+        List<String> inputList = Arrays.asList("SET", "key", "value");
+
+        when(mockDatabase.set(inputList)).thenReturn("+OK\r\n");
+
+        String result = Main.executeCommand(mockDatabase, inputList, mockHazeList);
+
+        verify(mockDatabase).set(inputList);
+        assertEquals("+OK\r\n", result);
+    }
+
+
+
+
+
+
+
+
 
 }

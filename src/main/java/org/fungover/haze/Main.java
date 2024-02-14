@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +22,7 @@ public class Main {
         HazeDatabase hazeDatabase = new HazeDatabase();
         HazeList hazeList = new HazeList(hazeDatabase);
         Auth auth = new Auth();
-        initializeServer(args, initialize, auth);
+        Initialize.initializeServer(args, initialize, auth);
         final boolean isPasswordSet = auth.isPasswordSet();
         addHook(hazeDatabase);
 
@@ -45,10 +44,19 @@ public class Main {
         }
     }
 
+
     private static void runThread(HazeList hazeList, HazeDatabase hazeDatabase, Auth auth, boolean isPasswordSet, Socket client) {
         Runnable newThread = () -> createThread(hazeList, hazeDatabase, auth, isPasswordSet, client);
         Thread.startVirtualThread(newThread);
     }
+
+                Runnable newThread = () -> {
+                    try {
+                        BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                        boolean clientAuthenticated = false;
+                        while (!client.isClosed()) {
+                            List<String> inputList = new ArrayList<>();
+
 
     private static void createThread(HazeList hazeList, HazeDatabase hazeDatabase, Auth auth, boolean isPasswordSet, Socket client) {
         try {
@@ -65,9 +73,13 @@ public class Main {
         }
     }
 
+n
     private static void handleThread(HazeList hazeList, HazeDatabase hazeDatabase, Socket client, List<String> inputList) throws IOException {
         controlCommand(hazeList, hazeDatabase, client, inputList);
         printThreadDebug();
+
+                            clientAuthenticated = Auth.authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
+
 
         inputList.clear();
     }
@@ -123,11 +135,11 @@ public class Main {
             return "-ERR unknown command\r\n";
         }
 
+
         return commandSwitch (hazeDatabase, inputList, hazeList, commandEnum);
 
+
     }
-
-
         private static String commandSwitch (HazeDatabase hazeDatabase, List < String > inputList, HazeList
         hazeList, Command commandEnum){
             return switch (commandEnum) {
@@ -169,6 +181,7 @@ public class Main {
             }
         }
 
+
         private static void initializeServer (String[]args, Initialize initialize, Auth auth){
             initialize.importCliOptions(args);
             auth.setPassword(initialize.getPassword());
@@ -196,4 +209,7 @@ public class Main {
         }
     }
 
+
+
+}
 
