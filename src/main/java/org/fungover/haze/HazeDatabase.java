@@ -9,6 +9,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class HazeDatabase {
     private static final String ARGUMENT_ERROR = "-ERR wrong number of arguments for command\r\n";
+    private static final String NO_SUCH_KEY_ERROR = "-ERR no such key\r\n";
     private final Map<String, String> database;
     private final Lock lock;
 
@@ -68,6 +69,23 @@ public class HazeDatabase {
                 }
             });
             return ":" + counter + "\r\n";
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public String getAndDelete(List<String> inputList) {
+        if (inputList.size() != 2)
+            return ARGUMENT_ERROR;
+        lock.lock();
+        String key = inputList.get(1);
+        var value = "";
+        try {
+            if (database.containsKey(key)) {
+                value = database.get(inputList.get(1));
+                database.remove(key);
+                return value;
+            } else return NO_SUCH_KEY_ERROR;
         } finally {
             lock.unlock();
         }
@@ -160,7 +178,7 @@ public class HazeDatabase {
         String key = inputList.get(1);
         try {
             if (!database.containsKey(key)) {
-                return "-ERR no such key\r\n";
+                return NO_SUCH_KEY_ERROR;
             }
             String value = database.get(key);
             try {
@@ -181,7 +199,7 @@ public class HazeDatabase {
         String key = inputList.get(1);
         try {
             if (!database.containsKey(key)) {
-                return "-ERR no such key\r\n";
+                return NO_SUCH_KEY_ERROR;
             }
             String value = database.get(key);
             try {
