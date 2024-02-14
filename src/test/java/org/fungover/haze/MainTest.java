@@ -12,6 +12,7 @@ import org.testcontainers.shaded.org.apache.commons.io.output.ByteArrayOutputStr
 
 import java.io.BufferedReader;
 
+import java.io.IOException;
 import java.io.PrintStream;
 
 import java.io.StringReader;
@@ -126,20 +127,11 @@ class MainTest {
     }
 
     @Test
-
-    @DisplayName("getInputList Should Return List With Correct Data Based On Index")
-    void getInputListShouldReturn() {
+    void getInputListShouldReturnFirstElementInTheList() throws IOException {
         String inputString = "First\nSecond\nThird";
         BufferedReader input = new BufferedReader(new StringReader(inputString));
-        try {
-            List<String> result = Main.getInputList(input);
-            assertThat(result.get(1)).isEqualTo("Second");
-
-        } catch (Exception e) {
-            System.out.println("Exception");
-        }
-
-
+        List<String> result = Main.getInputList(input);
+        assertThat(result.getFirst()).isEqualTo("First");
     }
 
     @Test
