@@ -126,35 +126,30 @@ public class Main {
             commandEnum = Command.valueOf(command);
         } catch (IllegalArgumentException ex) {
             return "-ERR unknown command\r\n";
-        }
-
-
-        return commandSwitch (hazeDatabase, inputList, hazeList, commandEnum);
 
 
     }
-        private static String commandSwitch (HazeDatabase hazeDatabase, List < String > inputList, HazeList
-        hazeList, Command commandEnum){
-            return switch (commandEnum) {
-                case SET -> hazeDatabase.set(inputList);
-                case GET -> hazeDatabase.get(inputList);
-                case DEL -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
-                case PING -> hazeDatabase.ping(inputList);
-                case SETNX -> hazeDatabase.setNX(inputList);
-                case EXISTS -> hazeDatabase.exists(inputList.subList(1, inputList.size()));
-                case SAVE -> SaveFile.writeOnFile(hazeDatabase.copy());
-                case RPUSH -> hazeList.rPush(inputList);
-                case LPUSH -> hazeList.lPush(inputList);
-                case LPOP -> hazeList.callLPop(inputList);
-                case RPOP -> hazeList.callRPop(inputList);
-                case LLEN -> hazeList.lLen(inputList);
-                case LMOVE -> hazeList.lMove(inputList);
-                case LTRIM -> hazeList.callLtrim(inputList);
-                case LINDEX -> hazeList.lIndex(inputList);
-                case INCR -> hazeDatabase.increaseValue(inputList);
-                case DECR -> hazeDatabase.decreaseValue(inputList);
-                case AUTH -> "+OK\r\n";
-            };
+        return switch (commandEnum) {
+        case SET -> hazeDatabase.set(inputList);
+        case GET -> hazeDatabase.get(inputList);
+        case DEL -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
+        case PING -> hazeDatabase.ping(inputList);
+        case SETNX -> hazeDatabase.setNX(inputList);
+        case EXISTS -> hazeDatabase.exists(inputList.subList(1, inputList.size()));
+        case SAVE -> SaveFile.writeOnFile(hazeDatabase.copy());
+        case RPUSH -> hazeList.rPush(inputList);
+        case LPUSH -> hazeList.lPush(inputList);
+        case LPOP -> hazeList.callLPop(inputList);
+        case RPOP -> hazeList.callRPop(inputList);
+        case LLEN -> hazeList.lLen(inputList);
+        case LMOVE -> hazeList.lMove(inputList);
+        case LTRIM -> hazeList.callLtrim(inputList);
+        case LINDEX -> hazeList.lIndex(inputList);
+        case LSET -> hazeList.lSet(inputList);
+        case AUTH -> "+OK\r\n";
+        case INCR -> hazeDatabase.increaseValue(inputList);
+        case DECR -> hazeDatabase.decreaseValue(inputList);
+    };
         }
 
         private static void readInputStream (BufferedReader input, List < String > inputList, String firstReading) throws
@@ -204,5 +199,5 @@ public class Main {
 
 
 
-}
+
 
