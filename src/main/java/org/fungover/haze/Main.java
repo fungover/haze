@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,18 +51,6 @@ public class Main {
         Thread.startVirtualThread(newThread);
     }
 
-                Runnable newThread = () -> {
-                    try {
-                        BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                        boolean clientAuthenticated = false;
-                        while (!client.isClosed()) {
-                            List<String> inputList = new ArrayList<>();
-                        }
-
-                    } finally {
-
-                    }
-                };
     private static void createThread(HazeList hazeList, HazeDatabase hazeDatabase, Auth auth, boolean isPasswordSet, Socket client) {
         try {
             BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
