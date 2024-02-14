@@ -71,9 +71,6 @@ public class Main {
         controlCommand(hazeList, hazeDatabase, client, inputList);
         printThreadDebug();
 
-        clientAuthenticated = Auth.authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
-
-
         inputList.clear();
     }
 
@@ -91,7 +88,7 @@ public class Main {
         return inputList;
     }
 
-   public static void initSocket(Initialize initialize, ServerSocket serverSocket) throws IOException {
+    public static void initSocket(Initialize initialize, ServerSocket serverSocket) throws IOException {
         serverSocket.setReuseAddress(true);
         serverSocket.bind(new InetSocketAddress(initialize.getPort()));
     }
@@ -107,7 +104,7 @@ public class Main {
         logger.info("Shutting down....");
     }
 
-   public static void printThreadDebug() {
+    public static void printThreadDebug() {
         logger.debug("ThreadID {}", () -> Thread.currentThread().threadId());  // Only for Debug
         logger.debug("Is virtual Thread {}", () -> Thread.currentThread().isVirtual()); // Only for Debug
     }
@@ -128,52 +125,48 @@ public class Main {
             return "-ERR unknown command\r\n";
 
 
-    }
+        }
         return switch (commandEnum) {
-        case SET -> hazeDatabase.set(inputList);
-        case GET -> hazeDatabase.get(inputList);
-        case DEL -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
-        case PING -> hazeDatabase.ping(inputList);
-        case SETNX -> hazeDatabase.setNX(inputList);
-        case EXISTS -> hazeDatabase.exists(inputList.subList(1, inputList.size()));
-        case SAVE -> SaveFile.writeOnFile(hazeDatabase.copy());
-        case RPUSH -> hazeList.rPush(inputList);
-        case LPUSH -> hazeList.lPush(inputList);
-        case LPOP -> hazeList.callLPop(inputList);
-        case RPOP -> hazeList.callRPop(inputList);
-        case LLEN -> hazeList.lLen(inputList);
-        case LMOVE -> hazeList.lMove(inputList);
-        case LTRIM -> hazeList.callLtrim(inputList);
-        case LINDEX -> hazeList.lIndex(inputList);
-        case LSET -> hazeList.lSet(inputList);
-        case AUTH -> "+OK\r\n";
-        case INCR -> hazeDatabase.increaseValue(inputList);
-        case DECR -> hazeDatabase.decreaseValue(inputList);
-    };
-        }
+            case SET -> hazeDatabase.set(inputList);
+            case GET -> hazeDatabase.get(inputList);
+            case DEL -> hazeDatabase.delete(inputList.subList(1, inputList.size()));
+            case PING -> hazeDatabase.ping(inputList);
+            case SETNX -> hazeDatabase.setNX(inputList);
+            case EXISTS -> hazeDatabase.exists(inputList.subList(1, inputList.size()));
+            case SAVE -> SaveFile.writeOnFile(hazeDatabase.copy());
+            case RPUSH -> hazeList.rPush(inputList);
+            case LPUSH -> hazeList.lPush(inputList);
+            case LPOP -> hazeList.callLPop(inputList);
+            case RPOP -> hazeList.callRPop(inputList);
+            case LLEN -> hazeList.lLen(inputList);
+            case LMOVE -> hazeList.lMove(inputList);
+            case LTRIM -> hazeList.callLtrim(inputList);
+            case LINDEX -> hazeList.lIndex(inputList);
+            case LSET -> hazeList.lSet(inputList);
+            case AUTH -> "+OK\r\n";
+            case INCR -> hazeDatabase.increaseValue(inputList);
+            case DECR -> hazeDatabase.decreaseValue(inputList);
+        };
+    }
 
-        private static void readInputStream (BufferedReader input, List < String > inputList, String firstReading) throws
-        IOException {
-            logger.debug("readInputStream: {} {} {}", () -> input, () -> inputList, () -> firstReading);
-            int size;
-            if (firstReading.startsWith("*")) {
-                size = Integer.parseInt(firstReading.substring(1)) * 2;
-                for (int i = 0; i < size; i++) {
-                    String temp = input.readLine();
-                    if (!temp.contains("$"))
-                        inputList.add(temp);
-                }
-            } else {
-                String[] seperated = firstReading.split("\\s");
-                inputList.addAll(Arrays.asList(seperated));
+    private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
+            IOException {
+        logger.debug("readInputStream: {} {} {}", () -> input, () -> inputList, () -> firstReading);
+        int size;
+        if (firstReading.startsWith("*")) {
+            size = Integer.parseInt(firstReading.substring(1)) * 2;
+            for (int i = 0; i < size; i++) {
+                String temp = input.readLine();
+                if (!temp.contains("$"))
+                    inputList.add(temp);
             }
+        } else {
+            String[] seperated = firstReading.split("\\s");
+            inputList.addAll(Arrays.asList(seperated));
         }
+    }
 
 
-        private static void initializeServer (String[]args, Initialize initialize, Auth auth){
-            initialize.importCliOptions(args);
-            auth.setPassword(initialize.getPassword());
-        }
 
         private static boolean authenticateClient (Auth auth,boolean isPasswordSet, Socket
         client, List < String > inputList,boolean clientAuthenticated) throws IOException {
