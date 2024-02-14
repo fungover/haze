@@ -71,7 +71,7 @@ public class Main {
         controlCommand(hazeList, hazeDatabase, client, inputList);
         printThreadDebug();
 
-                            clientAuthenticated = Auth.authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
+        clientAuthenticated = Auth.authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
 
 
         inputList.clear();
