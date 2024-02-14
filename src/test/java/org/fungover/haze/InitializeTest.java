@@ -65,18 +65,17 @@ class InitializeTest {
 
     @Test
     public void testGetInitialize() throws NoSuchFieldException, IllegalAccessException {
-        // Ange testargument
+
         String[] args = {"-p", "1234", "--password", "test"};
 
-        // Anropa getInitialize-metoden för att skapa en Initialize-instans
+
         Initialize initialize = Initialize.getInitialize(args);
 
-        // Hämta cliOptions från den skapade Initialize-instansen med reflektion
+
         Field field = Initialize.class.getDeclaredField("cliOptions");
         field.setAccessible(true);
         Object obj = field.get(initialize);
 
-        // Kontrollera att cliOptions-mapen har rätt värden
         Assertions.assertNotNull(obj);
         Assertions.assertEquals("1234", ((Map<String, String>) obj).get("-p"));
         Assertions.assertEquals("test", ((Map<String, String>) obj).get("--password"));
@@ -84,22 +83,7 @@ class InitializeTest {
 
 
 
-    }
-
-
-
-    void shouldImportCliOptionsWhenInitializingServer() {
-        String[] args = {"--password", "1234"};
-        Initialize initialize = Mockito.mock(Initialize.class);
-        Auth auth = Mockito.mock(Auth.class);
-
-        Initialize.initializeServer(args, initialize, auth);
-
-        verify(initialize).importCliOptions(args);
-    }
-
-
-
-
 }
+
+
 
