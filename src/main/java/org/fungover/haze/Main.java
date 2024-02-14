@@ -56,8 +56,12 @@ public class Main {
                         boolean clientAuthenticated = false;
                         while (!client.isClosed()) {
                             List<String> inputList = new ArrayList<>();
+                        }
 
+                    } finally {
 
+                    }
+                };
     private static void createThread(HazeList hazeList, HazeDatabase hazeDatabase, Auth auth, boolean isPasswordSet, Socket client) {
         try {
             BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -73,7 +77,7 @@ public class Main {
         }
     }
 
-n
+
     private static void handleThread(HazeList hazeList, HazeDatabase hazeDatabase, Socket client, List<String> inputList) throws IOException {
         controlCommand(hazeList, hazeDatabase, client, inputList);
         printThreadDebug();
