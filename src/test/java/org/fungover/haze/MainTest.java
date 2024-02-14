@@ -153,8 +153,8 @@ class MainTest {
 
         printThreadDebug();
 
-        assertFalse(outContent.toString().contains("ThreadID"));
-        assertFalse(outContent.toString().contains("Is virtual Thread"));
+        assertFalse(String.valueOf(outContent).contains("ThreadID"));
+        assertFalse(String.valueOf(outContent).contains("Is virtual Thread"));
     }
 
     @ParameterizedTest
