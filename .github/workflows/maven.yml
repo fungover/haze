@@ -1,10 +1,4 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
 
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
 
 name: Java CI with Maven
 
@@ -26,7 +20,10 @@ jobs:
         run: |
           Java_Version=$(mvn help:evaluate "-Dexpression=maven.compiler.release" -q -DforceStdout | sed -e 's/^1\./1.0./')
           echo "Java_Version=$Java_Version" >> $GITHUB_ENV
+
+
       - name: Set up JDK ${{ env.Java_Version }}
+
         uses: actions/setup-java@v4
         with:
           java-version: ${{ env.Java_Version }}
@@ -37,4 +34,3 @@ jobs:
 
       - name: Test with Maven
         run: mvn -B test --file pom.xml
-
