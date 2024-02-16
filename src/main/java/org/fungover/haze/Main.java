@@ -15,7 +15,6 @@ import java.util.List;
 
 
 
-
 public class Main {
     static boolean serverOpen = true;
     static Logger logger = LogManager.getLogger(Main.class);
@@ -53,6 +52,7 @@ public class Main {
         Thread.startVirtualThread(newThread);
     }
 
+
     private static void createThread(HazeList hazeList, HazeDatabase hazeDatabase, Auth auth, boolean isPasswordSet, Socket client) {
         try {
             BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -62,6 +62,7 @@ public class Main {
                 clientAuthenticated = Auth.authenticateClient(auth, isPasswordSet, client, inputList, clientAuthenticated);
                 handleThread(hazeList, hazeDatabase, client, inputList);
             }
+
 
         } catch (IOException e) {
             logger.error(e);
@@ -148,6 +149,7 @@ public class Main {
             case AUTH -> "+OK\r\n";
             case INCR -> hazeDatabase.increaseValue(inputList);
             case DECR -> hazeDatabase.decreaseValue(inputList);
+            case GETDEL -> hazeDatabase.getAndDelete(inputList);
         };
     }
 
