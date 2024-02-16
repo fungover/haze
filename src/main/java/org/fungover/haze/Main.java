@@ -129,9 +129,9 @@ public class Main {
             case INCR -> hazeDatabase.increaseValue(inputList);
             case DECR -> hazeDatabase.decreaseValue(inputList);
             case GETDEL -> hazeDatabase.getAndDelete(inputList);
+            case LINSERT -> hazeList.lInsert(inputList);
         };
     }
-
 
     private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
             IOException {

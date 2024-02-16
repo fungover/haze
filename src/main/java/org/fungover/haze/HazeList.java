@@ -1,19 +1,52 @@
 package org.fungover.haze;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class HazeList {
-
     static final String NIL_RESPONSE = "$5\r\n(nil)\r\n";
     static final String EMPTY_ARRAY_RESPONSE = "*0\r\n";
     static final String LEFT = "LEFT";
     static final String RIGHT = "RIGHT";
+    public static final String OK = "+OK\r\n";
     HazeDatabase hazeDatabase;
 
     public HazeList(HazeDatabase hazeDatabase) {
         this.hazeDatabase = hazeDatabase;
+    }
+
+    public String lInsert(List<String> inputList) {
+        if (inputList.size() < 5) {
+            return "-Wrong number of arguments for LINSERT\r\n";
+        }
+
+        String key = inputList.get(1);
+        String pivot = inputList.get(3).trim();
+        String elementToInsert = inputList.get(4);
+        boolean before = inputList.get(2).equalsIgnoreCase("BEFORE");
+
+        String listAsString = hazeDatabase.getValue(key);
+
+        if (listAsString == null) {
+            return "-List not found\r\n";
+        }
+
+        List<String> elements = convertToList(listAsString);
+
+        int pivotIndex = elements.indexOf(pivot);
+
+        if (pivotIndex == -1) {
+            return "-Pivot element not found in the list\r\n";
+        }
+
+        int insertIndex = before ? pivotIndex : pivotIndex + 1;
+        elements.add(insertIndex, elementToInsert);
+
+        hazeDatabase.addValue(key, listValueAsString(elements));
+
+        return OK;
     }
 
     public String lPush(List<String> inputList) {
@@ -32,7 +65,7 @@ public class HazeList {
 
         hazeDatabase.addValue(key, newListAsString + oldListAsString);
 
-        int currentSize = getValueAsList(hazeDatabase.getValue(key)).size();
+        int currentSize = convertToList(hazeDatabase.getValue(key)).size();
 
         return ":" + currentSize + "\r\n";
     }
@@ -41,7 +74,7 @@ public class HazeList {
         String key = getKey(inputList);
 
         String currentValuesAsString = hazeDatabase.getValue(key);
-        List<String> currentValues = currentValuesAsString != null ? getValueAsList(currentValuesAsString) : new ArrayList<>();
+        List<String> currentValues = currentValuesAsString != null ? convertToList(currentValuesAsString) : new ArrayList<>();
 
         List<String> newInputs = inputList.stream()
                 .skip(2)
@@ -61,7 +94,7 @@ public class HazeList {
         if (!hazeDatabase.containsKey(key))
             return NIL_RESPONSE;
 
-        List<String> list = getValueAsList(hazeDatabase.getValue(key));
+        List<String> list = convertToList(hazeDatabase.getValue(key));
 
         String firstElement = list.removeFirst();
         String newValue = listValueAsString(list);
@@ -77,7 +110,7 @@ public class HazeList {
         if (!hazeDatabase.containsKey(key))
             return NIL_RESPONSE;
 
-        List<String> list = getValueAsList(hazeDatabase.getValue(key));
+        List<String> list = convertToList(hazeDatabase.getValue(key));
 
         int actualCount = Math.min(count, list.size());
 
@@ -99,7 +132,7 @@ public class HazeList {
         if (!hazeDatabase.containsKey(key))
             return NIL_RESPONSE;
 
-        List<String> list = getValueAsList(hazeDatabase.getValue(key));
+        List<String> list = convertToList(hazeDatabase.getValue(key));
 
         int lastIndex = list.size() - 1;
         String lastElement = list.remove(lastIndex);
@@ -116,7 +149,7 @@ public class HazeList {
         if (!hazeDatabase.containsKey(key))
             return NIL_RESPONSE;
 
-        List<String> list = getValueAsList(hazeDatabase.getValue(key));
+        List<String> list = convertToList(hazeDatabase.getValue(key));
 
         int actualCount = Math.min(count, list.size());
         if (actualCount == 0)
@@ -140,7 +173,7 @@ public class HazeList {
         if (value == null || value.isEmpty())
             return ":0\r\n";
         else {
-            List<String> list = getValueAsList(value);
+            List<String> list = convertToList(value);
             return ":" + list.size() + "\r\n";
         }
     }
@@ -163,8 +196,8 @@ public class HazeList {
         else if (sourceValue.isEmpty())
             return "-The source list is empty.\r\n";
 
-        List<String> sourceList = getValueAsList(sourceValue);
-        List<String> destinationList = getValueAsList(destinationValue);
+        List<String> sourceList = convertToList(sourceValue);
+        List<String> destinationList = convertToList(destinationValue);
         String value;
 
         if (whereFrom.equals(LEFT) && whereTo.equals(LEFT)) {
@@ -197,11 +230,11 @@ public class HazeList {
             return "-The key is not present in the database.\r\n";
         }
         try {
-            List<String> list = getValueAsList(hazeDatabase.getValue(key));
+            List<String> list = convertToList(hazeDatabase.getValue(key));
             List<String> subList = new ArrayList<>(list.subList(start, stop + 1));
             String newCsv = listValueAsString(subList);
             hazeDatabase.addValue(key, newCsv);
-            return "+OK\r\n";
+            return OK;
         }
         catch (IndexOutOfBoundsException e) {
             return "-The inputs are outside the range of the list.\r\n";
@@ -256,7 +289,7 @@ public class HazeList {
         }
     }
     @SuppressWarnings("squid:S6204")
-    public static List<String> getValueAsList(String textToSplit) {
+    public static List<String> convertToList(String textToSplit) {
         return Stream.of(textToSplit.split("\r\n", -1))
                 .collect(Collectors.toList());
     }
@@ -299,7 +332,11 @@ public class HazeList {
         return key;
     }
 
-        public String lSet(List<String> inputlist){
+    private List<String> getValueAsList(String value) {
+        return Arrays.asList(value.split("\r\n"));
+    }
+
+    public String lSet(List<String> inputlist){
         if (inputlist.size() < 4){
             return "-Err Wrong number of arguments for LSET\r\n";
         }
@@ -330,7 +367,6 @@ public class HazeList {
                 mapToObj(i -> i == index ? element : list.get(i)).toList();
 
         hazeDatabase.addValue(key,listValueAsString(updatedList));
-        return "+OK\r\n";
-
-        }
+        return OK;
+    }
 }
