@@ -93,7 +93,28 @@ java redis docker-container maven-pom sonarqube sonarcloud log4j2 html
 Returns if key exists, it returns 1 if the key exists, and 0 otherwise.
 - SAVE:
    Saves the current state of the dataset. It is helpful if you are creating backups or snapshots.
-
+- RPUSH:
+  Appends one or multiple elements to the end of a list.
+- LPUSH:
+  Appends one or multiple elements to the beginning of a list.
+- LPOP:
+  Removes and returns the first element of the list stored at the key.
+- RPOP:
+  Removes and returns the last element of the list stored at the key.
+- LLEN:
+  Returns the length of the list stored at the key.
+- LMOVE:
+  Removes the first or last element from the source list and pushes it to the destination list.
+- LTRIM:
+  Trim a list so that it contains only the specified range of elements.
+- AUTH:
+  Authenticate to the server.
+- LINDEX:
+  Returns the element at index position in the list stored at the key.
+- INCR:
+  Increments the number stored at key by one.
+- DECR:
+  Decrements the number stored at key by one.
    
 
 ## Examples:
@@ -103,5 +124,16 @@ Returns if key exists, it returns 1 if the key exists, and 0 otherwise.
   4. ```PING "PONG"```
   5. ```SETNX mykey "Hello"```
   6. ```EXISTS key1```
-  
+  7. ```SAVE```
+  8. ```RPUSH mylist "a" "b" "c"```
+  9. ```LPUSH mylist "d" "e"```
+  10. ```LPOP mylist```
+  11. ```RPOP mylist```
+  12. ```LLEN mylist```
+  13. ```LMOVE sourcelist destinationlist LEFT RIGHT```
+  14. ```LTRIM mylist 0 1```
+  15. ```AUTH password```
+  16. ```LINDEX mylist index```
+  17. ```INCR key```
+  18. ```DECR key```  
   
