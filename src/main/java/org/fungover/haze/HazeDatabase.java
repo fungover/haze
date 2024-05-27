@@ -1,4 +1,5 @@
 package org.fungover.haze;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,15 @@ public class HazeDatabase {
     public HazeDatabase() {
         this.database = new HashMap<>();
         this.lock = new ReentrantLock();
+    }
+
+    public String getValue(String key) {
+        lock.lock();
+        try {
+            return database.get(key);
+        } finally {
+            lock.unlock();
+        }
     }
 
     public String set(List<String> inputList) {
@@ -143,16 +153,6 @@ public class HazeDatabase {
         else return "$" + (messageList.get(1)).length() + "\r\n" + messageList.get(1) + "\r\n";
     }
 
-    public String getValue(String key) {
-        lock.lock();
-        try {
-            return database.get(key);
-        }
-        finally {
-            lock.unlock();
-        }
-    }
-
     public boolean containsKey(String key) {
         lock.lock();
         try {
@@ -214,5 +214,4 @@ public class HazeDatabase {
             lock.unlock();
         }
     }
-
 }

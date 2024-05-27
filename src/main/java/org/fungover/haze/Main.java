@@ -150,10 +150,13 @@ public class Main {
             case INCR -> hazeDatabase.increaseValue(inputList);
             case DECR -> hazeDatabase.decreaseValue(inputList);
             case GETDEL -> hazeDatabase.getAndDelete(inputList);
+            case LINSERT -> hazeList.lInsert(inputList);
         };
     }
 
     static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
+
+    private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws
             IOException {
         logger.debug("readInputStream: {} {} {}", () -> input, () -> inputList, () -> firstReading);
         int size;

@@ -9,12 +9,31 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class HazeDatabaseTest {
 
     HazeDatabase testDatabase = new HazeDatabase();
 
+    @Test
+    void testAddValueAndGetValidValue() {
+        testDatabase.addValue("key1", "value1");
+        assertEquals("value1", testDatabase.getValue("key1"));
+    }
+
+    @Test
+    void testGetValueWithNonExistentKey() {
+        assertNull(testDatabase.getValue("nonexistentKey"));
+    }
+
+    @Test
+    void testGetValueAfterSettingMultipleValues() {
+        testDatabase.addValue("key1", "value1");
+        testDatabase.addValue("key2", "value2");
+        assertEquals("value2", testDatabase.getValue("key2"));
+    }
+    
     @Test
     void callingDeleteReturnsZeroWhenKeyDoesNotExist() {
         assertThat(testDatabase.delete(Collections.singletonList("2"))).isEqualTo(":0\r\n");
@@ -84,8 +103,9 @@ class HazeDatabaseTest {
         testDatabase.setNX(List.of("", "name", "saher"));
         testDatabase.setNX(List.of("", "1", "Hej"));
 
-        assertThat(testDatabase.exists(Collections.EMPTY_LIST)).isEqualTo(":0\r\n");
+        assertThat(testDatabase.exists(Collections.<String>emptyList())).isEqualTo(":0\r\n");
     }
+
 
     @Test
     void testSetNxReturnOneWhenKeyDontExist() {
@@ -276,5 +296,4 @@ class HazeDatabaseTest {
         assertThat(testDatabase.getAndDelete(List.of("GETDEL", "key2"))).isEqualTo("-ERR no such key\r\n");
 
     }
-
 }
