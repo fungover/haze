@@ -153,7 +153,7 @@ public class Main {
             case LINSERT -> hazeList.lInsert(inputList);
         };
     }
-    private static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws IOException {
+    public static void readInputStream(BufferedReader input, List<String> inputList, String firstReading) throws IOException {
         logger.debug("readInputStream: {} {} {}", () -> input, () -> inputList, () -> firstReading);
         int size;
         if (firstReading.startsWith("*")) {
