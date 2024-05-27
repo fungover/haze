@@ -1,28 +1,35 @@
 package org.fungover.haze;
 
+
+
+
+
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Mockito;
-
-import java.io.*;
-import java.net.Socket;
-import java.util.Arrays;
+import org.testcontainers.shaded.org.apache.commons.io.output.ByteArrayOutputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.StringReader;
 import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.fungover.haze.Main.printThreadDebug;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+
+
 
 
 class MainTest {
     HazeDatabase database = new HazeDatabase();
     HazeList hazeList = new HazeList(database);
-
 
     @Test
     void callingExecuteCommandWithValidNonExistingInputReturnsColonOne() {
@@ -115,13 +122,21 @@ class MainTest {
     }
 
     @Test
+    void getInputListShouldReturnFirstElementInTheList() throws IOException {
+        String inputString = "First\nSecond\nThird";
+        BufferedReader input = new BufferedReader(new StringReader(inputString));
+        List<String> result = Main.getInputList(input);
+        assertThat(result.getFirst()).isEqualTo("First");
+    }
+
+    @Test
     void callExecuteCommandWithIncrShouldIncreaseTheValueOfTheKeyBy1() {
         Main.executeCommand(database, List.of("SET", "key1", "1"), hazeList);
         assertThat(Main.executeCommand(database, List.of("INCR", "key1"), hazeList)).isEqualTo(":2\r\n");
     }
 
     @Test
-    void callExecuteCommandWithDecrShouldDecreaseTheValueOfTheKeyBy1(){
+    void callExecuteCommandWithDecrShouldDecreaseTheValueOfTheKeyBy1() {
         Main.executeCommand(database, List.of("SET", "key1", "1"), hazeList);
         assertThat(Main.executeCommand(database, List.of("DECR", "key1"), hazeList)).isEqualTo(":0\r\n");
     }
@@ -133,8 +148,8 @@ class MainTest {
 
         printThreadDebug();
 
-        assertFalse(outContent.toString().contains("ThreadID"));
-        assertFalse(outContent.toString().contains("Is virtual Thread"));
+        Assertions.assertFalse(String.valueOf(outContent).contains("ThreadID"));
+        Assertions.assertFalse(String.valueOf(outContent).contains("Is virtual Thread"));
     }
 
     @ParameterizedTest
@@ -152,6 +167,8 @@ class MainTest {
 
         assertEquals(expected, result);
     }
+
+
 
     @Test
 
@@ -192,9 +209,22 @@ class MainTest {
     }
 
 
+    @Test
+    public void testReadInputStream_DoesNotStartWithAsterisk() throws IOException {
+
+        BufferedReader inputMock = mock(BufferedReader.class);
+        List<String> inputList = new ArrayList<>();
+        String firstReading = "word1 word2 word3";
 
 
+        Main.readInputStream(inputMock, inputList, firstReading);
 
+
+        assertEquals(3, inputList.size());
+        assertEquals("word1", inputList.get(0));
+        assertEquals("word2", inputList.get(1));
+        assertEquals("word3", inputList.get(2));
+    }
 
 
 

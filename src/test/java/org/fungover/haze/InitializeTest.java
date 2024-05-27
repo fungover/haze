@@ -1,10 +1,12 @@
 package org.fungover.haze;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-
+import java.lang.reflect.Field;
+import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
 
@@ -61,6 +63,24 @@ class InitializeTest {
     }
 
     @Test
+    public void testGetInitialize() throws NoSuchFieldException, IllegalAccessException {
+
+        String[] args = {"-p", "1234", "--password", "test"};
+
+
+        Initialize initialize = Initialize.getInitialize(args);
+
+
+        Field field = Initialize.class.getDeclaredField("cliOptions");
+        field.setAccessible(true);
+        Object obj = field.get(initialize);
+
+        Assertions.assertNotNull(obj);
+        Assertions.assertEquals("1234", ((Map<String, String>) obj).get("-p"));
+        Assertions.assertEquals("test", ((Map<String, String>) obj).get("--password"));
+    }
+
+    @Test
     void shouldImportCliOptionsWhenInitializingServer() {
         String[] args = {"--password", "1234"};
         Initialize initialize = Mockito.mock(Initialize.class);
@@ -71,7 +91,7 @@ class InitializeTest {
         verify(initialize).importCliOptions(args);
     }
 
-
-
-
 }
+
+
+
