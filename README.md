@@ -79,8 +79,8 @@ java redis docker-container maven-pom sonarqube sonarcloud log4j2 html
        Commands that the Server support:
       
  
-  - SET:
-     Sets a value to a key in Redis.
+- SET:
+    Sets a value to a key in Redis.
 - GET:
     Retrieves a value to a key in Redis.
 - DEL:
@@ -93,6 +93,12 @@ java redis docker-container maven-pom sonarqube sonarcloud log4j2 html
 Returns if key exists, it returns 1 if the key exists, and 0 otherwise.
 - SAVE:
    Saves the current state of the dataset. It is helpful if you are creating backups or snapshots.
+- GETDEL:
+   Retrives a value from a key in Redis and deletes it
+- LSET: 
+   Sets the value of an element in a list stored at a key by its index.
+- LINSERT: 
+   Inserts an element in a list stored at a key, either before or after a specified pivot element.
 
    
 
@@ -103,5 +109,7 @@ Returns if key exists, it returns 1 if the key exists, and 0 otherwise.
   4. ```PING "PONG"```
   5. ```SETNX mykey "Hello"```
   6. ```EXISTS key1```
-  
+  7. ```GETDEL key1```
+  8. ```LSET list1 1 "Hello"```
+  9. ```LINSERT list1 BEFORE key1 "Hello"```
   
